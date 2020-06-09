@@ -14,17 +14,15 @@
 # included in all copies or substantial portions of the Software.
 
 """Allows beets to embed album art into file metadata."""
-from __future__ import division, absolute_import, print_function
+from __future__ import absolute_import, division, print_function
 
 import os.path
 
+from beets import art, config, ui
 from beets.plugins import BeetsPlugin
-from beets import ui
-from beets.ui import print_, decargs
-from beets.util import syspath, normpath, displayable_path, bytestring_path
+from beets.ui import decargs, print_
+from beets.util import bytestring_path, displayable_path, normpath, syspath
 from beets.util.artresizer import ArtResizer
-from beets import config
-from beets import art
 
 
 def _confirm(objs, album):

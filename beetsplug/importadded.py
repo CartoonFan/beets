@@ -5,12 +5,11 @@ modification time (mtime) of the item's source file before import.
 
 Reimported albums and items are skipped.
 """
-from __future__ import division, absolute_import, print_function
+from __future__ import absolute_import, division, print_function
 
 import os
 
-from beets import util
-from beets import importer
+from beets import importer, util
 from beets.plugins import BeetsPlugin
 
 

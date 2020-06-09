@@ -16,14 +16,14 @@
 """If the title is empty, try to extract track and title from the
 filename.
 """
-from __future__ import division, absolute_import, print_function
+from __future__ import absolute_import, division, print_function
 
-from beets import plugins
-from beets.util import displayable_path
 import os
 import re
-import six
 
+import six
+from beets import plugins
+from beets.util import displayable_path
 
 # Filename field extraction patterns.
 PATTERNS = [

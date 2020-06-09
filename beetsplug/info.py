@@ -16,15 +16,15 @@
 """Shows file metadata.
 """
 
-from __future__ import division, absolute_import, print_function
+from __future__ import absolute_import, division, print_function
 
 import os
 import re
 
-from beets.plugins import BeetsPlugin
-from beets import ui
 import mediafile
+from beets import ui
 from beets.library import Item
+from beets.plugins import BeetsPlugin
 from beets.util import displayable_path, normpath, syspath
 
 

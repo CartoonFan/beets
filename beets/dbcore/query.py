@@ -15,15 +15,16 @@
 
 """The Query type hierarchy for DBCore.
 """
-from __future__ import division, absolute_import, print_function
+from __future__ import absolute_import, division, print_function
 
 import re
-from operator import mul
-from beets import util
-from datetime import datetime, timedelta
 import unicodedata
+from datetime import datetime, timedelta
 from functools import reduce
+from operator import mul
+
 import six
+from beets import util
 
 if not six.PY2:
     buffer = memoryview  # sqlite won't accept memoryview in python 2

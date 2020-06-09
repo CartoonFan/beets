@@ -13,17 +13,18 @@
 # The above copyright notice and this permission notice shall be
 # included in all copies or substantial portions of the Software.
 
-from __future__ import division, absolute_import, print_function
-
-"""Tests for the `importadded` plugin."""
+from __future__ import absolute_import, division, print_function
 
 import os
 import unittest
+from test.test_importer import AutotagStub, ImportHelper
 
-from test.test_importer import ImportHelper, AutotagStub
-from beets import importer
-from beets import util
+from beets import importer, util
 from beetsplug.importadded import ImportAddedPlugin
+
+"""Tests for the `importadded` plugin."""
+
+
 
 _listeners = ImportAddedPlugin.listeners
 

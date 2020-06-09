@@ -14,20 +14,18 @@
 # included in all copies or substantial portions of the Software.
 
 """Glue between metadata sources and the matching logic."""
-from __future__ import division, absolute_import, print_function
+from __future__ import absolute_import, division, print_function
 
+import re
 from collections import namedtuple
 from functools import total_ordering
-import re
 
-from beets import logging
-from beets import plugins
-from beets import config
-from beets.util import as_string
+import six
+from beets import config, logging, plugins
 from beets.autotag import mb
+from beets.util import as_string
 from jellyfish import levenshtein_distance
 from unidecode import unidecode
-import six
 
 log = logging.getLogger("beets")
 

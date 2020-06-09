@@ -13,9 +13,17 @@
 # The above copyright notice and this permission notice shall be
 # included in all copies or substantial portions of the Software.
 
-from __future__ import division, absolute_import, print_function
+from __future__ import absolute_import, division, print_function
 
+import codecs
+import os
+import traceback
+
+import pylast
 import six
+import yaml
+from beets import config, library, plugins, ui
+from beets.util import normpath, plurality
 
 """Gets genres for imported music based on Last.fm tags.
 
@@ -25,17 +33,7 @@ and has been edited to remove some questionable entries.
 The scraper script used is available here:
 https://gist.github.com/1241307
 """
-import pylast
-import codecs
-import os
-import yaml
-import traceback
 
-from beets import plugins
-from beets import ui
-from beets import config
-from beets.util import normpath, plurality
-from beets import library
 
 
 LASTFM = pylast.LastFMNetwork(api_key=plugins.LASTFM_KEY)

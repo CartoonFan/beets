@@ -17,12 +17,11 @@
 and work composition date
 """
 
-from __future__ import division, absolute_import, print_function
-
-from beets import ui
-from beets.plugins import BeetsPlugin
+from __future__ import absolute_import, division, print_function
 
 import musicbrainzngs
+from beets import ui
+from beets.plugins import BeetsPlugin
 
 
 def direct_parent_id(mb_workid, work_date=None):

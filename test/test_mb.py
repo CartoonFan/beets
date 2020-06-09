@@ -15,14 +15,14 @@
 
 """Tests for MusicBrainz API wrapper.
 """
-from __future__ import division, absolute_import, print_function
-
-from test import _common
-from beets.autotag import mb
-from beets import config
+from __future__ import absolute_import, division, print_function
 
 import unittest
+from test import _common
+
 import mock
+from beets import config
+from beets.autotag import mb
 
 
 class MBAlbumInfoTest(_common.TestCase):

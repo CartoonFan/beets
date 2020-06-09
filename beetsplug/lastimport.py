@@ -13,15 +13,12 @@
 # The above copyright notice and this permission notice shall be
 # included in all copies or substantial portions of the Software.
 
-from __future__ import division, absolute_import, print_function
+from __future__ import absolute_import, division, print_function
 
 import pylast
-from pylast import TopItem, _extract, _number
-from beets import ui
-from beets import dbcore
-from beets import config
-from beets import plugins
+from beets import config, dbcore, plugins, ui
 from beets.dbcore import types
+from pylast import TopItem, _extract, _number
 
 API_URL = "https://ws.audioscrobbler.com/2.0/"
 

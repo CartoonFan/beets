@@ -9,16 +9,15 @@
         apikey: apikey
         password: password
 """
-from __future__ import division, absolute_import, print_function
+from __future__ import absolute_import, division, print_function
 
 import hashlib
+
 import requests
-
-from six.moves.urllib.parse import urlencode
-from six.moves.urllib.parse import urljoin, parse_qs, urlsplit, urlunsplit
-
 from beets import config
 from beets.plugins import BeetsPlugin
+from six.moves.urllib.parse import (parse_qs, urlencode, urljoin, urlsplit,
+                                    urlunsplit)
 
 
 def api_url(host, port, endpoint):

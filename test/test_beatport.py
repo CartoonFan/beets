@@ -15,16 +15,16 @@
 
 """Tests for the 'beatport' plugin.
 """
-from __future__ import division, absolute_import, print_function
+from __future__ import absolute_import, division, print_function
 
 import unittest
+from datetime import timedelta
 from test import _common
 from test.helper import TestHelper
-import six
-from datetime import timedelta
 
-from beetsplug import beatport
+import six
 from beets import library
+from beetsplug import beatport
 
 
 class BeatportTest(_common.TestCase, TestHelper):

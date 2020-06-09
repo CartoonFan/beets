@@ -15,12 +15,11 @@
 
 """Moves "featured" artists to the title from the artist field.
 """
-from __future__ import division, absolute_import, print_function
+from __future__ import absolute_import, division, print_function
 
 import re
 
-from beets import plugins
-from beets import ui
+from beets import plugins, ui
 from beets.util import displayable_path
 
 

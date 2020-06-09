@@ -15,16 +15,16 @@
 
 """ Clears tag fields in media files."""
 
-from __future__ import division, absolute_import, print_function
-import six
+from __future__ import absolute_import, division, print_function
 
 import re
 
-from beets.plugins import BeetsPlugin
-from mediafile import MediaFile
-from beets.importer import action
-from beets.ui import Subcommand, decargs, input_yn
 import confuse
+import six
+from beets.importer import action
+from beets.plugins import BeetsPlugin
+from beets.ui import Subcommand, decargs, input_yn
+from mediafile import MediaFile
 
 __author__ = "baobab@heresiarch.info"
 

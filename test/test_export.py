@@ -16,14 +16,14 @@
 """Test the beets.export utilities associated with the export plugin.
 """
 
-from __future__ import division, absolute_import, print_function
+from __future__ import absolute_import, division, print_function
 
+import json
+import re  # used to test csv format
 import unittest
 from test.helper import TestHelper
-import re  # used to test csv format
-import json
-from xml.etree.ElementTree import Element
 from xml.etree import ElementTree
+from xml.etree.ElementTree import Element
 
 
 class ExportPluginTest(unittest.TestCase, TestHelper):

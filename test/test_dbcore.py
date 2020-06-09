@@ -15,19 +15,18 @@
 
 """Tests for the DBCore database abstraction.
 """
-from __future__ import division, absolute_import, print_function
+from __future__ import absolute_import, division, print_function
 
 import os
 import shutil
 import sqlite3
 import unittest
-from six import assertRaisesRegex
-
-from test import _common
-from beets import dbcore
 from tempfile import mkstemp
-import six
+from test import _common
 
+import six
+from beets import dbcore
+from six import assertRaisesRegex
 
 # Fixture: concrete database and model classes. For migration tests, we
 # have multiple models with different numbers of fields.

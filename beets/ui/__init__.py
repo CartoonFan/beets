@@ -18,32 +18,28 @@ interface. To invoke the CLI, just call beets.ui.main(). The actual
 CLI commands are implemented in the ui.commands module.
 """
 
-from __future__ import division, absolute_import, print_function
+from __future__ import absolute_import, division, print_function
 
-import optparse
-import textwrap
-import sys
-from difflib import SequenceMatcher
-import sqlite3
 import errno
-import re
-import struct
-import traceback
+import optparse
 import os.path
-from six.moves import input
+import re
+import sqlite3
+import struct
+import sys
+import textwrap
+import traceback
+from difflib import SequenceMatcher
 
-from beets import logging
-from beets import library
-from beets import plugins
-from beets import util
-from beets.util.functemplate import template
-from beets import config
-from beets.util import as_string
-from beets.autotag import mb
-from beets.dbcore import query as db_query
-from beets.dbcore import db
 import confuse
 import six
+from beets import config, library, logging, plugins, util
+from beets.autotag import mb
+from beets.dbcore import db
+from beets.dbcore import query as db_query
+from beets.util import as_string
+from beets.util.functemplate import template
+from six.moves import input
 
 # On Windows platforms, use colorama to support "ANSI" terminal colors.
 if sys.platform == "win32":

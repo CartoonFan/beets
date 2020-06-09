@@ -19,6 +19,7 @@ List all files in the library folder which are not listed in the
 """
 
 from __future__ import absolute_import, division, print_function
+
 import os
 
 from beets import util

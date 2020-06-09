@@ -15,11 +15,11 @@
 
 """Get a random song or album from the library.
 """
-from __future__ import division, absolute_import, print_function
+from __future__ import absolute_import, division, print_function
 
 from beets.plugins import BeetsPlugin
-from beets.ui import Subcommand, decargs, print_
 from beets.random import random_objs
+from beets.ui import Subcommand, decargs, print_
 
 
 def random_func(lib, opts, args):

@@ -13,20 +13,17 @@
 # The above copyright notice and this permission notice shall be
 # included in all copies or substantial portions of the Software.
 
-from __future__ import division, absolute_import, print_function
+from __future__ import absolute_import, division, print_function
+
+import os
+import select
+import socket
+import time
 
 import mpd
-import socket
-import select
-import time
-import os
-
-from beets import ui
-from beets import config
-from beets import plugins
-from beets import library
-from beets.util import displayable_path
+from beets import config, library, plugins, ui
 from beets.dbcore import types
+from beets.util import displayable_path
 
 # If we lose the connection, how many times do we want to retry and how
 # much time should we wait between retries?

@@ -15,9 +15,10 @@
 
 """Moves patterns in path formats (suitable for moving articles)."""
 
-from __future__ import division, absolute_import, print_function
+from __future__ import absolute_import, division, print_function
 
 import re
+
 from beets.plugins import BeetsPlugin
 
 __author__ = "baobab@heresiarch.info"

@@ -16,7 +16,7 @@
 """Calculate acoustic information and submit to AcousticBrainz.
 """
 
-from __future__ import division, absolute_import, print_function
+from __future__ import absolute_import, division, print_function
 
 import errno
 import hashlib
@@ -24,13 +24,10 @@ import json
 import os
 import subprocess
 import tempfile
-
 from distutils.spawn import find_executable
-import requests
 
-from beets import plugins
-from beets import util
-from beets import ui
+import requests
+from beets import plugins, ui, util
 
 # We use this field to check whether AcousticBrainz info is present.
 PROBE_FIELD = "mood_acoustic"

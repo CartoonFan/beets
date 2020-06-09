@@ -15,11 +15,11 @@
 
 """Test the "pipeline.py" restricted parallel programming library.
 """
-from __future__ import division, absolute_import, print_function
+from __future__ import absolute_import, division, print_function
 
-import six
 import unittest
 
+import six
 from beets.util import pipeline
 
 

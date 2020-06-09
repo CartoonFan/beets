@@ -16,16 +16,14 @@
 """Test module for file ui/commands.py
 """
 
-from __future__ import division, absolute_import, print_function
+from __future__ import absolute_import, division, print_function
 
 import os
 import shutil
 import unittest
-
 from test import _common
 
-from beets import library
-from beets import ui
+from beets import library, ui
 from beets.ui import commands
 
 

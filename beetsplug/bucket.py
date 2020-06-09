@@ -16,16 +16,15 @@
 """Provides the %bucket{} function for path formatting.
 """
 
-from __future__ import division, absolute_import, print_function
+from __future__ import absolute_import, division, print_function
 
-from datetime import datetime
 import re
 import string
-from six.moves import zip
+from datetime import datetime
 from itertools import tee
 
 from beets import plugins, ui
-
+from six.moves import zip
 
 ASCII_DIGITS = string.digits + string.ascii_lowercase
 

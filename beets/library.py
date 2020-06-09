@@ -15,32 +15,23 @@
 
 """The core data store and collection logic for beets.
 """
-from __future__ import division, absolute_import, print_function
+from __future__ import absolute_import, division, print_function
 
 import os
-import sys
-import unicodedata
-import time
 import re
-import six
 import string
+import sys
+import time
+import unicodedata
 
-from beets import logging
-from mediafile import MediaFile, UnreadableFileError
-from beets import plugins
-from beets import util
-from beets.util import (
-    bytestring_path,
-    syspath,
-    normpath,
-    samefile,
-    MoveOperation,
-    lazy_property,
-)
-from beets.util.functemplate import template, Template
-from beets import dbcore
-from beets.dbcore import types
 import beets
+import six
+from beets import dbcore, logging, plugins, util
+from beets.dbcore import types
+from beets.util import (MoveOperation, bytestring_path, lazy_property,
+                        normpath, samefile, syspath)
+from beets.util.functemplate import Template, template
+from mediafile import MediaFile, UnreadableFileError
 
 # To use the SQLite "blob" type, it doesn't suffice to provide a byte
 # string; SQLite treats that as encoded text. Wrapping it in a `buffer` or a

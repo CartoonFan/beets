@@ -21,12 +21,13 @@ that when getLogger(name) instantiates a logger that logger uses
 {}-style formatting.
 """
 
-from __future__ import division, absolute_import, print_function
+from __future__ import absolute_import, division, print_function
 
-from copy import copy
-from logging import *  # noqa
 import subprocess
 import threading
+from copy import copy
+from logging import *  # noqa
+
 import six
 
 

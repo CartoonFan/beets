@@ -7,18 +7,18 @@ asyncore.
 
 Bluelet: easy concurrency without all the messy parallelism.
 """
-from __future__ import division, absolute_import, print_function
+from __future__ import absolute_import, division, print_function
+
+import collections
+import errno
+import select
+import socket
+import sys
+import time
+import traceback
+import types
 
 import six
-import socket
-import select
-import sys
-import types
-import errno
-import traceback
-import time
-import collections
-
 
 # Basic events used for thread scheduling.
 

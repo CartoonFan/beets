@@ -17,12 +17,11 @@ from __future__ import absolute_import, division, print_function
 
 import random
 import string
-from xml.etree import ElementTree
 from hashlib import md5
 from urllib.parse import urlencode
+from xml.etree import ElementTree
 
 import requests
-
 from beets.dbcore import AndQuery
 from beets.dbcore.query import MatchQuery
 from beets.plugins import BeetsPlugin

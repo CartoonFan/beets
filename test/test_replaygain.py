@@ -14,18 +14,18 @@
 # included in all copies or substantial portions of the Software.
 
 
-from __future__ import division, absolute_import, print_function
+from __future__ import absolute_import, division, print_function
 
 import unittest
-import six
-
-from mock import patch
 from test.helper import TestHelper, capture_log, has_program
 
+import six
 from beets import config
 from beets.util import CommandOutput
+from beetsplug.replaygain import (FatalGstreamerPluginReplayGainError,
+                                  GStreamerBackend)
 from mediafile import MediaFile
-from beetsplug.replaygain import FatalGstreamerPluginReplayGainError, GStreamerBackend
+from mock import patch
 
 try:
     import gi

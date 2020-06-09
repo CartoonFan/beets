@@ -13,29 +13,23 @@
 # The above copyright notice and this permission notice shall be
 # included in all copies or substantial portions of the Software.
 
-from __future__ import division, absolute_import, print_function
+from __future__ import absolute_import, division, print_function
 
-import subprocess
-import os
 import collections
+import enum
 import math
+import os
+import re
+import subprocess
 import sys
 import warnings
-import enum
-import re
 import xml.parsers.expat
-from six.moves import zip
 
 from beets import ui
 from beets.plugins import BeetsPlugin
-from beets.util import (
-    syspath,
-    command_output,
-    bytestring_path,
-    displayable_path,
-    py3_path,
-)
-
+from beets.util import (bytestring_path, command_output, displayable_path,
+                        py3_path, syspath)
+from six.moves import zip
 
 # Utilities.
 

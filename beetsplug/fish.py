@@ -23,13 +23,14 @@ by default but can be added via the `-e` / `--extravalues` flag. For example:
 `beet fish -e genre -e albumartist`
 """
 
-from __future__ import division, absolute_import, print_function
+from __future__ import absolute_import, division, print_function
 
-from beets.plugins import BeetsPlugin
-from beets import library, ui
-from beets.ui import commands
-from operator import attrgetter
 import os
+from operator import attrgetter
+
+from beets import library, ui
+from beets.plugins import BeetsPlugin
+from beets.ui import commands
 
 BL_NEED2 = """complete -c beet -n '__fish_beet_needs_command' {} {}\n"""
 BL_USE3 = """complete -c beet -n '__fish_beet_using_command {}' {} {}\n"""

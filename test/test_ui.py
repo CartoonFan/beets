@@ -15,31 +15,25 @@
 
 """Tests for the command-line interface.
 """
-from __future__ import division, absolute_import, print_function
+from __future__ import absolute_import, division, print_function
 
 import os
-import shutil
-import re
-import subprocess
 import platform
-import six
+import re
+import shutil
+import subprocess
 import unittest
-
-from mock import patch, Mock
 from test import _common
-from test.helper import capture_stdout, has_program, TestHelper, control_stdin
+from test.helper import TestHelper, capture_stdout, control_stdin, has_program
 
-from beets import library
-from beets import ui
-from beets.ui import commands
-from beets import autotag
+import six
+from beets import autotag, config, library, plugins, ui, util
 from beets.autotag.match import distance
-from mediafile import MediaFile
-from beets import config
-from beets import plugins
+from beets.ui import commands
+from beets.util import MoveOperation, syspath
 from confuse import ConfigError
-from beets import util
-from beets.util import syspath, MoveOperation
+from mediafile import MediaFile
+from mock import Mock, patch
 
 
 class ListTest(unittest.TestCase):

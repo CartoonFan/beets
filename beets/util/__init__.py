@@ -15,26 +15,27 @@
 
 """Miscellaneous utility functions."""
 
-from __future__ import division, absolute_import, print_function
-import os
-import sys
+from __future__ import absolute_import, division, print_function
+
 import errno
-import locale
-import re
-import shutil
 import fnmatch
 import functools
-from collections import Counter, namedtuple
-from multiprocessing.pool import ThreadPool
-import traceback
-import subprocess
+import locale
+import os
 import platform
+import re
 import shlex
-from beets.util import hidden
-import six
-from unidecode import unidecode
+import shutil
+import subprocess
+import sys
+import traceback
+from collections import Counter, namedtuple
 from enum import Enum
+from multiprocessing.pool import ThreadPool
 
+import six
+from beets.util import hidden
+from unidecode import unidecode
 
 MAX_FILENAME_LENGTH = 200
 WINDOWS_MAGIC_PREFIX = u"\\\\?\\"

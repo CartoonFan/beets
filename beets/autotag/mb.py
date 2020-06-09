@@ -15,19 +15,17 @@
 
 """Searches for albums in the MusicBrainz database.
 """
-from __future__ import division, absolute_import, print_function
+from __future__ import absolute_import, division, print_function
 
-import musicbrainzngs
 import re
 import traceback
-from six.moves.urllib.parse import urljoin
 
-from beets import logging
-import beets.autotag.hooks
 import beets
-from beets import util
-from beets import config
+import beets.autotag.hooks
+import musicbrainzngs
 import six
+from beets import config, logging, util
+from six.moves.urllib.parse import urljoin
 
 VARIOUS_ARTISTS_ID = "89ad4ac3-39f7-470e-963a-56509c546377"
 

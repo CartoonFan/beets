@@ -15,21 +15,21 @@
 
 """The central Model and Database constructs for DBCore.
 """
-from __future__ import division, absolute_import, print_function
+from __future__ import absolute_import, division, print_function
 
-import time
-import os
-from collections import defaultdict
-import threading
-import sqlite3
 import contextlib
+import os
+import sqlite3
+import threading
+import time
+from collections import defaultdict
 
 import beets
-from beets.util import functemplate
-from beets.util import py3_path
-from beets.dbcore import types
-from .query import MatchQuery, NullSort, TrueQuery
 import six
+from beets.dbcore import types
+from beets.util import functemplate, py3_path
+
+from .query import MatchQuery, NullSort, TrueQuery
 
 if six.PY2:
     from collections import Mapping

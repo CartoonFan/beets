@@ -16,23 +16,18 @@
 """Generates smart playlists based on beets queries.
 """
 
-from __future__ import division, absolute_import, print_function
+from __future__ import absolute_import, division, print_function
 
-from beets.plugins import BeetsPlugin
+import os
+
+import six
 from beets import ui
-from beets.util import (
-    mkdirall,
-    normpath,
-    sanitize_path,
-    syspath,
-    bytestring_path,
-    path_as_posix,
-)
-from beets.library import Item, Album, parse_query_string
 from beets.dbcore import OrQuery
 from beets.dbcore.query import MultipleSort, ParsingError
-import os
-import six
+from beets.library import Album, Item, parse_query_string
+from beets.plugins import BeetsPlugin
+from beets.util import (bytestring_path, mkdirall, normpath, path_as_posix,
+                        sanitize_path, syspath)
 
 
 class SmartPlaylistPlugin(BeetsPlugin):

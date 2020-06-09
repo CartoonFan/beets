@@ -18,26 +18,25 @@ Beets library. Attempts to implement a compatible protocol to allow
 use of the wide range of MPD clients.
 """
 
-from __future__ import division, absolute_import, print_function
+from __future__ import absolute_import, division, print_function
 
-import re
-from string import Template
-import traceback
-import random
-import time
-import math
 import inspect
+import math
+import random
+import re
 import socket
+import time
+import traceback
+from string import Template
 
 import beets
-from beets.plugins import BeetsPlugin
 import beets.ui
-from beets import vfs
-from beets.util import bluelet
-from beets.library import Item
-from beets import dbcore
-from mediafile import MediaFile
 import six
+from beets import dbcore, vfs
+from beets.library import Item
+from beets.plugins import BeetsPlugin
+from beets.util import bluelet
+from mediafile import MediaFile
 
 PROTOCOL_VERSION = "0.16.0"
 BUFSIZE = 1024

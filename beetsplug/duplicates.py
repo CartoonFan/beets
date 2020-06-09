@@ -15,21 +15,16 @@
 
 """List duplicate tracks or albums.
 """
-from __future__ import division, absolute_import, print_function
+from __future__ import absolute_import, division, print_function
 
 import shlex
 
-from beets.plugins import BeetsPlugin
-from beets.ui import decargs, print_, Subcommand, UserError
-from beets.util import (
-    command_output,
-    displayable_path,
-    subprocess,
-    bytestring_path,
-    MoveOperation,
-)
-from beets.library import Item, Album
 import six
+from beets.library import Album, Item
+from beets.plugins import BeetsPlugin
+from beets.ui import Subcommand, UserError, decargs, print_
+from beets.util import (MoveOperation, bytestring_path, command_output,
+                        displayable_path, subprocess)
 
 PLUGIN = "duplicates"
 

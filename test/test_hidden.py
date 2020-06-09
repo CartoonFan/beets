@@ -15,16 +15,17 @@
 
 """Tests for the 'hidden' utility."""
 
-from __future__ import division, absolute_import, print_function
+from __future__ import absolute_import, division, print_function
 
-import unittest
+import ctypes
+import errno
+import subprocess
 import sys
 import tempfile
-from beets.util import hidden
+import unittest
+
 from beets import util
-import subprocess
-import errno
-import ctypes
+from beets.util import hidden
 
 
 class HiddenFileTest(unittest.TestCase):

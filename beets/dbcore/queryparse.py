@@ -15,10 +15,11 @@
 
 """Parsing of strings into DBCore queries.
 """
-from __future__ import division, absolute_import, print_function
+from __future__ import absolute_import, division, print_function
 
-import re
 import itertools
+import re
+
 from . import query
 
 PARSE_QUERY_PART_REGEX = re.compile(

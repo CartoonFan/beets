@@ -15,26 +15,21 @@
 
 """Adds Beatport release and track search support to the autotagger
 """
-from __future__ import division, absolute_import, print_function
+from __future__ import absolute_import, division, print_function
 
 import json
 import re
-import six
 from datetime import datetime, timedelta
-
-from requests_oauthlib import OAuth1Session
-from requests_oauthlib.oauth1_session import (
-    TokenRequestDenied,
-    TokenMissing,
-    VerifierMissing,
-)
 
 import beets
 import beets.ui
+import confuse
+import six
 from beets.autotag.hooks import AlbumInfo, TrackInfo
 from beets.plugins import BeetsPlugin, MetadataSourcePlugin, get_distance
-import confuse
-
+from requests_oauthlib import OAuth1Session
+from requests_oauthlib.oauth1_session import (TokenMissing, TokenRequestDenied,
+                                              VerifierMissing)
 
 AUTH_ERRORS = (TokenRequestDenied, TokenMissing, VerifierMissing)
 USER_AGENT = u"beets/{0} +https://beets.io/".format(beets.__version__)

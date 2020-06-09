@@ -17,16 +17,16 @@
 music and items' embedded album art.
 """
 
-from __future__ import division, absolute_import, print_function
+from __future__ import absolute_import, division, print_function
 
-import subprocess
-import platform
-from tempfile import NamedTemporaryFile
 import os
+import platform
+import subprocess
+from tempfile import NamedTemporaryFile
 
-from beets.util import displayable_path, syspath, bytestring_path
-from beets.util.artresizer import ArtResizer
 import mediafile
+from beets.util import bytestring_path, displayable_path, syspath
+from beets.util.artresizer import ArtResizer
 
 
 def mediafile_image(image_path, maxwidth=None):

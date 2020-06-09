@@ -13,35 +13,34 @@
 # The above copyright notice and this permission notice shall be
 # included in all copies or substantial portions of the Software.
 
-from __future__ import division, absolute_import, print_function
+from __future__ import absolute_import, division, print_function
 
-"""Tests for the general importer functionality.
-"""
 import os
 import re
 import shutil
-import unicodedata
-import sys
 import stat
-from six import StringIO
-from tempfile import mkstemp
-from zipfile import ZipFile
-from tarfile import TarFile
-from mock import patch, Mock
+import sys
+import unicodedata
 import unittest
-
+from tarfile import TarFile
+from tempfile import mkstemp
 from test import _common
-from beets.util import displayable_path, bytestring_path, py3_path
-from test.helper import TestHelper, has_program, capture_log
-from test.helper import ImportSessionFixture
-from beets import importer
+from test.helper import (ImportSessionFixture, TestHelper, capture_log,
+                         has_program)
+from zipfile import ZipFile
+
+from beets import autotag, config, importer, logging, util
+from beets.autotag import AlbumInfo, AlbumMatch, TrackInfo
 from beets.importer import albums_in_dir
+from beets.util import bytestring_path, displayable_path, py3_path
 from mediafile import MediaFile
-from beets import autotag
-from beets.autotag import AlbumInfo, TrackInfo, AlbumMatch
-from beets import config
-from beets import logging
-from beets import util
+from mock import Mock, patch
+from six import StringIO
+
+
+"""Tests for the general importer functionality.
+"""
+
 
 
 class AutotagStub(object):

@@ -13,18 +13,16 @@
 # The above copyright notice and this permission notice shall be
 # included in all copies or substantial portions of the Software.
 
-from __future__ import division, absolute_import, print_function
-from six.moves import shlex_quote
+from __future__ import absolute_import, division, print_function
 
 import os
 import shutil
 import tempfile
 import unittest
-
-from test import _common
-from test import helper
+from test import _common, helper
 
 import beets
+from six.moves import shlex_quote
 
 
 class PlaylistTestHelper(helper.TestHelper):

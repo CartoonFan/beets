@@ -13,34 +13,30 @@
 # The above copyright notice and this permission notice shall be
 # included in all copies or substantial portions of the Software.
 
-from __future__ import division, absolute_import, print_function
+from __future__ import absolute_import, division, print_function
+
+import itertools
+import os
+import pickle
+import re
+import shutil
+import time
+from bisect import bisect_left, insort
+from collections import defaultdict
+from contextlib import contextmanager
+from enum import Enum
+from tempfile import mkdtemp
+
+import mediafile
+from beets import autotag, config, dbcore, library, logging, plugins, util
+from beets.util import (MoveOperation, ancestry, displayable_path, normpath,
+                        pipeline, sorted_walk, syspath)
 
 """Provides the basic, interface-agnostic workflow for importing and
 autotagging music files.
 """
 
-import os
-import re
-import pickle
-import itertools
-from collections import defaultdict
-from tempfile import mkdtemp
-from bisect import insort, bisect_left
-from contextlib import contextmanager
-import shutil
-import time
 
-from beets import logging
-from beets import autotag
-from beets import library
-from beets import dbcore
-from beets import plugins
-from beets import util
-from beets import config
-from beets.util import pipeline, sorted_walk, ancestry, MoveOperation
-from beets.util import syspath, normpath, displayable_path
-from enum import Enum
-import mediafile
 
 action = Enum("action", ["SKIP", "ASIS", "TRACKS", "APPLY", "ALBUMS", "RETAG"])
 # The RETAG action represents "don't apply any match, but do record

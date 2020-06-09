@@ -23,12 +23,12 @@ Put something like the following in your config.yaml to configure:
         user: user
         pwd: secret
 """
-from __future__ import division, absolute_import, print_function
+from __future__ import absolute_import, division, print_function
 
 import requests
+import six
 from beets import config
 from beets.plugins import BeetsPlugin
-import six
 
 
 def update_kodi(host, port, user, password):

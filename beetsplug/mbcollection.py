@@ -13,15 +13,14 @@
 # The above copyright notice and this permission notice shall be
 # included in all copies or substantial portions of the Software.
 
-from __future__ import division, absolute_import, print_function
-
-from beets.plugins import BeetsPlugin
-from beets.ui import Subcommand
-from beets import ui
-from beets import config
-import musicbrainzngs
+from __future__ import absolute_import, division, print_function
 
 import re
+
+import musicbrainzngs
+from beets import config, ui
+from beets.plugins import BeetsPlugin
+from beets.ui import Subcommand
 
 SUBMISSION_CHUNK_SIZE = 200
 FETCH_CHUNK_SIZE = 100

@@ -15,21 +15,19 @@
 
 """Support for beets plugins."""
 
-from __future__ import division, absolute_import, print_function
+from __future__ import absolute_import, division, print_function
 
-import traceback
-import re
-import inspect
 import abc
+import inspect
+import re
+import traceback
 from collections import defaultdict
 from functools import wraps
 
-
 import beets
-from beets import logging
 import mediafile
 import six
-
+from beets import logging
 
 PLUGIN_NAMESPACE = "beetsplug"
 

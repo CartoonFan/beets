@@ -22,15 +22,18 @@ import difflib
 import errno
 import itertools
 import json
-import struct
 import os.path
 import re
-import requests
+import struct
 import unicodedata
-from unidecode import unidecode
 import warnings
+
+import beets
+import requests
 import six
+from beets import plugins, ui, util
 from six.moves import urllib
+from unidecode import unidecode
 
 try:
     from bs4 import SoupStrainer, BeautifulSoup
@@ -57,10 +60,6 @@ except ImportError:
         pass
 
 
-from beets import plugins
-from beets import ui
-from beets import util
-import beets
 
 DIV_RE = re.compile(r"<(/?)div>?", re.I)
 COMMENT_RE = re.compile(r"<!--.*-->", re.S)

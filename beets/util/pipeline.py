@@ -32,12 +32,13 @@ To do so, pass an iterable of coroutines to the Pipeline constructor
 in place of any single coroutine.
 """
 
-from __future__ import division, absolute_import, print_function
+from __future__ import absolute_import, division, print_function
 
-from six.moves import queue
-from threading import Thread, Lock
 import sys
+from threading import Lock, Thread
+
 import six
+from six.moves import queue
 
 BUBBLE = "__PIPELINE_BUBBLE__"
 POISON = "__PIPELINE_POISON__"

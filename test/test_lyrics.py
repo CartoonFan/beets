@@ -19,22 +19,17 @@ from __future__ import absolute_import, division, print_function
 
 import os
 import re
-import six
 import sys
 import unittest
-
-from mock import patch
 from test import _common
 
+import confuse
+import six
 from beets import logging
 from beets.library import Item
 from beets.util import bytestring_path
-import confuse
-
 from beetsplug import lyrics
-
-from mock import MagicMock
-
+from mock import MagicMock, patch
 
 log = logging.getLogger("beets.test_lyrics")
 raw_backend = lyrics.Backend({}, log)

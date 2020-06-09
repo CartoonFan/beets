@@ -15,21 +15,19 @@
 
 """Open metadata information in a text editor to let the user edit it.
 """
-from __future__ import division, absolute_import, print_function
+from __future__ import absolute_import, division, print_function
 
-from beets import plugins
-from beets import util
-from beets import ui
+import codecs
+import os
+import subprocess
+from tempfile import NamedTemporaryFile
+
+import six
+import yaml
+from beets import plugins, ui, util
 from beets.dbcore import types
 from beets.importer import action
-from beets.ui.commands import _do_query, PromptChoice
-import codecs
-import subprocess
-import yaml
-from tempfile import NamedTemporaryFile
-import os
-import six
-
+from beets.ui.commands import PromptChoice, _do_query
 
 # These "safe" types can avoid the format/parse cycle that most fields go
 # through: they are safe to edit with native YAML types.
