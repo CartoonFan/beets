@@ -52,6 +52,7 @@ def _confirm(objs, album):
 class EmbedCoverArtPlugin(BeetsPlugin):
     """Allows albumart to be embedded into the actual files.
     """
+
     def __init__(self):
         super(EmbedCoverArtPlugin, self).__init__()
         self.config.add({

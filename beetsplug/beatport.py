@@ -134,7 +134,8 @@ class BeatportClient(object):
                              facets=['fieldType:{0}'.format(release_type)])
         for item in response:
             if release_type == 'release':
-                release = self.get_release(item['id']) if details else BeatportRelease(item)
+                release = self.get_release(
+                    item['id']) if details else BeatportRelease(item)
                 yield release
             elif release_type == 'track':
                 yield BeatportTrack(item)
@@ -414,7 +415,7 @@ class BeatportPlugin(BeetsPlugin):
         # can also negate an otherwise positive result.
         query = re.sub(r'\b(CD|disc)\s*\d+', '', query, flags=re.I)
         return [self._get_album_info(x)
-                  for x in self.client.search(query)]
+                for x in self.client.search(query)]
 
     def _get_album_info(self, release):
         """Returns an AlbumInfo object for a Beatport Release object.

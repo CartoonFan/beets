@@ -178,6 +178,7 @@ class ImportSession(object):
     """Controls an import action. Subclasses should implement methods to
     communicate with the user or otherwise make decisions.
     """
+
     def __init__(self, lib, loghandler, paths, query):
         """Create a session. `lib` is a Library object. `loghandler` is a
         logging.Handler. Either `paths` or `query` is non-null and indicates
@@ -288,7 +289,8 @@ class ImportSession(object):
         self.set_config(config['import'])
 
         # Set up the pipeline.
-        stages = [read_tasks(self)] if self.query is None else [query_tasks(self)]
+        stages = [read_tasks(self)] if self.query is None else [
+                             query_tasks(self)]
         # In pretend mode, just log what would otherwise be imported.
         if self.config['pretend']:
             stages += [log_files(self)]
@@ -339,8 +341,8 @@ class ImportSession(object):
             progress_element(toppath, p) for p in paths
         ):
             return True
-        return bool(self.config['incremental'] \
-           and tuple(paths) in self.history_dirs)
+        return bool(self.config['incremental']
+                    and tuple(paths) in self.history_dirs)
 
     @property
     def history_dirs(self):
@@ -352,8 +354,8 @@ class ImportSession(object):
         """Returns true if all the paths being imported were part of a merge
         during previous tasks.
         """
-        return not any(path not in self._merged_items \
-               and path not in self._merged_dirs for path in paths)
+        return not any(path not in self._merged_items
+                       and path not in self._merged_dirs for path in paths)
 
     def mark_merged(self, paths):
         """Mark paths and directories as merged for future reimport tasks.
@@ -398,6 +400,7 @@ class BaseImportTask(object):
 
     Tasks flow through the importer pipeline. Each stage can update
     them.     """
+
     def __init__(self, toppath, paths, items):
         """Create a task. The primary fields that define a task are:
 
@@ -451,6 +454,7 @@ class ImportTask(BaseImportTask):
     * `finalize()` Update the import progress and cleanup the file
       system.
     """
+
     def __init__(self, toppath, paths, items):
         super(ImportTask, self).__init__(toppath, paths, items)
         self.choice_flag = None
@@ -1066,6 +1070,7 @@ class ImportTaskFactory(object):
     """Generate album and singleton import tasks for all media files
     indicated by a path.
     """
+
     def __init__(self, toppath, session):
         """Create a new task factory.
 

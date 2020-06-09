@@ -95,6 +95,7 @@ class BPDError(Exception):
     """An error that should be exposed to the client to the BPD
     server.
     """
+
     def __init__(self, code, message, cmd_name='', index=0):
         self.code = code
         self.message = message
@@ -161,6 +162,7 @@ class BPDIdle(Exception):
     """Raised by a command to indicate the client wants to enter the idle state
     and should be notified when a relevant event happens.
     """
+
     def __init__(self, subsystems):
         super(BPDIdle, self).__init__()
         self.subsystems = set(subsystems)
@@ -727,6 +729,7 @@ class BaseServer(object):
 class Connection(object):
     """A connection between a client and the server.
     """
+
     def __init__(self, server, sock):
         """Create a new connection for the accepted socket `client`.
         """
@@ -769,6 +772,7 @@ class Connection(object):
 class MPDConnection(Connection):
     """A connection that receives commands from an MPD-compatible client.
     """
+
     def __init__(self, server, sock):
         """Create a new connection for the accepted socket `client`.
         """
@@ -884,6 +888,7 @@ class MPDConnection(Connection):
 class ControlConnection(Connection):
     """A connection used to control BPD for debugging and internal events.
     """
+
     def __init__(self, server, sock):
         """Create a new connection for the accepted socket `client`.
         """
@@ -1579,6 +1584,7 @@ class BPDPlugin(BeetsPlugin):
     """Provides the "beet bpd" command for running a music player
     server.
     """
+
     def __init__(self):
         super(BPDPlugin, self).__init__()
         self.config.add({
@@ -1610,7 +1616,8 @@ class BPDPlugin(BeetsPlugin):
             host = self.config['host'].as_str()
             host = args.pop(0) if args else host
             port = args.pop(0) if args else self.config['port'].get(int)
-            ctrl_port = args.pop(0) if args else self.config['control_port'].get(int)
+            ctrl_port = args.pop(
+                0) if args else self.config['control_port'].get(int)
             if args:
                 raise beets.ui.UserError(u'too many arguments')
             password = self.config['password'].as_str()

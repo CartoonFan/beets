@@ -35,6 +35,7 @@ class WaitableEvent(Event):
     waited for using a select() call. That is, it's an event with an
     associated file descriptor.
     """
+
     def waitables(self):
         """Return "waitable" objects to pass to select(). Should return
         three iterables for input readiness, output readiness, and
@@ -52,18 +53,21 @@ class WaitableEvent(Event):
 
 class ValueEvent(Event):
     """An event that does nothing but return a fixed value."""
+
     def __init__(self, value):
         self.value = value
 
 
 class ExceptionEvent(Event):
     """Raise an exception at the yield point. Used internally."""
+
     def __init__(self, exc_info):
         self.exc_info = exc_info
 
 
 class SpawnEvent(Event):
     """Add a new coroutine thread to the scheduler."""
+
     def __init__(self, coro):
         self.spawned = coro
 
@@ -72,12 +76,14 @@ class JoinEvent(Event):
     """Suspend the thread until the specified child thread has
     completed.
     """
+
     def __init__(self, child):
         self.child = child
 
 
 class KillEvent(Event):
     """Unschedule a child thread."""
+
     def __init__(self, child):
         self.child = child
 
@@ -87,6 +93,7 @@ class DelegationEvent(Event):
     once the child thread finished, return control to the parent
     thread.
     """
+
     def __init__(self, coro):
         self.spawned = coro
 
@@ -95,6 +102,7 @@ class ReturnEvent(Event):
     """Return a value the current thread's delegator at the point of
     delegation. Ends the current (delegate) thread.
     """
+
     def __init__(self, value):
         self.value = value
 
@@ -102,6 +110,7 @@ class ReturnEvent(Event):
 class SleepEvent(WaitableEvent):
     """Suspend the thread for a given duration.
     """
+
     def __init__(self, duration):
         self.wakeup_time = time.time() + duration
 
@@ -111,6 +120,7 @@ class SleepEvent(WaitableEvent):
 
 class ReadEvent(WaitableEvent):
     """Reads from a file-like object."""
+
     def __init__(self, fd, bufsize):
         self.fd = fd
         self.bufsize = bufsize
@@ -124,6 +134,7 @@ class ReadEvent(WaitableEvent):
 
 class WriteEvent(WaitableEvent):
     """Writes to a file-like object."""
+
     def __init__(self, fd, data):
         self.fd = fd
         self.data = data
@@ -165,7 +176,8 @@ def _event_select(events):
                 waitable_to_event[('x', waitable)] = event
 
     # If we have a any sleeping threads, determine how long to sleep.
-    timeout = max(earliest_wakeup - time.time(), 0.0) if earliest_wakeup else None
+    timeout = max(earliest_wakeup - time.time(),
+                  0.0) if earliest_wakeup else None
     # Perform select() if we have any waitables.
     if rlist or wlist or xlist:
         rready, wready, xready = select.select(rlist, wlist, xlist, timeout)
@@ -207,6 +219,7 @@ class Delegated(Event):
     """Placeholder indicating that a thread has delegated execution to a
     different thread.
     """
+
     def __init__(self, child):
         self.child = child
 
@@ -386,6 +399,7 @@ class SocketClosedError(Exception):
 class Listener(object):
     """A socket wrapper object for listening sockets.
     """
+
     def __init__(self, host, port):
         """Create a listening socket on the given hostname and port.
         """
@@ -416,6 +430,7 @@ class Listener(object):
 class Connection(object):
     """A socket wrapper object for connected sockets.
     """
+
     def __init__(self, sock, addr):
         self.sock = sock
         self.addr = addr
@@ -479,6 +494,7 @@ class AcceptEvent(WaitableEvent):
     """An event for Listener objects (listening sockets) that suspends
     execution until the socket gets a connection.
     """
+
     def __init__(self, listener):
         self.listener = listener
 
@@ -494,6 +510,7 @@ class ReceiveEvent(WaitableEvent):
     """An event for Connection objects (connected sockets) for
     asynchronously reading data.
     """
+
     def __init__(self, conn, bufsize):
         self.conn = conn
         self.bufsize = bufsize
@@ -509,6 +526,7 @@ class SendEvent(WaitableEvent):
     """An event for Connection objects (connected sockets) for
     asynchronously writing data.
     """
+
     def __init__(self, conn, data, sendall=False):
         self.conn = conn
         self.data = data

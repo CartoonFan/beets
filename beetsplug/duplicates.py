@@ -32,6 +32,7 @@ PLUGIN = 'duplicates'
 class DuplicatesPlugin(BeetsPlugin):
     """List duplicate tracks or albums
     """
+
     def __init__(self):
         super(DuplicatesPlugin, self).__init__()
 

@@ -378,6 +378,7 @@ class Bs1770gainBackend(Backend):
 class FfmpegBackend(Backend):
     """A replaygain backend using ffmpeg's ebur128 filter.
     """
+
     def __init__(self, config, log):
         super(FfmpegBackend, self).__init__(config, log)
         self._ffmpeg_path = "ffmpeg"
@@ -860,7 +861,7 @@ class GStreamerBackend(Backend):
             raise ReplayGainError(u"Some tracks did not receive tags")
 
         return [Gain(self._file_tags[item]["TRACK_GAIN"],
-                            self._file_tags[item]["TRACK_PEAK"]) for item in items]
+                     self._file_tags[item]["TRACK_PEAK"]) for item in items]
 
     def compute_album_gain(self, items, target_level, peak):
         items = list(items)

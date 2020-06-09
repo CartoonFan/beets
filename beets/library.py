@@ -252,6 +252,7 @@ class SmartArtistSort(dbcore.query.Sort):
     """Sort by artist (either album artist or track artist),
     prioritizing the sort field over the raw field.
     """
+
     def __init__(self, model_cls, ascending=True, case_insensitive=True):
         self.album = model_cls is Album
         self.ascending = ascending
@@ -286,6 +287,7 @@ class FileOperationError(Exception):
     Possibilities include an unsupported media type, a permissions
     error, and an unhandled Mutagen exception.
     """
+
     def __init__(self, path, reason):
         """Create an exception describing an operation on the file at
         `path` with the underlying (chained) exception `reason`.
@@ -312,6 +314,7 @@ class FileOperationError(Exception):
 class ReadError(FileOperationError):
     """An error while reading a file (i.e. in `Item.read`).
     """
+
     def __str__(self):
         return u'error reading ' + super(ReadError, self).text()
 
@@ -320,6 +323,7 @@ class ReadError(FileOperationError):
 class WriteError(FileOperationError):
     """An error while writing a file (i.e. in `Item.write`).
     """
+
     def __str__(self):
         return u'error writing ' + super(WriteError, self).text()
 
@@ -1311,7 +1315,7 @@ class Library(dbcore.Database):
     def __init__(self, path='library.blb',
                  directory='~/Music',
                  path_formats=((PF_KEY_DEFAULT,
-                               '$artist/$album/$track $title'),),
+                                '$artist/$album/$track $title'),),
                  replacements=None):
         timeout = beets.config['timeout'].as_number()
         super(Library, self).__init__(path, timeout=timeout)
@@ -1426,7 +1430,8 @@ class Library(dbcore.Database):
         an :class:`Album` object for the album. If no such album exists,
         returns `None`.
         """
-        album_id = item_or_id if isinstance(item_or_id, int) else item_or_id.album_id
+        album_id = item_or_id if isinstance(
+            item_or_id, int) else item_or_id.album_id
         if album_id is None:
             return None
         return self._get(Album, album_id)

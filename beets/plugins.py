@@ -52,6 +52,7 @@ class PluginLogFilter(logging.Filter):
     """A logging filter that identifies the plugin that emitted a log
     message.
     """
+
     def __init__(self, plugin):
         self.prefix = u'{0}: '.format(plugin.name)
 
@@ -72,6 +73,7 @@ class BeetsPlugin(object):
     functionality by defining a subclass of BeetsPlugin and overriding
     the abstract methods defined here.
     """
+
     def __init__(self, name=None):
         """Perform one-time plugin setup.
         """
@@ -147,7 +149,7 @@ class BeetsPlugin(object):
                     if exc.args[0].startswith(func.__name__):
                         # caused by 'func' and not stuff internal to 'func'
                         kwargs = {arg: val for arg, val in kwargs.items()
-                                                      if arg in func_args}
+                                  if arg in func_args}
                         return func(*args, **kwargs)
                     else:
                         raise
@@ -384,7 +386,7 @@ def candidates(items, artist, album, va_likely, extra_tags=None):
     """
     for plugin in find_plugins():
         yield from plugin.candidates(items, artist, album, va_likely,
-                                           extra_tags)
+                                     extra_tags)
 
 
 def item_candidates(item, artist, title):

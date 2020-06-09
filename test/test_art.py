@@ -44,6 +44,7 @@ class Settings():
     """Used to pass settings to the ArtSources when the plugin isn't fully
     instantiated.
     """
+
     def __init__(self, **kwargs):
         for k, v in kwargs.items():
             setattr(self, k, v)

@@ -70,6 +70,7 @@ class AlbumInfo(AttrDict):
     ``mediums`` along with the fields up through ``tracks`` are required.
     The others are optional and may be None.
     """
+
     def __init__(self, tracks, album=None, album_id=None, artist=None,
                  artist_id=None, asin=None, albumtype=None, va=False,
                  year=None, month=None, day=None, label=None, mediums=None,
@@ -155,6 +156,7 @@ class TrackInfo(AttrDict):
     may be None. The indices ``index``, ``medium``, and ``medium_index``
     are all 1-based.
     """
+
     def __init__(self, title=None, track_id=None, release_track_id=None,
                  artist=None, artist_id=None, length=None, index=None,
                  medium=None, medium_index=None, medium_total=None,
@@ -310,6 +312,7 @@ class LazyClassProperty(object):
     the sense that the getter is only invoked once. Subsequent accesses
     through *any* instance use the cached result.
     """
+
     def __init__(self, getter):
         self.getter = getter
         self.computed = False
@@ -328,6 +331,7 @@ class Distance(object):
     weighted distance for all penalties as well as a weighted distance
     for each individual penalty.
     """
+
     def __init__(self):
         self._penalties = {}
 
@@ -610,7 +614,7 @@ def album_candidates(items, artist, album, va_likely, extra_tags):
     if artist and album:
         try:
             yield from mb.match_album(artist, album, len(items),
-                                            extra_tags)
+                                      extra_tags)
         except mb.MusicBrainzAPIError as exc:
             exc.log(log)
 
@@ -618,13 +622,13 @@ def album_candidates(items, artist, album, va_likely, extra_tags):
     if va_likely and album:
         try:
             yield from mb.match_album(None, album, len(items),
-                                            extra_tags)
+                                      extra_tags)
         except mb.MusicBrainzAPIError as exc:
             exc.log(log)
 
     # Candidates from plugins.
     yield from plugins.candidates(items, artist, album, va_likely,
-                                        extra_tags)
+                                  extra_tags)
 
 
 @plugins.notify_info_yielded(u'trackinfo_received')

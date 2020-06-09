@@ -54,6 +54,7 @@ class MusicBrainzAPIError(util.HumanReadableException):
     """An error while talking to MusicBrainz. The `query` field is the
     parameter to the action and may have any type.
     """
+
     def __init__(self, reason, verb, query, tb=None):
         self.query = query
         if isinstance(reason, musicbrainzngs.WebServiceError):

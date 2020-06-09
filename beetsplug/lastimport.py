@@ -58,6 +58,7 @@ class CustomUser(pylast.User):
     get_top_tracks_by_page method to allow access to more than one page of top
     tracks.
     """
+
     def __init__(self, *args, **kwargs):
         super(CustomUser, self).__init__(*args, **kwargs)
 

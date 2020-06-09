@@ -1225,6 +1225,7 @@ class CommonOptionsParserCliTest(unittest.TestCase, TestHelper):
     """Test CommonOptionsParser and formatting LibModel formatting on 'list'
     command.
     """
+
     def setUp(self):
         self.setup_beets()
         self.item = _common.item()

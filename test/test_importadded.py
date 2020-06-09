@@ -150,7 +150,8 @@ class ImportAddedTest(unittest.TestCase, ImportHelper):
         self.config['import']['singletons'] = True
         # Import and record the original added dates
         self.importer.run()
-        items_added_before = {item.path: item.added for item in self.lib.items()}
+        items_added_before = {
+            item.path: item.added for item in self.lib.items()}
         # Newer Item path mtimes as if Beets had modified them
         modify_mtimes(items_added_before.keys(), offset=10000)
         # Reimport
@@ -158,7 +159,8 @@ class ImportAddedTest(unittest.TestCase, ImportHelper):
         self._setup_import_session(import_dir=import_dir, singletons=True)
         self.importer.run()
         # Verify the reimported items
-        items_added_after = {item.path: item.added for item in self.lib.items()}
+        items_added_after = {
+            item.path: item.added for item in self.lib.items()}
         for item_path, added_after in items_added_after.items():
             self.assertEqualTimes(items_added_before[item_path], added_after,
                                   u"reimport modified Item.added for " +

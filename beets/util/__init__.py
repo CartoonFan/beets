@@ -102,6 +102,7 @@ class FilesystemError(HumanReadableException):
     via a function in this module. The `paths` field is a sequence of
     pathnames involved in the operation.
     """
+
     def __init__(self, reason, verb, paths, tb=None):
         self.paths = paths
         super(FilesystemError, self).__init__(reason, verb, tb)

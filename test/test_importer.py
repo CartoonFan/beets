@@ -578,6 +578,7 @@ class ImportSingletonTest(_common.TestCase, ImportHelper):
 class ImportTest(_common.TestCase, ImportHelper):
     """Test APPLY, ASIS and SKIP choices.
     """
+
     def setUp(self):
         self.setup_beets()
         self._create_import_dir(1)
@@ -765,6 +766,7 @@ class ImportTest(_common.TestCase, ImportHelper):
 class ImportTracksTest(_common.TestCase, ImportHelper):
     """Test TRACKS and APPLY choice.
     """
+
     def setUp(self):
         self.setup_beets()
         self._create_import_dir(1)
@@ -799,6 +801,7 @@ class ImportTracksTest(_common.TestCase, ImportHelper):
 class ImportCompilationTest(_common.TestCase, ImportHelper):
     """Test ASIS import of a folder containing tracks with different artists.
     """
+
     def setUp(self):
         self.setup_beets()
         self._create_import_dir(3)
@@ -873,6 +876,7 @@ class ImportCompilationTest(_common.TestCase, ImportHelper):
 class ImportExistingTest(_common.TestCase, ImportHelper):
     """Test importing files that are already in the library directory.
     """
+
     def setUp(self):
         self.setup_beets()
         self._create_import_dir(1)
@@ -1812,7 +1816,7 @@ class ImportPretendTest(_common.TestCase, ImportHelper):
         logs = self.__run([self.empty_path])
 
         self.assertEqual(logs, [u'No files imported from {0}'
-                         .format(displayable_path(self.empty_path))])
+                                .format(displayable_path(self.empty_path))])
 
 # Helpers for ImportMusicBrainzIdTest.
 

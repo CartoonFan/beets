@@ -528,7 +528,8 @@ def colorize(color_name, text):
 
     global COLORS
     if not COLORS:
-        COLORS = {name: config['ui']['colors'][name].as_str() for name in COLOR_NAMES}
+        COLORS = {name: config['ui']['colors'][name].as_str()
+                  for name in COLOR_NAMES}
     # In case a 3rd party plugin is still passing the actual color ('red')
     # instead of the abstract color name ('text_error')
     color = COLORS.get(color_name)
@@ -811,6 +812,7 @@ class CommonOptionsParser(optparse.OptionParser, object):
 
     Each method is fully documented in the related method.
     """
+
     def __init__(self, *args, **kwargs):
         super(CommonOptionsParser, self).__init__(*args, **kwargs)
         self._album_flags = False
@@ -929,6 +931,7 @@ class Subcommand(object):
     """A subcommand of a root command-line application that may be
     invoked by a SubcommandOptionParser.
     """
+
     def __init__(self, name, parser=None, help='', aliases=(), hide=False):
         """Creates a new subcommand. name is the primary way to invoke
         the subcommand; aliases are alternate names. parser is an

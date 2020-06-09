@@ -91,6 +91,7 @@ class CountedQueue(queue.Queue):
     still feeding into it. The queue is poisoned when all threads are
     finished with the queue.
     """
+
     def __init__(self, maxsize=0):
         queue.Queue.__init__(self, maxsize)
         self.nthreads = 0
@@ -139,6 +140,7 @@ class MultiMessage(object):
     """A message yielded by a pipeline stage encapsulating multiple
     values to be sent to the next stage.
     """
+
     def __init__(self, messages):
         self.messages = messages
 
@@ -210,6 +212,7 @@ def _allmsgs(obj):
 
 class PipelineThread(Thread):
     """Abstract base class for pipeline-stage threads."""
+
     def __init__(self, all_threads):
         super(PipelineThread, self).__init__()
         self.abort_lock = Lock()
@@ -241,6 +244,7 @@ class FirstPipelineThread(PipelineThread):
     """The thread running the first stage in a parallel pipeline setup.
     The coroutine should just be a generator.
     """
+
     def __init__(self, coro, out_queue, all_threads):
         super(FirstPipelineThread, self).__init__(all_threads)
         self.coro = coro
@@ -282,6 +286,7 @@ class MiddlePipelineThread(PipelineThread):
     """A thread running any stage in the pipeline except the first or
     last.
     """
+
     def __init__(self, coro, in_queue, out_queue, all_threads):
         super(MiddlePipelineThread, self).__init__(all_threads)
         self.coro = coro
@@ -330,6 +335,7 @@ class LastPipelineThread(PipelineThread):
     """A thread running the last stage in a pipeline. The coroutine
     should yield nothing.
     """
+
     def __init__(self, coro, in_queue, all_threads):
         super(LastPipelineThread, self).__init__(all_threads)
         self.coro = coro
@@ -367,6 +373,7 @@ class Pipeline(object):
     is a coroutine that receives messages from the previous stage and
     yields messages to be sent to the next stage.
     """
+
     def __init__(self, stages):
         """Makes a new pipeline from a list of coroutines. There must
         be at least two stages.

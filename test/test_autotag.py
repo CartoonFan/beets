@@ -86,7 +86,8 @@ class PluralityTest(_common.TestCase):
         fields = ['artist', 'album', 'albumartist', 'year', 'disctotal',
                   'mb_albumid', 'label', 'catalognum', 'country', 'media',
                   'albumdisambig']
-        items = [Item(**{f: '%s_%s' % (f, i or 1) for f in fields}) for i in range(5)]
+        items = [Item(**{f: '%s_%s' % (f, i or 1) for f in fields})
+                 for i in range(5)]
         likelies, _ = match.current_metadata(items)
         for f in fields:
             if isinstance(likelies[f], int):
@@ -928,6 +929,7 @@ class EnumTest(_common.TestCase):
     """
     Test Enum Subclasses defined in beets.util.enumeration
     """
+
     def test_ordered_enum(self):
         OrderedEnumClass = match.OrderedEnum('OrderedEnumTest', ['a', 'b', 'c'])  # noqa
         self.assertLess(OrderedEnumClass.a, OrderedEnumClass.b)

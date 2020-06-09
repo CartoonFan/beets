@@ -620,6 +620,7 @@ class Results(object):
     """An item query result set. Iterating over the collection lazily
     constructs LibModel objects that reflect database rows.
     """
+
     def __init__(self, model_class, rows, db, flex_rows,
                  query=None, sort=None):
         """Create a result set that will construct objects of type
@@ -784,6 +785,7 @@ class Transaction(object):
     """A context manager for safe, concurrent access to the database.
     All SQL commands should be executed through a transaction.
     """
+
     def __init__(self, db):
         self.db = db
 

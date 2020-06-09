@@ -52,6 +52,7 @@ class Environment(object):
     """Contains the values and functions to be substituted into a
     template.
     """
+
     def __init__(self, values, functions):
         self.values = values
         self.functions = functions
@@ -170,6 +171,7 @@ def compile_func(arg_names, statements, name='_the_func', debug=False):
 
 class Symbol(object):
     """A variable-substitution symbol in a template."""
+
     def __init__(self, ident, original):
         self.ident = ident
         self.original = original
@@ -197,6 +199,7 @@ class Symbol(object):
 
 class Call(object):
     """A function call in a template."""
+
     def __init__(self, ident, args, original):
         self.ident = ident
         self.args = args
@@ -258,6 +261,7 @@ class Expression(object):
     """Top-level template construct: contains a list of text blobs,
     Symbols, and Calls.
     """
+
     def __init__(self, parts):
         self.parts = parts
 
@@ -313,6 +317,7 @@ class Parser(object):
     replaced with a real, accepted parsing technique (PEG, parser
     generator, etc.).
     """
+
     def __init__(self, string, in_argument=False):
         """ Create a new parser.
         :param in_arguments: boolean that indicates the parser is to be
@@ -569,6 +574,7 @@ def template(fmt):
 class Template(object):
     """A string template, including text, Symbols, and Calls.
     """
+
     def __init__(self, template):
         self.expr = _parse(template)
         self.original = template

@@ -43,8 +43,8 @@ def filter_to_be_removed(items, keys):
         return [item for item in items if item not in dont_remove]
     else:
         def to_be_removed(item):
-            return not any(artist == item['artist'] and\
-                           album == item['album'] and\
+            return not any(artist == item['artist'] and
+                           album == item['album'] and
                            title == item['title'] for artist, album, title in keys)
 
         return [item for item in items if to_be_removed(item)]

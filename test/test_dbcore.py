@@ -76,6 +76,7 @@ class ModelFixture1(dbcore.Model):
 class DatabaseFixture1(dbcore.Database):
     _models = (ModelFixture1,)
 
+
 class ModelFixture2(ModelFixture1):
     _fields = {
         'id': dbcore.types.PRIMARY_ID,
@@ -84,10 +85,9 @@ class ModelFixture2(ModelFixture1):
     }
 
 
-
-
 class DatabaseFixture2(dbcore.Database):
     _models = (ModelFixture2,)
+
 
 class ModelFixture3(ModelFixture1):
     _fields = {
@@ -98,10 +98,9 @@ class ModelFixture3(ModelFixture1):
     }
 
 
-
-
 class DatabaseFixture3(dbcore.Database):
     _models = (ModelFixture3,)
+
 
 class ModelFixture4(ModelFixture1):
     _fields = {
@@ -113,10 +112,9 @@ class ModelFixture4(ModelFixture1):
     }
 
 
-
-
 class DatabaseFixture4(dbcore.Database):
     _models = (ModelFixture4,)
+
 
 class AnotherModelFixture(ModelFixture1):
     _table = 'another'
@@ -135,11 +133,8 @@ class ModelFixture5(ModelFixture1):
     }
 
 
-
-
 class DatabaseFixture5(dbcore.Database):
     _models = (ModelFixture5,)
-
 
 
 class DatabaseFixtureTwoModels(dbcore.Database):

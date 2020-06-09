@@ -793,6 +793,7 @@ class NotQueryMatchTest(_common.TestCase):
     cases and assertions as on `MatchTest`, plus assertion on the negated
     queries (ie. assertTrue(q) -> assertFalse(NotQuery(q))).
     """
+
     def setUp(self):
         super(NotQueryMatchTest, self).setUp()
         self.item = _common.item()
@@ -857,6 +858,7 @@ class NotQueryTest(DummyDataTestCase):
     - `test_type_xxx`: tests for the negation of a particular XxxQuery class.
     - `test_get_yyy`: tests on query strings (similar to `GetTest`)
     """
+
     def assertNegationProperties(self, q):    # noqa
         """Given a Query `q`, assert that:
         - q OR not(q) == all items
