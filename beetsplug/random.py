@@ -12,14 +12,17 @@
 #
 # The above copyright notice and this permission notice shall be
 # included in all copies or substantial portions of the Software.
-
 """Get a random song or album from the library.
 """
-from __future__ import absolute_import, division, print_function
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import print_function
 
 from beets.plugins import BeetsPlugin
 from beets.random import random_objs
-from beets.ui import Subcommand, decargs, print_
+from beets.ui import decargs
+from beets.ui import print_
+from beets.ui import Subcommand
 
 
 def random_func(lib, opts, args):

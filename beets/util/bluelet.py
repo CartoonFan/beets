@@ -1,5 +1,4 @@
 # -*- coding: utf-8 -*-
-
 """Extremely simple pure-Python implementation of coroutine-style
 asynchronous socket I/O. Inspired by, but inferior to, Eventlet.
 Bluelet can also be thought of as a less-terrible replacement for
@@ -7,7 +6,9 @@ asyncore.
 
 Bluelet: easy concurrency without all the messy parallelism.
 """
-from __future__ import absolute_import, division, print_function
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import print_function
 
 import collections
 import errno

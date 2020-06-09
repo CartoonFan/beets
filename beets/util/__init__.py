@@ -12,10 +12,10 @@
 #
 # The above copyright notice and this permission notice shall be
 # included in all copies or substantial portions of the Software.
-
 """Miscellaneous utility functions."""
-
-from __future__ import absolute_import, division, print_function
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import print_function
 
 import errno
 import fnmatch
@@ -29,13 +29,15 @@ import shutil
 import subprocess
 import sys
 import traceback
-from collections import Counter, namedtuple
+from collections import Counter
+from collections import namedtuple
 from enum import Enum
 from multiprocessing.pool import ThreadPool
 
 import six
-from beets.util import hidden
 from unidecode import unidecode
+
+from beets.util import hidden
 
 MAX_FILENAME_LENGTH = 200
 WINDOWS_MAGIC_PREFIX = u"\\\\?\\"

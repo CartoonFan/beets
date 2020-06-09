@@ -12,7 +12,6 @@
 #
 # The above copyright notice and this permission notice shall be
 # included in all copies or substantial portions of the Software.
-
 """This module implements a string formatter based on the standard PEP
 292 string.Template class extended with function calls. Variables, as
 with string.Template, are indicated with $ and functions are delimited
@@ -26,8 +25,9 @@ library: unknown symbols are left intact.
 This is sort of like a tiny, horrible degeneration of a real templating
 engine like Jinja2 or Mustache.
 """
-
-from __future__ import absolute_import, division, print_function
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import print_function
 
 import ast
 import dis

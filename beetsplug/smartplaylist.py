@@ -12,22 +12,30 @@
 #
 # The above copyright notice and this permission notice shall be
 # included in all copies or substantial portions of the Software.
-
 """Generates smart playlists based on beets queries.
 """
-
-from __future__ import absolute_import, division, print_function
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import print_function
 
 import os
 
 import six
+
 from beets import ui
 from beets.dbcore import OrQuery
-from beets.dbcore.query import MultipleSort, ParsingError
-from beets.library import Album, Item, parse_query_string
+from beets.dbcore.query import MultipleSort
+from beets.dbcore.query import ParsingError
+from beets.library import Album
+from beets.library import Item
+from beets.library import parse_query_string
 from beets.plugins import BeetsPlugin
-from beets.util import (bytestring_path, mkdirall, normpath, path_as_posix,
-                        sanitize_path, syspath)
+from beets.util import bytestring_path
+from beets.util import mkdirall
+from beets.util import normpath
+from beets.util import path_as_posix
+from beets.util import sanitize_path
+from beets.util import syspath
 
 
 class SmartPlaylistPlugin(BeetsPlugin):

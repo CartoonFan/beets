@@ -12,8 +12,9 @@
 #
 # The above copyright notice and this permission notice shall be
 # included in all copies or substantial portions of the Software.
-
-from __future__ import absolute_import, division, print_function
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import print_function
 
 import datetime
 import os
@@ -21,7 +22,11 @@ import re
 
 from beets import config
 from beets.plugins import BeetsPlugin
-from beets.util import bytestring_path, link, mkdirall, normpath, syspath
+from beets.util import bytestring_path
+from beets.util import link
+from beets.util import mkdirall
+from beets.util import normpath
+from beets.util import syspath
 
 """Write paths of imported files in various formats to ease later import in a
 music player. Also allow printing the new file locations to stdout in case

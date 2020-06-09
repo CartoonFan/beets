@@ -12,14 +12,15 @@
 #
 # The above copyright notice and this permission notice shall be
 # included in all copies or substantial portions of the Software.
-
 """Gets parent work, its disambiguation and id, composer, composer sort name
 and work composition date
 """
-
-from __future__ import absolute_import, division, print_function
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import print_function
 
 import musicbrainzngs
+
 from beets import ui
 from beets.plugins import BeetsPlugin
 

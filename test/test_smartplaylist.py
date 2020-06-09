@@ -12,23 +12,34 @@
 #
 # The above copyright notice and this permission notice shall be
 # included in all copies or substantial portions of the Software.
-
-from __future__ import absolute_import, division, print_function
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import print_function
 
 import unittest
-from os import path, remove
+from os import path
+from os import remove
 from shutil import rmtree
 from tempfile import mkdtemp
-from test.helper import TestHelper
+
+from mock import MagicMock
+from mock import Mock
 
 from beets import config
 from beets.dbcore import OrQuery
-from beets.dbcore.query import FixedFieldSort, MultipleSort, NullSort
-from beets.library import Album, Item, parse_query_string
+from beets.dbcore.query import FixedFieldSort
+from beets.dbcore.query import MultipleSort
+from beets.dbcore.query import NullSort
+from beets.library import Album
+from beets.library import Item
+from beets.library import parse_query_string
 from beets.ui import UserError
-from beets.util import CHAR_REPLACE, bytestring_path, py3_path, syspath
+from beets.util import bytestring_path
+from beets.util import CHAR_REPLACE
+from beets.util import py3_path
+from beets.util import syspath
 from beetsplug.smartplaylist import SmartPlaylistPlugin
-from mock import MagicMock, Mock
+from test.helper import TestHelper
 
 
 class SmartPlaylistTest(unittest.TestCase):

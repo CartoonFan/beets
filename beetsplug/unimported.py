@@ -12,19 +12,20 @@
 #
 # The above copyright notice and this permission notice shall be
 # included in all copies or substantial portions of the Software.
-
 """
 List all files in the library folder which are not listed in the
  beets library database, including art files
 """
-
-from __future__ import absolute_import, division, print_function
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import print_function
 
 import os
 
 from beets import util
 from beets.plugins import BeetsPlugin
-from beets.ui import Subcommand, print_
+from beets.ui import print_
+from beets.ui import Subcommand
 
 __author__ = "https://github.com/MrNuggelz"
 

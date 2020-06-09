@@ -12,21 +12,23 @@
 #
 # The above copyright notice and this permission notice shall be
 # included in all copies or substantial portions of the Software.
-
 """Tests for the DBCore database abstraction.
 """
-from __future__ import absolute_import, division, print_function
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import print_function
 
 import os
 import shutil
 import sqlite3
 import unittest
 from tempfile import mkstemp
-from test import _common
 
 import six
-from beets import dbcore
 from six import assertRaisesRegex
+
+from beets import dbcore
+from test import _common
 
 # Fixture: concrete database and model classes. For migration tests, we
 # have multiple models with different numbers of fields.

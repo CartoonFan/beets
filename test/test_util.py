@@ -14,18 +14,22 @@
 # included in all copies or substantial portions of the Software.
 """Tests for base utils from the beets.util package.
 """
-from __future__ import absolute_import, division, print_function
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import print_function
 
 import os
 import re
 import subprocess
 import sys
 import unittest
-from test import _common
 
 import six
+from mock import Mock
+from mock import patch
+
 from beets import util
-from mock import Mock, patch
+from test import _common
 
 
 class UtilTest(unittest.TestCase):

@@ -12,10 +12,11 @@
 #
 # The above copyright notice and this permission notice shall be
 # included in all copies or substantial portions of the Software.
-
 """Converts tracks or albums to external directory
 """
-from __future__ import absolute_import, division, print_function
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import print_function
 
 import os
 import platform
@@ -26,11 +27,17 @@ import threading
 from string import Template
 
 import six
-from beets import art, config, plugins, ui, util
-from beets.library import Item, parse_query_string
+from confuse import ConfigTypeError
+
+from beets import art
+from beets import config
+from beets import plugins
+from beets import ui
+from beets import util
+from beets.library import Item
+from beets.library import parse_query_string
 from beets.plugins import BeetsPlugin
 from beets.util.artresizer import ArtResizer
-from confuse import ConfigTypeError
 
 _fs_lock = threading.Lock()
 _temp_files = []  # Keep track of temporary transcoded files for deletion.

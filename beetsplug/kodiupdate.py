@@ -12,7 +12,6 @@
 #
 # The above copyright notice and this permission notice shall be
 # included in all copies or substantial portions of the Software.
-
 """Updates a Kodi library whenever the beets library is changed.
 This is based on the Plex Update plugin.
 
@@ -23,10 +22,13 @@ Put something like the following in your config.yaml to configure:
         user: user
         pwd: secret
 """
-from __future__ import absolute_import, division, print_function
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import print_function
 
 import requests
 import six
+
 from beets import config
 from beets.plugins import BeetsPlugin
 

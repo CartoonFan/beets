@@ -12,10 +12,11 @@
 #
 # The above copyright notice and this permission notice shall be
 # included in all copies or substantial portions of the Software.
-
 """The core data store and collection logic for beets.
 """
-from __future__ import absolute_import, division, print_function
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import print_function
 
 import os
 import re
@@ -24,14 +25,24 @@ import sys
 import time
 import unicodedata
 
-import beets
 import six
-from beets import dbcore, logging, plugins, util
+from mediafile import MediaFile
+from mediafile import UnreadableFileError
+
+import beets
+from beets import dbcore
+from beets import logging
+from beets import plugins
+from beets import util
 from beets.dbcore import types
-from beets.util import (MoveOperation, bytestring_path, lazy_property,
-                        normpath, samefile, syspath)
-from beets.util.functemplate import Template, template
-from mediafile import MediaFile, UnreadableFileError
+from beets.util import bytestring_path
+from beets.util import lazy_property
+from beets.util import MoveOperation
+from beets.util import normpath
+from beets.util import samefile
+from beets.util import syspath
+from beets.util.functemplate import Template
+from beets.util.functemplate import template
 
 # To use the SQLite "blob" type, it doesn't suffice to provide a byte
 # string; SQLite treats that as encoded text. Wrapping it in a `buffer` or a

@@ -12,19 +12,22 @@
 #
 # The above copyright notice and this permission notice shall be
 # included in all copies or substantial portions of the Software.
-
 """ Clears tag fields in media files."""
-
-from __future__ import absolute_import, division, print_function
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import print_function
 
 import re
 
 import confuse
 import six
+from mediafile import MediaFile
+
 from beets.importer import action
 from beets.plugins import BeetsPlugin
-from beets.ui import Subcommand, decargs, input_yn
-from mediafile import MediaFile
+from beets.ui import decargs
+from beets.ui import input_yn
+from beets.ui import Subcommand
 
 __author__ = "baobab@heresiarch.info"
 

@@ -12,29 +12,43 @@
 #
 # The above copyright notice and this permission notice shall be
 # included in all copies or substantial portions of the Software.
-
 """This module provides the default commands for beets' command-line
 interface.
 """
-
-from __future__ import absolute_import, division, print_function
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import print_function
 
 import os
 import re
-from collections import Counter, namedtuple
+from collections import Counter
+from collections import namedtuple
 from itertools import chain
 from platform import python_version
 
-import beets
 import six
-from beets import (autotag, config, importer, library, logging, plugins, ui,
-                   util)
-from beets.autotag import Recommendation, hooks
-from beets.ui import decargs, input_, print_, show_path_changes
-from beets.util import (MoveOperation, ancestry, displayable_path, normpath,
-                        syspath)
 
+import beets
 from . import _store_dict
+from beets import autotag
+from beets import config
+from beets import importer
+from beets import library
+from beets import logging
+from beets import plugins
+from beets import ui
+from beets import util
+from beets.autotag import hooks
+from beets.autotag import Recommendation
+from beets.ui import decargs
+from beets.ui import input_
+from beets.ui import print_
+from beets.ui import show_path_changes
+from beets.util import ancestry
+from beets.util import displayable_path
+from beets.util import MoveOperation
+from beets.util import normpath
+from beets.util import syspath
 
 VARIOUS_ARTISTS = u"Various Artists"
 PromptChoice = namedtuple("PromptChoice", ["short", "long", "callback"])

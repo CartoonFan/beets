@@ -12,16 +12,23 @@
 #
 # The above copyright notice and this permission notice shall be
 # included in all copies or substantial portions of the Software.
-
 """Allows beets to embed album art into file metadata."""
-from __future__ import absolute_import, division, print_function
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import print_function
 
 import os.path
 
-from beets import art, config, ui
+from beets import art
+from beets import config
+from beets import ui
 from beets.plugins import BeetsPlugin
-from beets.ui import decargs, print_
-from beets.util import bytestring_path, displayable_path, normpath, syspath
+from beets.ui import decargs
+from beets.ui import print_
+from beets.util import bytestring_path
+from beets.util import displayable_path
+from beets.util import normpath
+from beets.util import syspath
 from beets.util.artresizer import ArtResizer
 
 

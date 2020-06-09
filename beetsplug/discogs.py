@@ -12,11 +12,12 @@
 #
 # The above copyright notice and this permission notice shall be
 # included in all copies or substantial portions of the Software.
-
 """Adds Discogs album search support to the autotagger. Requires the
 discogs-client library.
 """
-from __future__ import absolute_import, division, print_function
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import print_function
 
 import json
 import os
@@ -26,16 +27,21 @@ import time
 import traceback
 from string import ascii_lowercase
 
-import beets
-import beets.ui
 import confuse
-from beets import config
-from beets.autotag.hooks import AlbumInfo, TrackInfo
-from beets.plugins import BeetsPlugin, MetadataSourcePlugin, get_distance
-from discogs_client import Client, Master, Release
+from discogs_client import Client
+from discogs_client import Master
+from discogs_client import Release
 from discogs_client.exceptions import DiscogsAPIError
 from requests.exceptions import ConnectionError
 from six.moves import http_client
+
+import beets.ui
+from beets import config
+from beets.autotag.hooks import AlbumInfo
+from beets.autotag.hooks import TrackInfo
+from beets.plugins import BeetsPlugin
+from beets.plugins import get_distance
+from beets.plugins import MetadataSourcePlugin
 
 USER_AGENT = u"beets/{0} +https://beets.io/".format(beets.__version__)
 API_KEY = "rAzVUQYRaoFjeBjyWuWZ"

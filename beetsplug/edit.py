@@ -12,10 +12,11 @@
 #
 # The above copyright notice and this permission notice shall be
 # included in all copies or substantial portions of the Software.
-
 """Open metadata information in a text editor to let the user edit it.
 """
-from __future__ import absolute_import, division, print_function
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import print_function
 
 import codecs
 import os
@@ -24,10 +25,14 @@ from tempfile import NamedTemporaryFile
 
 import six
 import yaml
-from beets import plugins, ui, util
+
+from beets import plugins
+from beets import ui
+from beets import util
 from beets.dbcore import types
 from beets.importer import action
-from beets.ui.commands import PromptChoice, _do_query
+from beets.ui.commands import _do_query
+from beets.ui.commands import PromptChoice
 
 # These "safe" types can avoid the format/parse cycle that most fields go
 # through: they are safe to edit with native YAML types.

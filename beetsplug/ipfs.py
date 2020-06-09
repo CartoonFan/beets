@@ -11,18 +11,21 @@
 #
 # The above copyright notice and this permission notice shall be
 # included in all copies or substantial portions of the Software.
-
 """Adds support for ipfs. Requires go-ipfs and a running ipfs daemon
 """
-
-from __future__ import absolute_import, division, print_function
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import print_function
 
 import os
 import shutil
 import subprocess
 import tempfile
 
-from beets import config, library, ui, util
+from beets import config
+from beets import library
+from beets import ui
+from beets import util
 from beets.plugins import BeetsPlugin
 
 

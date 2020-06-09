@@ -12,13 +12,16 @@
 #
 # The above copyright notice and this permission notice shall be
 # included in all copies or substantial portions of the Software.
-
-from __future__ import absolute_import, division, print_function
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import print_function
 
 import re
 
 import musicbrainzngs
-from beets import config, ui
+
+from beets import config
+from beets import ui
 from beets.plugins import BeetsPlugin
 from beets.ui import Subcommand
 

@@ -12,20 +12,23 @@
 #
 # The above copyright notice and this permission notice shall be
 # included in all copies or substantial portions of the Software.
-
 """Shows file metadata.
 """
-
-from __future__ import absolute_import, division, print_function
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import print_function
 
 import os
 import re
 
 import mediafile
+
 from beets import ui
 from beets.library import Item
 from beets.plugins import BeetsPlugin
-from beets.util import displayable_path, normpath, syspath
+from beets.util import displayable_path
+from beets.util import normpath
+from beets.util import syspath
 
 
 def tag_data(lib, args):

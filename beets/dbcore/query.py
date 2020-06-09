@@ -12,18 +12,21 @@
 #
 # The above copyright notice and this permission notice shall be
 # included in all copies or substantial portions of the Software.
-
 """The Query type hierarchy for DBCore.
 """
-from __future__ import absolute_import, division, print_function
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import print_function
 
 import re
 import unicodedata
-from datetime import datetime, timedelta
+from datetime import datetime
+from datetime import timedelta
 from functools import reduce
 from operator import mul
 
 import six
+
 from beets import util
 
 if not six.PY2:

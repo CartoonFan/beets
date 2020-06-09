@@ -12,13 +12,13 @@
 #
 # The above copyright notice and this permission notice shall be
 # included in all copies or substantial portions of the Software.
-
 """This module contains all of the core logic for beets' command-line
 interface. To invoke the CLI, just call beets.ui.main(). The actual
 CLI commands are implemented in the ui.commands module.
 """
-
-from __future__ import absolute_import, division, print_function
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import print_function
 
 import errno
 import optparse
@@ -33,13 +33,18 @@ from difflib import SequenceMatcher
 
 import confuse
 import six
-from beets import config, library, logging, plugins, util
+from six.moves import input
+
+from beets import config
+from beets import library
+from beets import logging
+from beets import plugins
+from beets import util
 from beets.autotag import mb
 from beets.dbcore import db
 from beets.dbcore import query as db_query
 from beets.util import as_string
 from beets.util.functemplate import template
-from six.moves import input
 
 # On Windows platforms, use colorama to support "ANSI" terminal colors.
 if sys.platform == "win32":

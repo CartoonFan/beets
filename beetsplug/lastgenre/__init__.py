@@ -12,8 +12,9 @@
 #
 # The above copyright notice and this permission notice shall be
 # included in all copies or substantial portions of the Software.
-
-from __future__ import absolute_import, division, print_function
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import print_function
 
 import codecs
 import os
@@ -22,8 +23,13 @@ import traceback
 import pylast
 import six
 import yaml
-from beets import config, library, plugins, ui
-from beets.util import normpath, plurality
+
+from beets import config
+from beets import library
+from beets import plugins
+from beets import ui
+from beets.util import normpath
+from beets.util import plurality
 
 """Gets genres for imported music based on Last.fm tags.
 

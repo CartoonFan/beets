@@ -1,8 +1,9 @@
 # -*- coding: utf-8 -*-
 # Copyright 2016 Bruno Cauet
 # Split an album-file in tracks thanks a cue file
-
-from __future__ import absolute_import, division, print_function
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import print_function
 
 import subprocess
 from glob import glob
@@ -10,7 +11,8 @@ from os import path
 
 from beets.autotag import TrackInfo
 from beets.plugins import BeetsPlugin
-from beets.util import command_output, displayable_path
+from beets.util import command_output
+from beets.util import displayable_path
 
 
 class CuePlugin(BeetsPlugin):

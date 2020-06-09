@@ -12,10 +12,11 @@
 #
 # The above copyright notice and this permission notice shall be
 # included in all copies or substantial portions of the Software.
-
 """Fetches album art.
 """
-from __future__ import absolute_import, division, print_function
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import print_function
 
 import os
 import re
@@ -26,10 +27,18 @@ from tempfile import NamedTemporaryFile
 import confuse
 import requests
 import six
-from beets import config, importer, plugins, ui, util
-from beets.util import bytestring_path, py3_path, sorted_walk, syspath
-from beets.util.artresizer import ArtResizer
 from mediafile import image_mime_type
+
+from beets import config
+from beets import importer
+from beets import plugins
+from beets import ui
+from beets import util
+from beets.util import bytestring_path
+from beets.util import py3_path
+from beets.util import sorted_walk
+from beets.util import syspath
+from beets.util.artresizer import ArtResizer
 
 CONTENT_TYPES = {"image/jpeg": [b"jpg", b"jpeg"], "image/png": [b"png"]}
 IMAGE_EXTENSIONS = [ext for exts in CONTENT_TYPES.values() for ext in exts]

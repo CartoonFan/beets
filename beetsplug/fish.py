@@ -13,7 +13,6 @@
 #
 # The above copyright notice and this permission notice shall be
 # included in all copies or substantial portions of the Software.
-
 """This plugin generates tab completions for Beets commands for the Fish shell
 <https://fishshell.com/>, including completions for Beets commands, plugin
 commands, and option flags. Also generated are completions for all the album
@@ -22,13 +21,15 @@ Beets database. Completions for the *values* of those fields are not generated
 by default but can be added via the `-e` / `--extravalues` flag. For example:
 `beet fish -e genre -e albumartist`
 """
-
-from __future__ import absolute_import, division, print_function
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import print_function
 
 import os
 from operator import attrgetter
 
-from beets import library, ui
+from beets import library
+from beets import ui
 from beets.plugins import BeetsPlugin
 from beets.ui import commands
 

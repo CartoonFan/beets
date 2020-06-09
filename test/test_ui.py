@@ -12,10 +12,11 @@
 #
 # The above copyright notice and this permission notice shall be
 # included in all copies or substantial portions of the Software.
-
 """Tests for the command-line interface.
 """
-from __future__ import absolute_import, division, print_function
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import print_function
 
 import os
 import platform
@@ -23,17 +24,28 @@ import re
 import shutil
 import subprocess
 import unittest
-from test import _common
-from test.helper import TestHelper, capture_stdout, control_stdin, has_program
 
 import six
-from beets import autotag, config, library, plugins, ui, util
-from beets.autotag.match import distance
-from beets.ui import commands
-from beets.util import MoveOperation, syspath
 from confuse import ConfigError
 from mediafile import MediaFile
-from mock import Mock, patch
+from mock import Mock
+from mock import patch
+
+from beets import autotag
+from beets import config
+from beets import library
+from beets import plugins
+from beets import ui
+from beets import util
+from beets.autotag.match import distance
+from beets.ui import commands
+from beets.util import MoveOperation
+from beets.util import syspath
+from test import _common
+from test.helper import capture_stdout
+from test.helper import control_stdin
+from test.helper import has_program
+from test.helper import TestHelper
 
 
 class ListTest(unittest.TestCase):

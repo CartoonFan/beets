@@ -12,24 +12,31 @@
 #
 # The above copyright notice and this permission notice shall be
 # included in all copies or substantial portions of the Software.
-
 """Tests for the album art fetchers."""
-
-from __future__ import absolute_import, division, print_function
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import print_function
 
 import os
 import shutil
 import unittest
-from test import _common
-from test.helper import capture_log
 
 import confuse
 import responses
-from beets import config, importer, library, logging, util
-from beets.autotag import AlbumInfo, AlbumMatch
-from beets.util.artresizer import WEBPROXY, ArtResizer
-from beetsplug import fetchart
 from mock import patch
+
+from beets import config
+from beets import importer
+from beets import library
+from beets import logging
+from beets import util
+from beets.autotag import AlbumInfo
+from beets.autotag import AlbumMatch
+from beets.util.artresizer import ArtResizer
+from beets.util.artresizer import WEBPROXY
+from beetsplug import fetchart
+from test import _common
+from test.helper import capture_log
 
 logger = logging.getLogger("beets.test_art")
 

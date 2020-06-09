@@ -12,22 +12,25 @@
 #
 # The above copyright notice and this permission notice shall be
 # included in all copies or substantial portions of the Software.
-
 """Matches existing metadata with canonical information to identify
 releases and tracks.
 """
-
-from __future__ import absolute_import, division, print_function
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import print_function
 
 import datetime
 import re
 from collections import namedtuple
 
-from beets import config, logging, plugins
+from munkres import Munkres
+
+from beets import config
+from beets import logging
+from beets import plugins
 from beets.autotag import hooks
 from beets.util import plurality
 from beets.util.enumeration import OrderedEnum
-from munkres import Munkres
 
 # Artist signals that indicate "various artists". These are used at the
 # album level to determine whether a given release is likely a VA

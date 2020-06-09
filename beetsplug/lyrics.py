@@ -12,11 +12,11 @@
 #
 # The above copyright notice and this permission notice shall be
 # included in all copies or substantial portions of the Software.
-
 """Fetches, embeds, and displays lyrics.
 """
-
-from __future__ import absolute_import, division, print_function
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import print_function
 
 import difflib
 import errno
@@ -28,12 +28,15 @@ import struct
 import unicodedata
 import warnings
 
-import beets
 import requests
 import six
-from beets import plugins, ui, util
 from six.moves import urllib
 from unidecode import unidecode
+
+import beets
+from beets import plugins
+from beets import ui
+from beets import util
 
 try:
     from bs4 import SoupStrainer, BeautifulSoup

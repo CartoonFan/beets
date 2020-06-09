@@ -12,19 +12,21 @@
 #
 # The above copyright notice and this permission notice shall be
 # included in all copies or substantial portions of the Software.
-
 """Tests for the 'beatport' plugin.
 """
-from __future__ import absolute_import, division, print_function
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import print_function
 
 import unittest
 from datetime import timedelta
-from test import _common
-from test.helper import TestHelper
 
 import six
+
 from beets import library
 from beetsplug import beatport
+from test import _common
+from test.helper import TestHelper
 
 
 class BeatportTest(_common.TestCase, TestHelper):

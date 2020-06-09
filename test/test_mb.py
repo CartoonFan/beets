@@ -12,17 +12,19 @@
 #
 # The above copyright notice and this permission notice shall be
 # included in all copies or substantial portions of the Software.
-
 """Tests for MusicBrainz API wrapper.
 """
-from __future__ import absolute_import, division, print_function
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import print_function
 
 import unittest
-from test import _common
 
 import mock
+
 from beets import config
 from beets.autotag import mb
+from test import _common
 
 
 class MBAlbumInfoTest(_common.TestCase):

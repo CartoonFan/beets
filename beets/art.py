@@ -12,12 +12,12 @@
 #
 # The above copyright notice and this permission notice shall be
 # included in all copies or substantial portions of the Software.
-
 """High-level utilities for manipulating image files associated with
 music and items' embedded album art.
 """
-
-from __future__ import absolute_import, division, print_function
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import print_function
 
 import os
 import platform
@@ -25,7 +25,10 @@ import subprocess
 from tempfile import NamedTemporaryFile
 
 import mediafile
-from beets.util import bytestring_path, displayable_path, syspath
+
+from beets.util import bytestring_path
+from beets.util import displayable_path
+from beets.util import syspath
 from beets.util.artresizer import ArtResizer
 
 

@@ -12,10 +12,11 @@
 #
 # The above copyright notice and this permission notice shall be
 # included in all copies or substantial portions of the Software.
-
 """The central Model and Database constructs for DBCore.
 """
-from __future__ import absolute_import, division, print_function
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import print_function
 
 import contextlib
 import os
@@ -24,12 +25,15 @@ import threading
 import time
 from collections import defaultdict
 
-import beets
 import six
-from beets.dbcore import types
-from beets.util import functemplate, py3_path
 
-from .query import MatchQuery, NullSort, TrueQuery
+import beets
+from .query import MatchQuery
+from .query import NullSort
+from .query import TrueQuery
+from beets.dbcore import types
+from beets.util import functemplate
+from beets.util import py3_path
 
 if six.PY2:
     from collections import Mapping

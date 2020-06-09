@@ -12,8 +12,9 @@
 #
 # The above copyright notice and this permission notice shall be
 # included in all copies or substantial portions of the Software.
-
-from __future__ import absolute_import, division, print_function
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import print_function
 
 import itertools
 import os
@@ -21,16 +22,29 @@ import pickle
 import re
 import shutil
 import time
-from bisect import bisect_left, insort
+from bisect import bisect_left
+from bisect import insort
 from collections import defaultdict
 from contextlib import contextmanager
 from enum import Enum
 from tempfile import mkdtemp
 
 import mediafile
-from beets import autotag, config, dbcore, library, logging, plugins, util
-from beets.util import (MoveOperation, ancestry, displayable_path, normpath,
-                        pipeline, sorted_walk, syspath)
+
+from beets import autotag
+from beets import config
+from beets import dbcore
+from beets import library
+from beets import logging
+from beets import plugins
+from beets import util
+from beets.util import ancestry
+from beets.util import displayable_path
+from beets.util import MoveOperation
+from beets.util import normpath
+from beets.util import pipeline
+from beets.util import sorted_walk
+from beets.util import syspath
 
 """Provides the basic, interface-agnostic workflow for importing and
 autotagging music files.

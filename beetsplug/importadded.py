@@ -1,15 +1,17 @@
 # -*- coding: utf-8 -*-
-
 """Populate an item's `added` and `mtime` fields by using the file
 modification time (mtime) of the item's source file before import.
 
 Reimported albums and items are skipped.
 """
-from __future__ import absolute_import, division, print_function
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import print_function
 
 import os
 
-from beets import importer, util
+from beets import importer
+from beets import util
 from beets.plugins import BeetsPlugin
 
 

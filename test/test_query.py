@@ -12,26 +12,32 @@
 #
 # The above copyright notice and this permission notice shall be
 # included in all copies or substantial portions of the Software.
-
 """Various tests for querying the library database.
 """
-from __future__ import absolute_import, division, print_function
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import print_function
 
 import os
 import platform
 import sys
 import unittest
 from functools import partial
-from test import _common, helper
+
+import six
+from mock import patch
 
 import beets.library
-import six
-from beets import dbcore, util
+from beets import dbcore
+from beets import util
 from beets.dbcore import types
-from beets.dbcore.query import (InvalidQueryArgumentValueError, NoneQuery,
-                                ParsingError)
-from beets.library import Item, Library
-from mock import patch
+from beets.dbcore.query import InvalidQueryArgumentValueError
+from beets.dbcore.query import NoneQuery
+from beets.dbcore.query import ParsingError
+from beets.library import Item
+from beets.library import Library
+from test import _common
+from test import helper
 
 
 class TestHelper(helper.TestHelper):

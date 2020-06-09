@@ -12,13 +12,13 @@
 #
 # The above copyright notice and this permission notice shall be
 # included in all copies or substantial portions of the Software.
-
 """A clone of the Music Player Daemon (MPD) that plays music from a
 Beets library. Attempts to implement a compatible protocol to allow
 use of the wide range of MPD clients.
 """
-
-from __future__ import absolute_import, division, print_function
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import print_function
 
 import inspect
 import math
@@ -29,14 +29,15 @@ import time
 import traceback
 from string import Template
 
-import beets
-import beets.ui
 import six
-from beets import dbcore, vfs
+from mediafile import MediaFile
+
+import beets.ui
+from beets import dbcore
+from beets import vfs
 from beets.library import Item
 from beets.plugins import BeetsPlugin
 from beets.util import bluelet
-from mediafile import MediaFile
 
 PROTOCOL_VERSION = "0.16.0"
 BUFSIZE = 1024

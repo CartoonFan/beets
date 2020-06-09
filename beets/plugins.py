@@ -12,10 +12,10 @@
 #
 # The above copyright notice and this permission notice shall be
 # included in all copies or substantial portions of the Software.
-
 """Support for beets plugins."""
-
-from __future__ import absolute_import, division, print_function
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import print_function
 
 import abc
 import inspect
@@ -24,9 +24,10 @@ import traceback
 from collections import defaultdict
 from functools import wraps
 
-import beets
 import mediafile
 import six
+
+import beets
 from beets import logging
 
 PLUGIN_NAMESPACE = "beetsplug"

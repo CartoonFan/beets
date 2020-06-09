@@ -12,20 +12,24 @@
 #
 # The above copyright notice and this permission notice shall be
 # included in all copies or substantial portions of the Software.
-
 """Glue between metadata sources and the matching logic."""
-from __future__ import absolute_import, division, print_function
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import print_function
 
 import re
 from collections import namedtuple
 from functools import total_ordering
 
 import six
-from beets import config, logging, plugins
-from beets.autotag import mb
-from beets.util import as_string
 from jellyfish import levenshtein_distance
 from unidecode import unidecode
+
+from beets import config
+from beets import logging
+from beets import plugins
+from beets.autotag import mb
+from beets.util import as_string
 
 log = logging.getLogger("beets")
 

@@ -12,20 +12,23 @@
 #
 # The above copyright notice and this permission notice shall be
 # included in all copies or substantial portions of the Software.
-
 """Searches for albums in the MusicBrainz database.
 """
-from __future__ import absolute_import, division, print_function
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import print_function
 
 import re
 import traceback
 
-import beets
-import beets.autotag.hooks
 import musicbrainzngs
 import six
-from beets import config, logging, util
 from six.moves.urllib.parse import urljoin
+
+import beets.autotag.hooks
+from beets import config
+from beets import logging
+from beets import util
 
 VARIOUS_ARTISTS_ID = "89ad4ac3-39f7-470e-963a-56509c546377"
 

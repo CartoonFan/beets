@@ -12,24 +12,26 @@
 #
 # The above copyright notice and this permission notice shall be
 # included in all copies or substantial portions of the Software.
-
 """Tests for the 'lyrics' plugin."""
-
-from __future__ import absolute_import, division, print_function
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import print_function
 
 import os
 import re
 import sys
 import unittest
-from test import _common
 
 import confuse
 import six
+from mock import MagicMock
+from mock import patch
+
 from beets import logging
 from beets.library import Item
 from beets.util import bytestring_path
 from beetsplug import lyrics
-from mock import MagicMock, patch
+from test import _common
 
 log = logging.getLogger("beets.test_lyrics")
 raw_backend = lyrics.Backend({}, log)

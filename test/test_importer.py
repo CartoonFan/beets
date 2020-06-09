@@ -12,8 +12,9 @@
 #
 # The above copyright notice and this permission notice shall be
 # included in all copies or substantial portions of the Software.
-
-from __future__ import absolute_import, division, print_function
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import print_function
 
 import os
 import re
@@ -24,18 +25,30 @@ import unicodedata
 import unittest
 from tarfile import TarFile
 from tempfile import mkstemp
-from test import _common
-from test.helper import (ImportSessionFixture, TestHelper, capture_log,
-                         has_program)
 from zipfile import ZipFile
 
-from beets import autotag, config, importer, logging, util
-from beets.autotag import AlbumInfo, AlbumMatch, TrackInfo
-from beets.importer import albums_in_dir
-from beets.util import bytestring_path, displayable_path, py3_path
 from mediafile import MediaFile
-from mock import Mock, patch
+from mock import Mock
+from mock import patch
 from six import StringIO
+
+from beets import autotag
+from beets import config
+from beets import importer
+from beets import logging
+from beets import util
+from beets.autotag import AlbumInfo
+from beets.autotag import AlbumMatch
+from beets.autotag import TrackInfo
+from beets.importer import albums_in_dir
+from beets.util import bytestring_path
+from beets.util import displayable_path
+from beets.util import py3_path
+from test import _common
+from test.helper import capture_log
+from test.helper import has_program
+from test.helper import ImportSessionFixture
+from test.helper import TestHelper
 
 
 """Tests for the general importer functionality.

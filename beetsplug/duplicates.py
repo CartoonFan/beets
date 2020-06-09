@@ -12,19 +12,28 @@
 #
 # The above copyright notice and this permission notice shall be
 # included in all copies or substantial portions of the Software.
-
 """List duplicate tracks or albums.
 """
-from __future__ import absolute_import, division, print_function
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import print_function
 
 import shlex
 
 import six
-from beets.library import Album, Item
+
+from beets.library import Album
+from beets.library import Item
 from beets.plugins import BeetsPlugin
-from beets.ui import Subcommand, UserError, decargs, print_
-from beets.util import (MoveOperation, bytestring_path, command_output,
-                        displayable_path, subprocess)
+from beets.ui import decargs
+from beets.ui import print_
+from beets.ui import Subcommand
+from beets.ui import UserError
+from beets.util import bytestring_path
+from beets.util import command_output
+from beets.util import displayable_path
+from beets.util import MoveOperation
+from beets.util import subprocess
 
 PLUGIN = "duplicates"
 

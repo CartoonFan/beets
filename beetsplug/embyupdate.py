@@ -1,5 +1,4 @@
 # -*- coding: utf-8 -*-
-
 """Updates the Emby Library whenever the beets library is changed.
 
     emby:
@@ -9,15 +8,21 @@
         apikey: apikey
         password: password
 """
-from __future__ import absolute_import, division, print_function
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import print_function
 
 import hashlib
 
 import requests
+from six.moves.urllib.parse import parse_qs
+from six.moves.urllib.parse import urlencode
+from six.moves.urllib.parse import urljoin
+from six.moves.urllib.parse import urlsplit
+from six.moves.urllib.parse import urlunsplit
+
 from beets import config
 from beets.plugins import BeetsPlugin
-from six.moves.urllib.parse import (parse_qs, urlencode, urljoin, urlsplit,
-                                    urlunsplit)
 
 
 def api_url(host, port, endpoint):

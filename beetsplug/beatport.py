@@ -12,24 +12,30 @@
 #
 # The above copyright notice and this permission notice shall be
 # included in all copies or substantial portions of the Software.
-
 """Adds Beatport release and track search support to the autotagger
 """
-from __future__ import absolute_import, division, print_function
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import print_function
 
 import json
 import re
-from datetime import datetime, timedelta
+from datetime import datetime
+from datetime import timedelta
 
-import beets
-import beets.ui
 import confuse
 import six
-from beets.autotag.hooks import AlbumInfo, TrackInfo
-from beets.plugins import BeetsPlugin, MetadataSourcePlugin, get_distance
 from requests_oauthlib import OAuth1Session
-from requests_oauthlib.oauth1_session import (TokenMissing, TokenRequestDenied,
-                                              VerifierMissing)
+from requests_oauthlib.oauth1_session import TokenMissing
+from requests_oauthlib.oauth1_session import TokenRequestDenied
+from requests_oauthlib.oauth1_session import VerifierMissing
+
+import beets.ui
+from beets.autotag.hooks import AlbumInfo
+from beets.autotag.hooks import TrackInfo
+from beets.plugins import BeetsPlugin
+from beets.plugins import get_distance
+from beets.plugins import MetadataSourcePlugin
 
 AUTH_ERRORS = (TokenRequestDenied, TokenMissing, VerifierMissing)
 USER_AGENT = u"beets/{0} +https://beets.io/".format(beets.__version__)

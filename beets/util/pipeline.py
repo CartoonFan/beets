@@ -12,7 +12,6 @@
 #
 # The above copyright notice and this permission notice shall be
 # included in all copies or substantial portions of the Software.
-
 """Simple but robust implementation of generator/coroutine-based
 pipelines in Python. The pipelines may be run either sequentially
 (single-threaded) or in parallel (one thread per pipeline stage).
@@ -31,11 +30,13 @@ up a bottleneck stage by dividing its work among multiple threads.
 To do so, pass an iterable of coroutines to the Pipeline constructor
 in place of any single coroutine.
 """
-
-from __future__ import absolute_import, division, print_function
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import print_function
 
 import sys
-from threading import Lock, Thread
+from threading import Lock
+from threading import Thread
 
 import six
 from six.moves import queue

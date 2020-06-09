@@ -12,20 +12,23 @@
 #
 # The above copyright notice and this permission notice shall be
 # included in all copies or substantial portions of the Software.
-
-
-from __future__ import absolute_import, division, print_function
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import print_function
 
 import unittest
-from test.helper import TestHelper, capture_log, has_program
 
 import six
-from beets import config
-from beets.util import CommandOutput
-from beetsplug.replaygain import (FatalGstreamerPluginReplayGainError,
-                                  GStreamerBackend)
 from mediafile import MediaFile
 from mock import patch
+
+from beets import config
+from beets.util import CommandOutput
+from beetsplug.replaygain import FatalGstreamerPluginReplayGainError
+from beetsplug.replaygain import GStreamerBackend
+from test.helper import capture_log
+from test.helper import has_program
+from test.helper import TestHelper
 
 try:
     import gi

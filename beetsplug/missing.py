@@ -13,21 +13,25 @@
 #
 # The above copyright notice and this permission notice shall be
 # included in all copies or substantial portions of the Software.
-
 """List missing tracks.
 """
-from __future__ import absolute_import, division, print_function
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import print_function
 
 from collections import defaultdict
 
 import musicbrainzngs
+from musicbrainzngs.musicbrainz import MusicBrainzError
+
 from beets import config
 from beets.autotag import hooks
 from beets.dbcore import types
 from beets.library import Item
 from beets.plugins import BeetsPlugin
-from beets.ui import Subcommand, decargs, print_
-from musicbrainzngs.musicbrainz import MusicBrainzError
+from beets.ui import decargs
+from beets.ui import print_
+from beets.ui import Subcommand
 
 
 def _missing_count(album):

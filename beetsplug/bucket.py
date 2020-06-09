@@ -12,19 +12,21 @@
 #
 # The above copyright notice and this permission notice shall be
 # included in all copies or substantial portions of the Software.
-
 """Provides the %bucket{} function for path formatting.
 """
-
-from __future__ import absolute_import, division, print_function
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import print_function
 
 import re
 import string
 from datetime import datetime
 from itertools import tee
 
-from beets import plugins, ui
 from six.moves import zip
+
+from beets import plugins
+from beets import ui
 
 ASCII_DIGITS = string.digits + string.ascii_lowercase
 

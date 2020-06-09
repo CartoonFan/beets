@@ -12,19 +12,20 @@
 #
 # The above copyright notice and this permission notice shall be
 # included in all copies or substantial portions of the Software.
-
 """Test module for file ui/commands.py
 """
-
-from __future__ import absolute_import, division, print_function
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import print_function
 
 import os
 import shutil
 import unittest
-from test import _common
 
-from beets import library, ui
+from beets import library
+from beets import ui
 from beets.ui import commands
+from test import _common
 
 
 class QueryTest(_common.TestCase):

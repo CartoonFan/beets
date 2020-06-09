@@ -12,7 +12,6 @@
 #
 # The above copyright notice and this permission notice shall be
 # included in all copies or substantial portions of the Software.
-
 """A drop-in replacement for the standard-library `logging` module that
 allows {}-style log formatting on Python 2 and 3.
 
@@ -20,8 +19,9 @@ Provides everything the "logging" module does. The only difference is
 that when getLogger(name) instantiates a logger that logger uses
 {}-style formatting.
 """
-
-from __future__ import absolute_import, division, print_function
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import print_function
 
 import subprocess
 import threading

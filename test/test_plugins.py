@@ -12,26 +12,37 @@
 #
 # The above copyright notice and this permission notice shall be
 # included in all copies or substantial portions of the Software.
-
-from __future__ import absolute_import, division, print_function
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import print_function
 
 import itertools
 import os
 import shutil
 import unittest
+
+from mediafile import MediaFile
+from mock import ANY
+from mock import Mock
+from mock import patch
+
+from beets import config
+from beets import plugins
+from beets import ui
+from beets.dbcore import types
+from beets.importer import action
+from beets.importer import ArchiveImportTask
+from beets.importer import SentinelImportTask
+from beets.importer import SingletonImportTask
+from beets.library import Item
+from beets.util import bytestring_path
+from beets.util import displayable_path
+from beets.util import syspath
 from test import helper
 from test._common import RSRC
-from test.test_importer import AutotagStub, ImportHelper
+from test.test_importer import AutotagStub
+from test.test_importer import ImportHelper
 from test.test_ui_importer import TerminalImportSessionSetup
-
-from beets import config, plugins, ui
-from beets.dbcore import types
-from beets.importer import (ArchiveImportTask, SentinelImportTask,
-                            SingletonImportTask, action)
-from beets.library import Item
-from beets.util import bytestring_path, displayable_path, syspath
-from mediafile import MediaFile
-from mock import ANY, Mock, patch
 
 
 class TestHelper(helper.TestHelper):

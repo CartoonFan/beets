@@ -12,11 +12,11 @@
 #
 # The above copyright notice and this permission notice shall be
 # included in all copies or substantial portions of the Software.
-
 """Calculate acoustic information and submit to AcousticBrainz.
 """
-
-from __future__ import absolute_import, division, print_function
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import print_function
 
 import errno
 import hashlib
@@ -27,7 +27,10 @@ import tempfile
 from distutils.spawn import find_executable
 
 import requests
-from beets import plugins, ui, util
+
+from beets import plugins
+from beets import ui
+from beets import util
 
 # We use this field to check whether AcousticBrainz info is present.
 PROBE_FIELD = "mood_acoustic"

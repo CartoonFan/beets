@@ -12,16 +12,18 @@
 #
 # The above copyright notice and this permission notice shall be
 # included in all copies or substantial portions of the Software.
-
 """If the title is empty, try to extract track and title from the
 filename.
 """
-from __future__ import absolute_import, division, print_function
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import print_function
 
 import os
 import re
 
 import six
+
 from beets import plugins
 from beets.util import displayable_path
 
