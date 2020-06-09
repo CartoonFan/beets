@@ -35,9 +35,10 @@ PARSE_QUERY_PART_REGEX = re.compile(
 )
 
 
-def parse_query_part(
-    part, query_classes={}, prefixes={}, default_class=query.SubstringQuery
-):
+def parse_query_part(part,
+                     query_classes={},
+                     prefixes={},
+                     default_class=query.SubstringQuery):
     """Parse a single *query part*, which is a chunk of a complete query
     string representing a single criterion.
 
@@ -94,7 +95,7 @@ def parse_query_part(
     # corresponding query type.
     for pre, query_class in prefixes.items():
         if term.startswith(pre):
-            return key, term[len(pre) :], query_class, negate
+            return key, term[len(pre):], query_class, negate
 
     # No matching prefix, so use either the query class determined by
     # the field or the default as a fallback.
@@ -121,14 +122,14 @@ def construct_query_part(model_cls, prefixes, query_part):
     # Use `model_cls` to build up a map from field (or query) names to
     # `Query` classes.
     query_classes = {}
-    for k, t in itertools.chain(model_cls._fields.items(), model_cls._types.items()):
+    for k, t in itertools.chain(model_cls._fields.items(),
+                                model_cls._types.items()):
         query_classes[k] = t.query
     query_classes.update(model_cls._queries)  # Non-field queries.
 
     # Parse the string.
     key, pattern, query_class, negate = parse_query_part(
-        query_part, query_classes, prefixes
-    )
+        query_part, query_classes, prefixes)
 
     # If there's no key (field name) specified, this is a "match
     # anything" query.
@@ -137,9 +138,8 @@ def construct_query_part(model_cls, prefixes, query_part):
             # The query type matches a specific field, but none was
             # specified. So we use a version of the query that matches
             # any field.
-            out_query = query.AnyFieldQuery(
-                pattern, model_cls._search_fields, query_class
-            )
+            out_query = query.AnyFieldQuery(pattern, model_cls._search_fields,
+                                            query_class)
         else:
             # Non-field query type.
             out_query = query_class(pattern)
@@ -191,7 +191,8 @@ def construct_sort_part(model_cls, part, case_insensitive=True):
     is_ascending = direction == "+"
 
     if field in model_cls._sorts:
-        sort = model_cls._sorts[field](model_cls, is_ascending, case_insensitive)
+        sort = model_cls._sorts[field](model_cls, is_ascending,
+                                       case_insensitive)
     elif field in model_cls._fields:
         sort = query.FixedFieldSort(field, is_ascending, case_insensitive)
     else:
@@ -210,7 +211,8 @@ def sort_from_strings(model_cls, sort_parts, case_insensitive=True):
     else:
         sort = query.MultipleSort()
         for part in sort_parts:
-            sort.add_sort(construct_sort_part(model_cls, part, case_insensitive))
+            sort.add_sort(
+                construct_sort_part(model_cls, part, case_insensitive))
     return sort
 
 
@@ -234,13 +236,14 @@ def parse_sorted_query(model_cls, parts, prefixes={}, case_insensitive=True):
             # Parse the subquery in to a single AndQuery
             # TODO: Avoid needlessly wrapping AndQueries containing 1 subquery?
             query_parts.append(
-                query_from_strings(query.AndQuery, model_cls, prefixes, subquery_parts)
-            )
+                query_from_strings(query.AndQuery, model_cls, prefixes,
+                                   subquery_parts))
             del subquery_parts[:]
         else:
             # Sort parts (1) end in + or -, (2) don't have a field, and
             # (3) consist of more than just the + or -.
-            if part.endswith((u"+", u"-")) and u":" not in part and len(part) > 1:
+            if part.endswith(
+                (u"+", u"-")) and u":" not in part and len(part) > 1:
                 sort_parts.append(part)
             else:
                 subquery_parts.append(part)

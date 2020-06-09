@@ -55,12 +55,10 @@ if sys.platform == "win32":
     else:
         colorama.init()
 
-
 log = logging.getLogger("beets")
 if not log.handlers:
     log.addHandler(logging.StreamHandler())
 log.propagate = False  # Don't propagate to root handler.
-
 
 PF_KEY_QUERIES = {
     "comp": u"comp:true",
@@ -191,7 +189,8 @@ def should_move(move_opt=None):
     """
     return _bool_fallback(
         move_opt,
-        config["import"]["move"].get(bool) or config["import"]["copy"].get(bool),
+        config["import"]["move"].get(bool)
+        or config["import"]["copy"].get(bool),
     )
 
 
@@ -222,13 +221,13 @@ def input_(prompt=None):
 
 
 def input_options(
-    options,
-    require=False,
-    prompt=None,
-    fallback_prompt=None,
-    numrange=None,
-    default=None,
-    max_width=72,
+        options,
+        require=False,
+        prompt=None,
+        fallback_prompt=None,
+        numrange=None,
+        default=None,
+        max_width=72,
 ):
     """Prompts a user for input. The sequence of `options` defines the
     choices the user has. A single-letter shortcut is inferred for each
@@ -275,13 +274,9 @@ def input_options(
         index = option.index(found_letter)
 
         # Mark the option's shortcut letter for display.
-        if not require and (
-            (default is None and not numrange and first)
-            or (
-                isinstance(default, six.string_types)
-                and found_letter.lower() == default.lower()
-            )
-        ):
+        if not require and ((default is None and not numrange and first) or
+                            (isinstance(default, six.string_types)
+                             and found_letter.lower() == default.lower())):
             # The first option is the default; mark it.
             show_letter = "[%s]" % found_letter.upper()
             is_default = True
@@ -290,12 +285,11 @@ def input_options(
             is_default = False
 
         # Colorize the letter shortcut.
-        show_letter = colorize(
-            "action_default" if is_default else "action", show_letter
-        )
+        show_letter = colorize("action_default" if is_default else "action",
+                               show_letter)
 
         # Insert the highlighted letter back into the word.
-        capitalized.append(option[:index] + show_letter + option[index + 1 :])
+        capitalized.append(option[:index] + show_letter + option[index + 1:])
         display_letters.append(found_letter.upper())
 
         first = False
@@ -325,7 +319,8 @@ def input_options(
         # Wrap the query text.
         prompt = ""
         line_length = 0
-        for i, (part, length) in enumerate(zip(prompt_parts, prompt_part_lengths)):
+        for i, (part,
+                length) in enumerate(zip(prompt_parts, prompt_part_lengths)):
             # Add punctuation.
             part += "?" if i == len(prompt_parts) - 1 else ","
             length += 1
@@ -398,7 +393,8 @@ def input_select_objects(prompt, objs, rep):
     phrased as an imperative verb). `rep` is a function to call on each
     object to print it out when confirming objects individually.
     """
-    choice = input_options((u"y", u"n", u"s"), False, u"%s? (Yes/no/select)" % prompt)
+    choice = input_options((u"y", u"n", u"s"), False,
+                           u"%s? (Yes/no/select)" % prompt)
     print()  # Blank line.
 
     if choice == u"y":  # Yes.
@@ -408,9 +404,9 @@ def input_select_objects(prompt, objs, rep):
         out = []
         for obj in objs:
             rep(obj)
-            answer = input_options(
-                ("y", "n", "q"), True, u"%s? (yes/no/quit)" % prompt, u"Enter Y or N:"
-            )
+            answer = input_options(("y", "n", "q"), True,
+                                   u"%s? (yes/no/quit)" % prompt,
+                                   u"Enter Y or N:")
             if answer == u"y":
                 out.append(obj)
             elif answer == u"q":
@@ -541,7 +537,10 @@ def colorize(color_name, text):
 
     global COLORS
     if not COLORS:
-        COLORS = {name: config["ui"]["colors"][name].as_str() for name in COLOR_NAMES}
+        COLORS = {
+            name: config["ui"]["colors"][name].as_str()
+            for name in COLOR_NAMES
+        }
     # In case a 3rd party plugin is still passing the actual color ('red')
     # instead of the abstract color name ('text_error')
     color = COLORS.get(color_name)
@@ -551,15 +550,17 @@ def colorize(color_name, text):
     return _colorize(color, text)
 
 
-def _colordiff(
-    a, b, highlight="text_highlight", minor_highlight="text_highlight_minor"
-):
+def _colordiff(a,
+               b,
+               highlight="text_highlight",
+               minor_highlight="text_highlight_minor"):
     """Given two values, return the same pair of strings except with
     their differences highlighted in the specified color. Strings are
     highlighted intelligently to show differences; other values are
     stringified and highlighted in their entirety.
     """
-    if not (isinstance(a, six.string_types) and isinstance(b, six.string_types)):
+    if not (isinstance(a, six.string_types)
+            and isinstance(b, six.string_types)):
         # Non-strings: use ordinary equality.
         a = six.text_type(a)
         b = six.text_type(b)
@@ -635,8 +636,8 @@ def get_replacements():
             replacements.append((re.compile(pattern), repl))
         except re.error:
             raise UserError(
-                u"malformed regular expression in replace: {0}".format(pattern)
-            )
+                u"malformed regular expression in replace: {0}".format(
+                    pattern))
     return replacements
 
 
@@ -675,11 +676,8 @@ def _field_diff(field, old, new):
     newval = new.get(field)
 
     # If no change, abort.
-    if (
-        isinstance(oldval, float)
-        and isinstance(newval, float)
-        and abs(oldval - newval) < FLOAT_EPSILON
-    ):
+    if (isinstance(oldval, float) and isinstance(newval, float)
+            and abs(oldval - newval) < FLOAT_EPSILON):
         return None
     elif oldval == newval:
         return None
@@ -728,11 +726,9 @@ def show_model_changes(new, old=None, fields=None, always=False):
         if fields and field not in fields:
             continue
 
-        changes.append(
-            u"  {0}: {1}".format(
-                field, colorize("text_highlight", new.formatted()[field])
-            )
-        )
+        changes.append(u"  {0}: {1}".format(
+            field, colorize("text_highlight",
+                            new.formatted()[field])))
 
     # Print changes.
     if changes or always:
@@ -805,8 +801,8 @@ def _store_dict(option, opt_str, value, parser):
             raise ValueError
     except ValueError:
         raise UserError(
-            "supplied argument `{0}' is not of the form `key=value'".format(value)
-        )
+            "supplied argument `{0}' is not of the form `key=value'".format(
+                value))
 
     option_values[key] = value
 
@@ -841,15 +837,20 @@ class CommonOptionsParser(optparse.OptionParser, object):
         the format for items or albums.
         Sets the album property on the options extracted from the CLI.
         """
-        album = optparse.Option(
-            *flags, action="store_true", help=u"match albums instead of tracks"
-        )
+        album = optparse.Option(*flags,
+                                action="store_true",
+                                help=u"match albums instead of tracks")
         self.add_option(album)
         self._album_flags = set(flags)
 
-    def _set_format(
-        self, option, opt_str, value, parser, target=None, fmt=None, store_true=False
-    ):
+    def _set_format(self,
+                    option,
+                    opt_str,
+                    value,
+                    parser,
+                    target=None,
+                    fmt=None,
+                    store_true=False):
         """Internal callback that sets the correct format while parsing CLI
         arguments.
         """
@@ -860,7 +861,7 @@ class CommonOptionsParser(optparse.OptionParser, object):
         if fmt:
             value = fmt
         elif value:
-            (value,) = decargs([value])
+            (value, ) = decargs([value])
         else:
             value = u""
 
@@ -892,14 +893,15 @@ class CommonOptionsParser(optparse.OptionParser, object):
         Sets the format property to u'$path' on the options extracted from the
         CLI.
         """
-        path = optparse.Option(
-            *flags,
-            nargs=0,
-            action="callback",
-            callback=self._set_format,
-            callback_kwargs={"fmt": u"$path", "store_true": True},
-            help=u"print paths for matched items or albums"
-        )
+        path = optparse.Option(*flags,
+                               nargs=0,
+                               action="callback",
+                               callback=self._set_format,
+                               callback_kwargs={
+                                   "fmt": u"$path",
+                                   "store_true": True
+                               },
+                               help=u"print paths for matched items or albums")
         self.add_option(path)
 
     def add_format_option(self, flags=("-f", "--format"), target=None):
@@ -923,13 +925,11 @@ class CommonOptionsParser(optparse.OptionParser, object):
                 target = {"item": library.Item, "album": library.Album}[target]
             kwargs["target"] = target
 
-        opt = optparse.Option(
-            *flags,
-            action="callback",
-            callback=self._set_format,
-            callback_kwargs=kwargs,
-            help=u"print with custom format"
-        )
+        opt = optparse.Option(*flags,
+                              action="callback",
+                              callback=self._set_format,
+                              callback_kwargs=kwargs,
+                              help=u"print with custom format")
         self.add_option(opt)
 
     def add_all_common_options(self):
@@ -982,8 +982,7 @@ class Subcommand(object):
     def root_parser(self, root_parser):
         self._root_parser = root_parser
         self.parser.prog = "{0} {1}".format(
-            as_string(root_parser.get_prog_name()), self.name
-        )
+            as_string(root_parser.get_prog_name()), self.name)
 
 
 class SubcommandsOptionParser(CommonOptionsParser):
@@ -998,9 +997,7 @@ class SubcommandsOptionParser(CommonOptionsParser):
         """
         # A more helpful default usage.
         if "usage" not in kwargs:
-            kwargs[
-                "usage"
-            ] = u"""
+            kwargs["usage"] = u"""
   %prog COMMAND [ARGS...]
   %prog help COMMAND"""
         kwargs["add_help_option"] = False
@@ -1056,16 +1053,18 @@ class SubcommandsOptionParser(CommonOptionsParser):
                 name = "%*s%s\n" % (formatter.current_indent, "", name)
                 indent_first = help_position
             else:
-                name = "%*s%-*s  " % (formatter.current_indent, "", name_width, name)
+                name = "%*s%-*s  " % (formatter.current_indent, "", name_width,
+                                      name)
                 indent_first = 0
             result.append(name)
             help_width = formatter.width - help_position
             help_lines = textwrap.wrap(subcommand.help, help_width)
             help_line = help_lines[0] if help_lines else ""
             result.append("%*s%s\n" % (indent_first, "", help_line))
-            result.extend(
-                ["%*s%s\n" % (help_position, "", line) for line in help_lines[1:]]
-            )
+            result.extend([
+                "%*s%s\n" % (help_position, "", line)
+                for line in help_lines[1:]
+            ])
         formatter.dedent()
 
         # Concatenate the original help message with the subcommand
@@ -1113,8 +1112,7 @@ class SubcommandsOptionParser(CommonOptionsParser):
         return subcommand, suboptions, subargs
 
 
-optparse.Option.ALWAYS_TYPED_ACTIONS += ("callback",)
-
+optparse.Option.ALWAYS_TYPED_ACTIONS += ("callback", )
 
 # The main entry point and bootstrapping.
 
@@ -1195,17 +1193,19 @@ def _configure(options):
         log.set_global_level(logging.INFO)
 
     if overlay_path:
-        log.debug(u"overlaying configuration: {0}", util.displayable_path(overlay_path))
+        log.debug(u"overlaying configuration: {0}",
+                  util.displayable_path(overlay_path))
 
     config_path = config.user_config_path()
     if os.path.isfile(config_path):
-        log.debug(u"user configuration: {0}", util.displayable_path(config_path))
+        log.debug(u"user configuration: {0}",
+                  util.displayable_path(config_path))
     else:
-        log.debug(
-            u"no user configuration found at {0}", util.displayable_path(config_path)
-        )
+        log.debug(u"no user configuration found at {0}",
+                  util.displayable_path(config_path))
 
-    log.debug(u"data directory: {0}", util.displayable_path(config.config_dir()))
+    log.debug(u"data directory: {0}",
+              util.displayable_path(config.config_dir()))
     return config
 
 
@@ -1223,13 +1223,11 @@ def _open_library(config):
         lib.get_item(0)  # Test database connection.
     except (sqlite3.OperationalError, sqlite3.DatabaseError) as db_error:
         log.debug(u"{}", traceback.format_exc())
-        raise UserError(
-            u"database file {0} cannot not be opened: {1}".format(
-                util.displayable_path(dbpath), db_error
-            )
-        )
+        raise UserError(u"database file {0} cannot not be opened: {1}".format(
+            util.displayable_path(dbpath), db_error))
     log.debug(
-        u"library database: {0}\n" u"library directory: {1}",
+        u"library database: {0}\n"
+        u"library directory: {1}",
         util.displayable_path(lib.path),
         util.displayable_path(lib.directory),
     )
@@ -1241,14 +1239,16 @@ def _raw_main(args, lib=None):
     handling.
     """
     parser = SubcommandsOptionParser()
-    parser.add_format_option(flags=("--format-item",), target=library.Item)
-    parser.add_format_option(flags=("--format-album",), target=library.Album)
-    parser.add_option(
-        "-l", "--library", dest="library", help=u"library database file to use"
-    )
-    parser.add_option(
-        "-d", "--directory", dest="directory", help=u"destination music directory"
-    )
+    parser.add_format_option(flags=("--format-item", ), target=library.Item)
+    parser.add_format_option(flags=("--format-album", ), target=library.Album)
+    parser.add_option("-l",
+                      "--library",
+                      dest="library",
+                      help=u"library database file to use")
+    parser.add_option("-d",
+                      "--directory",
+                      dest="directory",
+                      help=u"destination music directory")
     parser.add_option(
         "-v",
         "--verbose",
@@ -1256,9 +1256,10 @@ def _raw_main(args, lib=None):
         action="count",
         help=u"log more details (use twice for even more)",
     )
-    parser.add_option(
-        "-c", "--config", dest="config", help=u"path to configuration file"
-    )
+    parser.add_option("-c",
+                      "--config",
+                      dest="config",
+                      help=u"path to configuration file")
     parser.add_option(
         "-h",
         "--help",
@@ -1266,16 +1267,18 @@ def _raw_main(args, lib=None):
         action="store_true",
         help=u"show this help message and exit",
     )
-    parser.add_option(
-        "--version", dest="version", action="store_true", help=optparse.SUPPRESS_HELP
-    )
+    parser.add_option("--version",
+                      dest="version",
+                      action="store_true",
+                      help=optparse.SUPPRESS_HELP)
 
     options, subargs = parser.parse_global_options(args)
 
     # Special case for the `config --edit` command: bypass _setup so
     # that an invalid configuration does not prevent the editor from
     # starting.
-    if subargs and subargs[0] == "config" and ("-e" in subargs or "--edit" in subargs):
+    if subargs and subargs[0] == "config" and ("-e" in subargs
+                                               or "--edit" in subargs):
         from beets.ui.commands import config_edit
 
         return config_edit()

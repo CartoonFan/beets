@@ -102,7 +102,10 @@ class PluralityTest(_common.TestCase):
             "media",
             "albumdisambig",
         ]
-        items = [Item(**{f: "%s_%s" % (f, i or 1) for f in fields}) for i in range(5)]
+        items = [
+            Item(**{f: "%s_%s" % (f, i or 1)
+                    for f in fields}) for i in range(5)
+        ]
         likelies, _ = match.current_metadata(items)
         for f in fields:
             if isinstance(likelies[f], int):
@@ -126,15 +129,21 @@ def _make_item(title, track, artist=u"some artist"):
 
 def _make_trackinfo():
     return [
-        TrackInfo(
-            title=u"one", track_id=None, artist=u"some artist", length=1, index=1
-        ),
-        TrackInfo(
-            title=u"two", track_id=None, artist=u"some artist", length=1, index=2
-        ),
-        TrackInfo(
-            title=u"three", track_id=None, artist=u"some artist", length=1, index=3
-        ),
+        TrackInfo(title=u"one",
+                  track_id=None,
+                  artist=u"some artist",
+                  length=1,
+                  index=1),
+        TrackInfo(title=u"two",
+                  track_id=None,
+                  artist=u"some artist",
+                  length=1,
+                  index=2),
+        TrackInfo(title=u"three",
+                  track_id=None,
+                  artist=u"some artist",
+                  length=1,
+                  index=3),
     ]
 
 
@@ -188,7 +197,8 @@ class DistanceTest(_common.TestCase):
         self.assertEqual(dist._penalties["number"], [0.0, 1.0, 1.0])
 
         dist.add_number("number", -1, 2)
-        self.assertEqual(dist._penalties["number"], [0.0, 1.0, 1.0, 1.0, 1.0, 1.0])
+        self.assertEqual(dist._penalties["number"],
+                         [0.0, 1.0, 1.0, 1.0, 1.0, 1.0])
 
     def test_add_priority(self):
         dist = Distance()
@@ -198,7 +208,9 @@ class DistanceTest(_common.TestCase):
         dist.add_priority("priority", "def", ["abc", "def"])
         self.assertEqual(dist._penalties["priority"], [0.0, 0.5])
 
-        dist.add_priority("priority", "gh", ["ab", "cd", "ef", re.compile("GH", re.I)])
+        dist.add_priority(
+            "priority", "gh",
+            ["ab", "cd", "ef", re.compile("GH", re.I)])
         self.assertEqual(dist._penalties["priority"], [0.0, 0.5, 0.75])
 
         dist.add_priority("priority", "xyz", ["abc", "def"])
@@ -320,9 +332,10 @@ class DistanceTest(_common.TestCase):
 
         dist1.update(dist2)
 
-        self.assertEqual(
-            dist1._penalties, {"album": [0.5, 0.75, 0.25], "media": [1.0, 0.05]}
-        )
+        self.assertEqual(dist1._penalties, {
+            "album": [0.5, 0.75, 0.25],
+            "media": [1.0, 0.05]
+        })
 
 
 class TrackDistanceTest(_common.TestCase):
@@ -490,7 +503,11 @@ class AlbumDistanceTest(_common.TestCase):
 class AssignmentTest(unittest.TestCase):
     def item(self, title, track):
         return Item(
-            title=title, track=track, mb_trackid="", mb_albumid="", mb_artistid="",
+            title=title,
+            track=track,
+            mb_trackid="",
+            mb_albumid="",
+            mb_artistid="",
         )
 
     def test_reorder_when_track_numbers_incorrect(self):
@@ -500,12 +517,17 @@ class AssignmentTest(unittest.TestCase):
         trackinfo = [TrackInfo(title=u"one")]
         trackinfo.append(TrackInfo(title=u"two"))
         trackinfo.append(TrackInfo(title=u"three"))
-        mapping, extra_items, extra_tracks = match.assign_items(items, trackinfo)
+        mapping, extra_items, extra_tracks = match.assign_items(
+            items, trackinfo)
         self.assertEqual(extra_items, [])
         self.assertEqual(extra_tracks, [])
         self.assertEqual(
             mapping,
-            {items[0]: trackinfo[0], items[1]: trackinfo[2], items[2]: trackinfo[1],},
+            {
+                items[0]: trackinfo[0],
+                items[1]: trackinfo[2],
+                items[2]: trackinfo[1],
+            },
         )
 
     def test_order_works_with_invalid_track_numbers(self):
@@ -515,12 +537,17 @@ class AssignmentTest(unittest.TestCase):
         trackinfo = [TrackInfo(title=u"one")]
         trackinfo.append(TrackInfo(title=u"two"))
         trackinfo.append(TrackInfo(title=u"three"))
-        mapping, extra_items, extra_tracks = match.assign_items(items, trackinfo)
+        mapping, extra_items, extra_tracks = match.assign_items(
+            items, trackinfo)
         self.assertEqual(extra_items, [])
         self.assertEqual(extra_tracks, [])
         self.assertEqual(
             mapping,
-            {items[0]: trackinfo[0], items[1]: trackinfo[2], items[2]: trackinfo[1],},
+            {
+                items[0]: trackinfo[0],
+                items[1]: trackinfo[2],
+                items[2]: trackinfo[1],
+            },
         )
 
     def test_order_works_with_missing_tracks(self):
@@ -529,10 +556,14 @@ class AssignmentTest(unittest.TestCase):
         trackinfo = [TrackInfo(title=u"one")]
         trackinfo.append(TrackInfo(title=u"two"))
         trackinfo.append(TrackInfo(title=u"three"))
-        mapping, extra_items, extra_tracks = match.assign_items(items, trackinfo)
+        mapping, extra_items, extra_tracks = match.assign_items(
+            items, trackinfo)
         self.assertEqual(extra_items, [])
         self.assertEqual(extra_tracks, [trackinfo[1]])
-        self.assertEqual(mapping, {items[0]: trackinfo[0], items[1]: trackinfo[2],})
+        self.assertEqual(mapping, {
+            items[0]: trackinfo[0],
+            items[1]: trackinfo[2],
+        })
 
     def test_order_works_with_extra_tracks(self):
         items = [self.item(u"one", 1)]
@@ -540,10 +571,14 @@ class AssignmentTest(unittest.TestCase):
         items.append(self.item(u"three", 3))
         trackinfo = [TrackInfo(title=u"one")]
         trackinfo.append(TrackInfo(title=u"three"))
-        mapping, extra_items, extra_tracks = match.assign_items(items, trackinfo)
+        mapping, extra_items, extra_tracks = match.assign_items(
+            items, trackinfo)
         self.assertEqual(extra_items, [items[1]])
         self.assertEqual(extra_tracks, [])
-        self.assertEqual(mapping, {items[0]: trackinfo[0], items[2]: trackinfo[1],})
+        self.assertEqual(mapping, {
+            items[0]: trackinfo[0],
+            items[2]: trackinfo[1],
+        })
 
     def test_order_works_when_track_names_are_entirely_wrong(self):
         # A real-world test case contributed by a user.
@@ -590,7 +625,8 @@ class AssignmentTest(unittest.TestCase):
         trackinfo.append(info(11, u"Beloved One", 243.733))
         trackinfo.append(info(12, u"In the Lord's Arms", 186.13300000000001))
 
-        mapping, extra_items, extra_tracks = match.assign_items(items, trackinfo)
+        mapping, extra_items, extra_tracks = match.assign_items(
+            items, trackinfo)
         self.assertEqual(extra_items, [])
         self.assertEqual(extra_tracks, [])
         for item, info in mapping.items():
@@ -635,8 +671,7 @@ class ApplyTest(_common.TestCase, ApplyTestUtil):
                 medium_index=1,
                 index=2,
                 medium_total=1,
-            )
-        )
+            ))
         self.info = AlbumInfo(
             tracks=trackinfo,
             artist=u"artistNew",
@@ -712,18 +747,18 @@ class ApplyTest(_common.TestCase, ApplyTestUtil):
 
     def test_mb_trackid_applied(self):
         self._apply()
-        self.assertEqual(
-            self.items[0].mb_trackid, "dfa939ec-118c-4d0f-84a0-60f3d1e6522c"
-        )
-        self.assertEqual(
-            self.items[1].mb_trackid, "40130ed1-a27c-42fd-a328-1ebefb6caef4"
-        )
+        self.assertEqual(self.items[0].mb_trackid,
+                         "dfa939ec-118c-4d0f-84a0-60f3d1e6522c")
+        self.assertEqual(self.items[1].mb_trackid,
+                         "40130ed1-a27c-42fd-a328-1ebefb6caef4")
 
     def test_mb_albumid_and_artistid_applied(self):
         self._apply()
         for item in self.items:
-            self.assertEqual(item.mb_albumid, "7edb51cb-77d6-4416-a23c-3a8c2994a2c7")
-            self.assertEqual(item.mb_artistid, "a6623d39-2d8e-4f70-8242-0a9553b91e50")
+            self.assertEqual(item.mb_albumid,
+                             "7edb51cb-77d6-4416-a23c-3a8c2994a2c7")
+            self.assertEqual(item.mb_artistid,
+                             "a6623d39-2d8e-4f70-8242-0a9553b91e50")
 
     def test_albumtype_applied(self):
         self._apply()
@@ -822,8 +857,7 @@ class ApplyCompilationTest(_common.TestCase, ApplyTestUtil):
                 artist=u"artistTwoNew",
                 artist_id=u"80b3cf5e-18fe-4c59-98c7-e5bb87210710",
                 index=2,
-            )
-        )
+            ))
         self.info = AlbumInfo(
             tracks=trackinfo,
             artist=u"variousNew",
@@ -842,18 +876,14 @@ class ApplyCompilationTest(_common.TestCase, ApplyTestUtil):
 
     def test_mb_albumartistid_applied(self):
         self._apply()
-        self.assertEqual(
-            self.items[0].mb_albumartistid, "89ad4ac3-39f7-470e-963a-56509c546377"
-        )
-        self.assertEqual(
-            self.items[1].mb_albumartistid, "89ad4ac3-39f7-470e-963a-56509c546377"
-        )
-        self.assertEqual(
-            self.items[0].mb_artistid, "a05686fc-9db2-4c23-b99e-77f5db3e5282"
-        )
-        self.assertEqual(
-            self.items[1].mb_artistid, "80b3cf5e-18fe-4c59-98c7-e5bb87210710"
-        )
+        self.assertEqual(self.items[0].mb_albumartistid,
+                         "89ad4ac3-39f7-470e-963a-56509c546377")
+        self.assertEqual(self.items[1].mb_albumartistid,
+                         "89ad4ac3-39f7-470e-963a-56509c546377")
+        self.assertEqual(self.items[0].mb_artistid,
+                         "a05686fc-9db2-4c23-b99e-77f5db3e5282")
+        self.assertEqual(self.items[1].mb_artistid,
+                         "80b3cf5e-18fe-4c59-98c7-e5bb87210710")
 
     def test_va_flag_cleared_does_not_set_comp(self):
         self._apply()
@@ -950,7 +980,8 @@ class EnumTest(_common.TestCase):
     """
 
     def test_ordered_enum(self):
-        OrderedEnumClass = match.OrderedEnum("OrderedEnumTest", ["a", "b", "c"])  # noqa
+        OrderedEnumClass = match.OrderedEnum("OrderedEnumTest",
+                                             ["a", "b", "c"])  # noqa
         self.assertLess(OrderedEnumClass.a, OrderedEnumClass.b)
         self.assertLess(OrderedEnumClass.a, OrderedEnumClass.c)
         self.assertLess(OrderedEnumClass.b, OrderedEnumClass.c)

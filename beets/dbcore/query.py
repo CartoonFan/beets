@@ -130,15 +130,12 @@ class FieldQuery(Query):
 
     def __repr__(self):
         return "{0.__class__.__name__}({0.field!r}, {0.pattern!r}, " "{0.fast})".format(
-            self
-        )
+            self)
 
     def __eq__(self, other):
-        return (
-            super(FieldQuery, self).__eq__(other)
-            and self.field == other.field
-            and self.pattern == other.pattern
-        )
+        return (super(FieldQuery, self).__eq__(other)
+                and self.field == other.field
+                and self.pattern == other.pattern)
 
     def __hash__(self):
         return hash((self.field, hash(self.pattern)))
@@ -195,9 +192,9 @@ class SubstringQuery(StringFieldQuery):
     """A query that matches a substring in a specific item field."""
 
     def col_clause(self):
-        pattern = (
-            self.pattern.replace("\\", "\\\\").replace("%", "\\%").replace("_", "\\_")
-        )
+        pattern = (self.pattern.replace("\\", "\\\\").replace("%",
+                                                              "\\%").replace(
+                                                                  "_", "\\_"))
         search = "%" + pattern + "%"
         clause = self.field + " like ? escape '\\'"
         subvals = [search]
@@ -223,9 +220,9 @@ class RegexpQuery(StringFieldQuery):
             self.pattern = re.compile(self.pattern)
         except re.error as exc:
             # Invalid regular expression.
-            raise InvalidQueryArgumentValueError(
-                pattern, u"a regular expression", format(exc)
-            )
+            raise InvalidQueryArgumentValueError(pattern,
+                                                 u"a regular expression",
+                                                 format(exc))
 
     @staticmethod
     def _normalize(s):
@@ -333,7 +330,7 @@ class NumericQuery(FieldQuery):
 
     def col_clause(self):
         if self.point is not None:
-            return self.field + "=?", (self.point,)
+            return self.field + "=?", (self.point, )
         else:
             if not (self.rangemin is None or self.rangemax is None):
                 return (
@@ -341,9 +338,9 @@ class NumericQuery(FieldQuery):
                     (self.rangemin, self.rangemax),
                 )
             elif self.rangemin is not None:
-                return u"{0} >= ?".format(self.field), (self.rangemin,)
+                return u"{0} >= ?".format(self.field), (self.rangemin, )
             elif self.rangemax is not None:
-                return u"{0} <= ?".format(self.field), (self.rangemax,)
+                return u"{0} <= ?".format(self.field), (self.rangemax, )
             else:
                 return u"1", ()
 
@@ -390,10 +387,8 @@ class CollectionQuery(Query):
         return "{0.__class__.__name__}({0.subqueries!r})".format(self)
 
     def __eq__(self, other):
-        return (
-            super(CollectionQuery, self).__eq__(other)
-            and self.subqueries == other.subqueries
-        )
+        return (super(CollectionQuery, self).__eq__(other)
+                and self.subqueries == other.subqueries)
 
     def __hash__(self):
         """Since subqueries are mutable, this object should not be hashable.
@@ -425,16 +420,12 @@ class AnyFieldQuery(CollectionQuery):
         return any(subq.match(item) for subq in self.subqueries)
 
     def __repr__(self):
-        return (
-            "{0.__class__.__name__}({0.pattern!r}, {0.fields!r}, "
-            "{0.query_class.__name__})".format(self)
-        )
+        return ("{0.__class__.__name__}({0.pattern!r}, {0.fields!r}, "
+                "{0.query_class.__name__})".format(self))
 
     def __eq__(self, other):
-        return (
-            super(AnyFieldQuery, self).__eq__(other)
-            and self.query_class == other.query_class
-        )
+        return (super(AnyFieldQuery, self).__eq__(other)
+                and self.query_class == other.query_class)
 
     def __hash__(self):
         return hash((self.pattern, tuple(self.fields), self.query_class))
@@ -496,7 +487,8 @@ class NotQuery(Query):
         return "{0.__class__.__name__}({0.subquery!r})".format(self)
 
     def __eq__(self, other):
-        return super(NotQuery, self).__eq__(other) and self.subquery == other.subquery
+        return super(NotQuery,
+                     self).__eq__(other) and self.subquery == other.subquery
 
     def __hash__(self):
         return hash(("not", hash(self.subquery)))
@@ -561,9 +553,9 @@ class Period(object):
 
     precisions = ("year", "month", "day", "hour", "minute", "second")
     date_formats = (
-        ("%Y",),  # year
-        ("%Y-%m",),  # month
-        ("%Y-%m-%d",),  # day
+        ("%Y", ),  # year
+        ("%Y-%m", ),  # month
+        ("%Y-%m-%d", ),  # day
         ("%Y-%m-%dT%H", "%Y-%m-%d %H"),  # hour
         ("%Y-%m-%dT%H:%M", "%Y-%m-%d %H:%M"),  # minute
         ("%Y-%m-%dT%H:%M:%S", "%Y-%m-%d %H:%M:%S"),  # second
@@ -624,13 +616,15 @@ class Period(object):
             # date.
             multiplier = -1 if sign == "-" else 1
             days = cls.relative_units[timespan]
-            date = datetime.now() + timedelta(days=int(quantity) * days) * multiplier
+            date = datetime.now() + timedelta(days=int(quantity) *
+                                              days) * multiplier
             return cls(date, cls.precisions[5])
 
         # Check for an absolute date.
         date, ordinal = find_date_and_format(string)
         if date is None:
-            raise InvalidQueryArgumentValueError(string, "a valid date/time string")
+            raise InvalidQueryArgumentValueError(string,
+                                                 "a valid date/time string")
         precision = cls.precisions[ordinal]
         return cls(date, precision)
 
@@ -669,8 +663,8 @@ class DateInterval(object):
     def __init__(self, start, end):
         if start is not None and end is not None and not start < end:
             raise ValueError(
-                u"start date {0} is not before end date {1}".format(start, end)
-            )
+                u"start date {0} is not before end date {1}".format(
+                    start, end))
         self.start = start
         self.end = end
 
@@ -759,7 +753,8 @@ class DurationQuery(NumericQuery):
             try:
                 return float(s)
             except ValueError:
-                raise InvalidQueryArgumentValueError(s, u"a M:SS string or a float")
+                raise InvalidQueryArgumentValueError(
+                    s, u"a M:SS string or a float")
 
 
 # Sorting.
@@ -852,7 +847,8 @@ class MultipleSort(Sort):
         return hash(tuple(self.sorts))
 
     def __eq__(self, other):
-        return super(MultipleSort, self).__eq__(other) and self.sorts == other.sorts
+        return super(MultipleSort,
+                     self).__eq__(other) and self.sorts == other.sorts
 
 
 class FieldSort(Sort):
@@ -880,18 +876,18 @@ class FieldSort(Sort):
 
     def __repr__(self):
         return "<{0}: {1}{2}>".format(
-            type(self).__name__, self.field, "+" if self.ascending else "-",
+            type(self).__name__,
+            self.field,
+            "+" if self.ascending else "-",
         )
 
     def __hash__(self):
         return hash((self.field, self.ascending))
 
     def __eq__(self, other):
-        return (
-            super(FieldSort, self).__eq__(other)
-            and self.field == other.field
-            and self.ascending == other.ascending
-        )
+        return (super(FieldSort, self).__eq__(other)
+                and self.field == other.field
+                and self.ascending == other.ascending)
 
 
 class FixedFieldSort(FieldSort):
@@ -901,12 +897,10 @@ class FixedFieldSort(FieldSort):
     def order_clause(self):
         order = "ASC" if self.ascending else "DESC"
         if self.case_insensitive:
-            field = (
-                "(CASE "
-                'WHEN TYPEOF({0})="text" THEN LOWER({0}) '
-                'WHEN TYPEOF({0})="blob" THEN LOWER({0}) '
-                "ELSE {0} END)".format(self.field)
-            )
+            field = ("(CASE "
+                     'WHEN TYPEOF({0})="text" THEN LOWER({0}) '
+                     'WHEN TYPEOF({0})="blob" THEN LOWER({0}) '
+                     "ELSE {0} END)".format(self.field))
         else:
             field = self.field
         return "{0} {1}".format(field, order)

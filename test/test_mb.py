@@ -29,43 +29,54 @@ from test import _common
 
 class MBAlbumInfoTest(_common.TestCase):
     def _make_release(
-        self,
-        date_str="2009",
-        tracks=None,
-        track_length=None,
-        track_artist=False,
-        data_tracks=None,
-        medium_format="FORMAT",
+            self,
+            date_str="2009",
+            tracks=None,
+            track_length=None,
+            track_artist=False,
+            data_tracks=None,
+            medium_format="FORMAT",
     ):
         release = {
-            "title": "ALBUM TITLE",
-            "id": "ALBUM ID",
-            "asin": "ALBUM ASIN",
-            "disambiguation": "R_DISAMBIGUATION",
+            "title":
+            "ALBUM TITLE",
+            "id":
+            "ALBUM ID",
+            "asin":
+            "ALBUM ASIN",
+            "disambiguation":
+            "R_DISAMBIGUATION",
             "release-group": {
                 "type": "Album",
                 "first-release-date": date_str,
                 "id": "RELEASE GROUP ID",
                 "disambiguation": "RG_DISAMBIGUATION",
             },
-            "artist-credit": [
-                {
-                    "artist": {
-                        "name": "ARTIST NAME",
-                        "id": "ARTIST ID",
-                        "sort-name": "ARTIST SORT NAME",
-                    },
-                    "name": "ARTIST CREDIT",
-                }
-            ],
-            "date": "3001",
+            "artist-credit": [{
+                "artist": {
+                    "name": "ARTIST NAME",
+                    "id": "ARTIST ID",
+                    "sort-name": "ARTIST SORT NAME",
+                },
+                "name": "ARTIST CREDIT",
+            }],
+            "date":
+            "3001",
             "medium-list": [],
-            "label-info-list": [
-                {"catalog-number": "CATALOG NUMBER", "label": {"name": "LABEL NAME"},}
-            ],
-            "text-representation": {"script": "SCRIPT", "language": "LANGUAGE",},
-            "country": "COUNTRY",
-            "status": "STATUS",
+            "label-info-list": [{
+                "catalog-number": "CATALOG NUMBER",
+                "label": {
+                    "name": "LABEL NAME"
+                },
+            }],
+            "text-representation": {
+                "script": "SCRIPT",
+                "language": "LANGUAGE",
+            },
+            "country":
+            "COUNTRY",
+            "status":
+            "STATUS",
         }
         i = 0
         track_list = []
@@ -84,16 +95,14 @@ class MBAlbumInfoTest(_common.TestCase):
                 if track_artist:
                     # Similarly, track artists can differ from recording
                     # artists.
-                    track["artist-credit"] = [
-                        {
-                            "artist": {
-                                "name": "TRACK ARTIST NAME",
-                                "id": "TRACK ARTIST ID",
-                                "sort-name": "TRACK ARTIST SORT NAME",
-                            },
-                            "name": "TRACK ARTIST CREDIT",
-                        }
-                    ]
+                    track["artist-credit"] = [{
+                        "artist": {
+                            "name": "TRACK ARTIST NAME",
+                            "id": "TRACK ARTIST ID",
+                            "sort-name": "TRACK ARTIST SORT NAME",
+                        },
+                        "name": "TRACK ARTIST CREDIT",
+                    }]
                 track_list.append(track)
         data_track_list = []
         if data_tracks:
@@ -106,15 +115,13 @@ class MBAlbumInfoTest(_common.TestCase):
                     "number": "A1",
                 }
                 data_track_list.append(data_track)
-        release["medium-list"].append(
-            {
-                "position": "1",
-                "track-list": track_list,
-                "data-track-list": data_track_list,
-                "format": medium_format,
-                "title": "MEDIUM TITLE",
-            }
-        )
+        release["medium-list"].append({
+            "position": "1",
+            "track-list": track_list,
+            "data-track-list": data_track_list,
+            "format": medium_format,
+            "title": "MEDIUM TITLE",
+        })
         return release
 
     def _make_track(self, title, tr_id, duration, artist=False, video=False):
@@ -125,16 +132,14 @@ class MBAlbumInfoTest(_common.TestCase):
         if duration is not None:
             track["length"] = duration
         if artist:
-            track["artist-credit"] = [
-                {
-                    "artist": {
-                        "name": "RECORDING ARTIST NAME",
-                        "id": "RECORDING ARTIST ID",
-                        "sort-name": "RECORDING ARTIST SORT NAME",
-                    },
-                    "name": "RECORDING ARTIST CREDIT",
-                }
-            ]
+            track["artist-credit"] = [{
+                "artist": {
+                    "name": "RECORDING ARTIST NAME",
+                    "id": "RECORDING ARTIST ID",
+                    "sort-name": "RECORDING ARTIST SORT NAME",
+                },
+                "name": "RECORDING ARTIST CREDIT",
+            }]
         if video:
             track["video"] = "true"
         return track
@@ -212,17 +217,16 @@ class MBAlbumInfoTest(_common.TestCase):
             self._make_track("TITLE TWO", "ID TWO", 200.0 * 1000.0),
         ]
         release = self._make_release(tracks=[tracks[0]])
-        second_track_list = [
-            {
-                "id": "RELEASE TRACK ID 2",
-                "recording": tracks[1],
-                "position": "1",
-                "number": "A1",
-            }
-        ]
-        release["medium-list"].append(
-            {"position": "2", "track-list": second_track_list,}
-        )
+        second_track_list = [{
+            "id": "RELEASE TRACK ID 2",
+            "recording": tracks[1],
+            "position": "1",
+            "number": "A1",
+        }]
+        release["medium-list"].append({
+            "position": "2",
+            "track-list": second_track_list,
+        })
 
         d = mb.album_info(release)
         self.assertEqual(d.mediums, 2)
@@ -377,7 +381,8 @@ class MBAlbumInfoTest(_common.TestCase):
             self._make_track("TITLE ONE", "ID ONE", 100.0 * 1000.0),
             self._make_track("TITLE TWO", "ID TWO", 200.0 * 1000.0),
         ]
-        release = self._make_release(tracks=tracks, medium_format="NON-IGNORED")
+        release = self._make_release(tracks=tracks,
+                                     medium_format="NON-IGNORED")
         d = mb.album_info(release)
         self.assertEqual(len(d.tracks), 2)
 
@@ -399,7 +404,8 @@ class MBAlbumInfoTest(_common.TestCase):
             self._make_track("TITLE TWO", "ID TWO", 200.0 * 1000.0),
         ]
         data_tracks = [
-            self._make_track("TITLE AUDIO DATA", "ID DATA TRACK", 100.0 * 1000.0)
+            self._make_track("TITLE AUDIO DATA", "ID DATA TRACK",
+                             100.0 * 1000.0)
         ]
         release = self._make_release(tracks=tracks, data_tracks=data_tracks)
         d = mb.album_info(release)
@@ -414,7 +420,8 @@ class MBAlbumInfoTest(_common.TestCase):
             self._make_track("TITLE TWO", "ID TWO", 200.0 * 1000.0),
         ]
         data_tracks = [
-            self._make_track("TITLE AUDIO DATA", "ID DATA TRACK", 100.0 * 1000.0)
+            self._make_track("TITLE AUDIO DATA", "ID DATA TRACK",
+                             100.0 * 1000.0)
         ]
         release = self._make_release(tracks=tracks, data_tracks=data_tracks)
         d = mb.album_info(release)
@@ -426,7 +433,8 @@ class MBAlbumInfoTest(_common.TestCase):
     def test_skip_video_tracks_by_default(self):
         tracks = [
             self._make_track("TITLE ONE", "ID ONE", 100.0 * 1000.0),
-            self._make_track("TITLE VIDEO", "ID VIDEO", 100.0 * 1000.0, False, True),
+            self._make_track("TITLE VIDEO", "ID VIDEO", 100.0 * 1000.0, False,
+                             True),
             self._make_track("TITLE TWO", "ID TWO", 200.0 * 1000.0),
         ]
         release = self._make_release(tracks=tracks)
@@ -441,7 +449,8 @@ class MBAlbumInfoTest(_common.TestCase):
             self._make_track("TITLE TWO", "ID TWO", 200.0 * 1000.0),
         ]
         data_tracks = [
-            self._make_track("TITLE VIDEO", "ID VIDEO", 100.0 * 1000.0, False, True)
+            self._make_track("TITLE VIDEO", "ID VIDEO", 100.0 * 1000.0, False,
+                             True)
         ]
         release = self._make_release(tracks=tracks, data_tracks=data_tracks)
         d = mb.album_info(release)
@@ -454,7 +463,8 @@ class MBAlbumInfoTest(_common.TestCase):
         config["match"]["ignore_video_tracks"] = False
         tracks = [
             self._make_track("TITLE ONE", "ID ONE", 100.0 * 1000.0),
-            self._make_track("TITLE VIDEO", "ID VIDEO", 100.0 * 1000.0, False, True),
+            self._make_track("TITLE VIDEO", "ID VIDEO", 100.0 * 1000.0, False,
+                             True),
             self._make_track("TITLE TWO", "ID TWO", 200.0 * 1000.0),
         ]
         release = self._make_release(tracks=tracks)
@@ -472,7 +482,8 @@ class MBAlbumInfoTest(_common.TestCase):
             self._make_track("TITLE TWO", "ID TWO", 200.0 * 1000.0),
         ]
         data_tracks = [
-            self._make_track("TITLE VIDEO", "ID VIDEO", 100.0 * 1000.0, False, True)
+            self._make_track("TITLE VIDEO", "ID VIDEO", 100.0 * 1000.0, False,
+                             True)
         ]
         release = self._make_release(tracks=tracks, data_tracks=data_tracks)
         d = mb.album_info(release)
@@ -503,7 +514,10 @@ class ParseIDTest(_common.TestCase):
 class ArtistFlatteningTest(_common.TestCase):
     def _credit_dict(self, suffix=""):
         return {
-            "artist": {"name": "NAME" + suffix, "sort-name": "SORT" + suffix,},
+            "artist": {
+                "name": "NAME" + suffix,
+                "sort-name": "SORT" + suffix,
+            },
             "name": "CREDIT" + suffix,
         }
 
@@ -527,8 +541,8 @@ class ArtistFlatteningTest(_common.TestCase):
 
     def test_two_artists(self):
         a, s, c = mb._flatten_artist_credit(
-            [self._credit_dict("a"), " AND ", self._credit_dict("b")]
-        )
+            [self._credit_dict("a"), " AND ",
+             self._credit_dict("b")])
         self.assertEqual(a, "NAMEa AND NAMEb")
         self.assertEqual(s, "SORTa AND SORTb")
         self.assertEqual(c, "CREDITa AND CREDITb")
@@ -536,7 +550,10 @@ class ArtistFlatteningTest(_common.TestCase):
     def test_alias(self):
         credit_dict = self._credit_dict()
         self._add_alias(credit_dict, suffix="en", locale="en", primary=True)
-        self._add_alias(credit_dict, suffix="en_GB", locale="en_GB", primary=True)
+        self._add_alias(credit_dict,
+                        suffix="en_GB",
+                        locale="en_GB",
+                        primary=True)
         self._add_alias(credit_dict, suffix="fr", locale="fr")
         self._add_alias(credit_dict, suffix="fr_P", locale="fr", primary=True)
         self._add_alias(credit_dict, suffix="pt_BR", locale="pt_BR")
@@ -576,7 +593,11 @@ class MBLibraryTest(unittest.TestCase):
     def test_match_track(self):
         with mock.patch("musicbrainzngs.search_recordings") as p:
             p.return_value = {
-                "recording-list": [{"title": "foo", "id": "bar", "length": 42,}],
+                "recording-list": [{
+                    "title": "foo",
+                    "id": "bar",
+                    "length": 42,
+                }],
             }
             ti = list(mb.match_track("hello", "there"))[0]
 
@@ -588,34 +609,40 @@ class MBLibraryTest(unittest.TestCase):
         with mock.patch("musicbrainzngs.search_releases") as sp:
             mbid = "d2a6f856-b553-40a0-ac54-a321e8e2da99"
             sp.return_value = {
-                "release-list": [{"id": mbid,}],
+                "release-list": [{
+                    "id": mbid,
+                }],
             }
             with mock.patch("musicbrainzngs.get_release_by_id") as gp:
                 gp.return_value = {
                     "release": {
-                        "title": "hi",
-                        "id": mbid,
-                        "medium-list": [
-                            {
-                                "track-list": [
-                                    {
-                                        "id": "baz",
-                                        "recording": {
-                                            "title": "foo",
-                                            "id": "bar",
-                                            "length": 42,
-                                        },
-                                        "position": 9,
-                                        "number": "A1",
-                                    }
-                                ],
-                                "position": 5,
-                            }
-                        ],
-                        "artist-credit": [
-                            {"artist": {"name": "some-artist", "id": "some-id",},}
-                        ],
-                        "release-group": {"id": "another-id",},
+                        "title":
+                        "hi",
+                        "id":
+                        mbid,
+                        "medium-list": [{
+                            "track-list": [{
+                                "id": "baz",
+                                "recording": {
+                                    "title": "foo",
+                                    "id": "bar",
+                                    "length": 42,
+                                },
+                                "position": 9,
+                                "number": "A1",
+                            }],
+                            "position":
+                            5,
+                        }],
+                        "artist-credit": [{
+                            "artist": {
+                                "name": "some-artist",
+                                "id": "some-id",
+                            },
+                        }],
+                        "release-group": {
+                            "id": "another-id",
+                        },
                     }
                 }
 

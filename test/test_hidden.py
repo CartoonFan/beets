@@ -59,7 +59,8 @@ class HiddenFileTest(unittest.TestCase):
             hidden_mask = 2
 
             # Hide the file using
-            success = ctypes.windll.kernel32.SetFileAttributesW(f.name, hidden_mask)
+            success = ctypes.windll.kernel32.SetFileAttributesW(
+                f.name, hidden_mask)
 
             if not success:
                 self.skipTest("unable to set file attributes")

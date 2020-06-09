@@ -84,7 +84,8 @@ def bad_title(title):
     """Determine whether a given title is "bad" (empty or otherwise
     meaningless) and in need of replacement.
     """
-    return any(re.match(pat, title, re.IGNORECASE) for pat in BAD_TITLE_PATTERNS)
+    return any(
+        re.match(pat, title, re.IGNORECASE) for pat in BAD_TITLE_PATTERNS)
 
 
 def apply_matches(d):

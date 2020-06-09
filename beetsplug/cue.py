@@ -19,9 +19,10 @@ class CuePlugin(BeetsPlugin):
     def __init__(self):
         super(CuePlugin, self).__init__()
         # this does not seem supported by shnsplit
-        self.config.add(
-            {"keep_before": 0.1, "keep_after": 0.9,}
-        )
+        self.config.add({
+            "keep_before": 0.1,
+            "keep_after": 0.9,
+        })
 
         # self.register_listener('import_task_start', self.look_for_cues)
 
@@ -56,6 +57,9 @@ class CuePlugin(BeetsPlugin):
         title = "dunno lol"
         track_id = "wtf"
         for t in tracks:
-            index = int(path.basename(t)[len("split-track") : -len(".wav")])
-            yield TrackInfo(title=title, track_id=track_id, index=index, artist=artist)
+            index = int(path.basename(t)[len("split-track"):-len(".wav")])
+            yield TrackInfo(title=title,
+                            track_id=track_id,
+                            index=index,
+                            artist=artist)
         # generate TrackInfo instances

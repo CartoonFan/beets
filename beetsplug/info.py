@@ -163,7 +163,10 @@ class InfoPlugin(BeetsPlugin):
             help=u"comma separated list of keys to show",
         )
         cmd.parser.add_option(
-            u"-k", u"--keys-only", action="store_true", help=u"show only the keys",
+            u"-k",
+            u"--keys-only",
+            action="store_true",
+            help=u"show only the keys",
         )
         cmd.parser.add_format_option(target="item")
         return [cmd]

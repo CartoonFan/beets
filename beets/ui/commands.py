@@ -60,7 +60,6 @@ log = logging.getLogger("beets")
 # objects that can be fed to a SubcommandsOptionParser.
 default_commands = []
 
-
 # Utilities.
 
 
@@ -124,11 +123,9 @@ def fields_func(lib, opts, args):
 
 
 fields_cmd = ui.Subcommand(
-    "fields", help=u"show fields available for queries and format strings"
-)
+    "fields", help=u"show fields available for queries and format strings")
 fields_cmd.func = fields_func
 default_commands.append(fields_cmd)
-
 
 # help: Print help text for commands
 
@@ -137,7 +134,7 @@ class HelpCommand(ui.Subcommand):
     def __init__(self):
         super(HelpCommand, self).__init__(
             "help",
-            aliases=("?",),
+            aliases=("?", ),
             help=u"give detailed help on a specific sub-command",
         )
 
@@ -153,7 +150,6 @@ class HelpCommand(ui.Subcommand):
 
 
 default_commands.append(HelpCommand())
-
 
 # import: Autotagger and importer.
 
@@ -253,15 +249,14 @@ def show_change(cur_artist, cur_album, match):
                 return u"{0}-{1}".format(medium, medium_index)
             else:
                 return six.text_type(
-                    medium_index if medium_index is not None else index
-                )
+                    medium_index if medium_index is not None else index)
         else:
             return six.text_type(index)
 
     # Identify the album in question.
     if cur_artist != match.info.artist or (
-        cur_album != match.info.album and match.info.album != VARIOUS_ARTISTS
-    ):
+            cur_album != match.info.album
+            and match.info.album != VARIOUS_ARTISTS):
         artist_l, artist_r = cur_artist or "", match.info.artist
         album_l, album_r = cur_album or "", match.info.album
         if artist_r == VARIOUS_ARTISTS:
@@ -314,7 +309,8 @@ def show_change(cur_artist, cur_album, match):
         if medium != track_info.medium or disctitle != track_info.disctitle:
             media = match.info.media or "Media"
             if match.info.mediums > 1 and track_info.disctitle:
-                lhs = u"%s %s: %s" % (media, track_info.medium, track_info.disctitle)
+                lhs = u"%s %s: %s" % (media, track_info.medium,
+                                      track_info.disctitle)
             elif match.info.mediums > 1:
                 lhs = u"%s %s" % (media, track_info.medium)
             elif track_info.disctitle:
@@ -349,12 +345,9 @@ def show_change(cur_artist, cur_album, match):
             lhs_width += len(cur_track) + 4
 
         # Length change.
-        if (
-            item.length
-            and track_info.length
-            and abs(item.length - track_info.length)
-            > config["ui"]["length_diff_thresh"].as_number()
-        ):
+        if (item.length and track_info.length
+                and abs(item.length - track_info.length) >
+                config["ui"]["length_diff_thresh"].as_number()):
             cur_length = ui.human_seconds_short(item.length)
             new_length = ui.human_seconds_short(track_info.length)
             templ = ui.colorize("text_highlight", u" ({0})")
@@ -387,18 +380,17 @@ def show_change(cur_artist, cur_album, match):
 
     # Missing and unmatched tracks.
     if match.extra_tracks:
-        print_(
-            u"Missing tracks ({0}/{1} - {2:.1%}):".format(
-                len(match.extra_tracks),
-                len(match.info.tracks),
-                len(match.extra_tracks) / len(match.info.tracks),
-            )
-        )
-        pad_width = max(len(track_info.title) for track_info in match.extra_tracks)
+        print_(u"Missing tracks ({0}/{1} - {2:.1%}):".format(
+            len(match.extra_tracks),
+            len(match.info.tracks),
+            len(match.extra_tracks) / len(match.info.tracks),
+        ))
+        pad_width = max(
+            len(track_info.title) for track_info in match.extra_tracks)
     for track_info in match.extra_tracks:
-        line = u" ! {0: <{width}} (#{1: >2})".format(
-            track_info.title, format_index(track_info), width=pad_width
-        )
+        line = u" ! {0: <{width}} (#{1: >2})".format(track_info.title,
+                                                     format_index(track_info),
+                                                     width=pad_width)
         if track_info.length:
             line += u" (%s)" % ui.human_seconds_short(track_info.length)
         print_(ui.colorize("text_warning", line))
@@ -406,9 +398,9 @@ def show_change(cur_artist, cur_album, match):
         print_(u"Unmatched tracks ({0}):".format(len(match.extra_items)))
         pad_width = max(len(item.title) for item in match.extra_items)
     for item in match.extra_items:
-        line = u" ! {0: <{width}} (#{1: >2})".format(
-            item.title, format_index(item), width=pad_width
-        )
+        line = u" ! {0: <{width}} (#{1: >2})".format(item.title,
+                                                     format_index(item),
+                                                     width=pad_width)
         if item.length:
             line += u" (%s)" % ui.human_seconds_short(item.length)
         print_(ui.colorize("text_warning", line))
@@ -473,8 +465,9 @@ def summarize_items(items, singleton):
     else:
         # Enumerate all the formats by decreasing frequencies:
         for fmt, count in sorted(
-            format_counts.items(),
-            key=lambda fmt_and_count: (-fmt_and_count[1], fmt_and_count[0]),
+                format_counts.items(),
+                key=lambda fmt_and_count: (-fmt_and_count[1], fmt_and_count[0]
+                                           ),
         ):
             summary_parts.append("{0} {1}".format(fmt, count))
 
@@ -501,15 +494,23 @@ def _summary_judgment(rec):
         if rec == Recommendation.strong:
             return importer.action.APPLY
         else:
-            action = config["import"]["quiet_fallback"].as_choice(
-                {"skip": importer.action.SKIP, "asis": importer.action.ASIS,}
-            )
+            action = config["import"]["quiet_fallback"].as_choice({
+                "skip":
+                importer.action.SKIP,
+                "asis":
+                importer.action.ASIS,
+            })
     elif config["import"]["timid"]:
         return None
     elif rec == Recommendation.none:
-        action = config["import"]["none_rec_action"].as_choice(
-            {"skip": importer.action.SKIP, "asis": importer.action.ASIS, "ask": None,}
-        )
+        action = config["import"]["none_rec_action"].as_choice({
+            "skip":
+            importer.action.SKIP,
+            "asis":
+            importer.action.ASIS,
+            "ask":
+            None,
+        })
     else:
         return None
 
@@ -521,14 +522,14 @@ def _summary_judgment(rec):
 
 
 def choose_candidate(
-    candidates,
-    singleton,
-    rec,
-    cur_artist=None,
-    cur_album=None,
-    item=None,
-    itemcount=None,
-    choices=[],
+        candidates,
+        singleton,
+        rec,
+        cur_artist=None,
+        cur_album=None,
+        item=None,
+        itemcount=None,
+        choices=[],
 ):
     """Given a sorted list of candidates, ask the user for a selection
     of which candidate to use. Applies to both full albums and
@@ -560,11 +561,10 @@ def choose_candidate(
         if singleton:
             print_(u"No matching recordings found.")
         else:
-            print_(u"No matching release found for {0} tracks.".format(itemcount))
             print_(
-                u"For help, see: "
-                u"https://beets.readthedocs.org/en/latest/faq.html#nomatch"
-            )
+                u"No matching release found for {0} tracks.".format(itemcount))
+            print_(u"For help, see: "
+                   u"https://beets.readthedocs.org/en/latest/faq.html#nomatch")
         sel = ui.input_options(choice_opts)
         if sel in choice_actions:
             return choice_actions[sel]
@@ -583,13 +583,11 @@ def choose_candidate(
 
         if not bypass_candidates:
             # Display list of candidates.
-            print_(
-                u'Finding tags for {0} "{1} - {2}".'.format(
-                    u"track" if singleton else u"album",
-                    item.artist if singleton else cur_artist,
-                    item.title if singleton else cur_album,
-                )
-            )
+            print_(u'Finding tags for {0} "{1} - {2}".'.format(
+                u"track" if singleton else u"album",
+                item.artist if singleton else cur_artist,
+                item.title if singleton else cur_album,
+            ))
 
             print_(u"Candidates:")
             for i, match in enumerate(candidates):
@@ -611,7 +609,9 @@ def choose_candidate(
                 # Disambiguation
                 disambig = disambig_string(match.info)
                 if disambig:
-                    line.append(ui.colorize("text_highlight_minor", u"(%s)" % disambig))
+                    line.append(
+                        ui.colorize("text_highlight_minor",
+                                    u"(%s)" % disambig))
 
                 print_(u" ".join(line))
 
@@ -640,9 +640,12 @@ def choose_candidate(
             return match
 
         # Ask for confirmation.
-        default = config["import"]["default_action"].as_choice(
-            {u"apply": u"a", u"skip": u"s", u"asis": u"u", u"none": None,}
-        )
+        default = config["import"]["default_action"].as_choice({
+            u"apply": u"a",
+            u"skip": u"s",
+            u"asis": u"u",
+            u"none": None,
+        })
         if default is None:
             require = True
         # Bell ring when user interaction is needed.
@@ -680,11 +683,13 @@ def manual_id(session, task):
 
     Input an ID, either for an album ("release") or a track ("recording").
     """
-    prompt = u"Enter {0} ID:".format(u"release" if task.is_album else u"recording")
+    prompt = u"Enter {0} ID:".format(
+        u"release" if task.is_album else u"recording")
     search_id = input_(prompt).strip()
 
     if task.is_album:
-        _, _, prop = autotag.tag_album(task.items, search_ids=search_id.split())
+        _, _, prop = autotag.tag_album(task.items,
+                                       search_ids=search_id.split())
         return prop
     else:
         return autotag.tag_item(task.item, search_ids=search_id.split())
@@ -708,9 +713,8 @@ class TerminalImportSession(importer.ImportSession):
         # Show what we're tagging.
         print_()
         print_(
-            displayable_path(task.paths, u"\n")
-            + u" ({0} items)".format(len(task.items))
-        )
+            displayable_path(task.paths, u"\n") +
+            u" ({0} items)".format(len(task.items)))
 
         # Take immediate action if appropriate.
         action = _summary_judgment(task.rec)
@@ -781,9 +785,11 @@ class TerminalImportSession(importer.ImportSession):
         while True:
             # Ask for a choice.
             choices = self._get_choices(task)
-            choice = choose_candidate(
-                candidates, True, rec, item=task.item, choices=choices
-            )
+            choice = choose_candidate(candidates,
+                                      True,
+                                      rec,
+                                      item=task.item,
+                                      choices=choices)
 
             if choice in (importer.action.SKIP, importer.action.ASIS):
                 return choice
@@ -818,21 +824,18 @@ class TerminalImportSession(importer.ImportSession):
             # Print some detail about the existing and new items so the
             # user can make an informed decision.
             for duplicate in found_duplicates:
-                print_(
-                    u"Old: "
-                    + summarize_items(
-                        list(duplicate.items()) if task.is_album else [duplicate],
-                        not task.is_album,
-                    )
-                )
+                print_(u"Old: " + summarize_items(
+                    list(duplicate.items()) if task.is_album else [duplicate],
+                    not task.is_album,
+                ))
 
-            print_(
-                u"New: " + summarize_items(task.imported_items(), not task.is_album,)
-            )
+            print_(u"New: " + summarize_items(
+                task.imported_items(),
+                not task.is_album,
+            ))
 
             sel = ui.input_options(
-                (u"Skip new", u"Keep both", u"Remove old", u"Merge all")
-            )
+                (u"Skip new", u"Keep both", u"Remove old", u"Merge all"))
 
         if sel == u"s":
             # Skip new.
@@ -849,10 +852,9 @@ class TerminalImportSession(importer.ImportSession):
             assert False
 
     def should_resume(self, path):
-        return ui.input_yn(
-            u"Import of the directory:\n{0}\n"
-            u"was interrupted. Resume (Y/n)?".format(displayable_path(path))
-        )
+        return ui.input_yn(u"Import of the directory:\n{0}\n"
+                           u"was interrupted. Resume (Y/n)?".format(
+                               displayable_path(path)))
 
     def _get_choices(self, task):
         """Get the list of prompt choices that should be presented to the
@@ -873,14 +875,16 @@ class TerminalImportSession(importer.ImportSession):
         # Standard, built-in choices.
         choices = [
             PromptChoice(u"s", u"Skip", lambda s, t: importer.action.SKIP),
-            PromptChoice(u"u", u"Use as-is", lambda s, t: importer.action.ASIS),
+            PromptChoice(u"u",
+                         u"Use as-is", lambda s, t: importer.action.ASIS),
         ]
         if task.is_album:
             choices += [
-                PromptChoice(u"t", u"as Tracks", lambda s, t: importer.action.TRACKS),
                 PromptChoice(
-                    u"g", u"Group albums", lambda s, t: importer.action.ALBUMS
-                ),
+                    u"t", u"as Tracks", lambda s, t: importer.action.TRACKS),
+                PromptChoice(
+                    u"g",
+                    u"Group albums", lambda s, t: importer.action.ALBUMS),
             ]
         choices += [
             PromptChoice(u"e", u"Enter search", manual_search),
@@ -890,18 +894,22 @@ class TerminalImportSession(importer.ImportSession):
 
         # Send the before_choose_candidate event and flatten list.
         extra_choices = list(
-            chain(*plugins.send("before_choose_candidate", session=self, task=task))
-        )
+            chain(*plugins.send(
+                "before_choose_candidate", session=self, task=task)))
 
         # Add a "dummy" choice for the other baked-in option, for
         # duplicate checking.
-        all_choices = [PromptChoice(u"a", u"Apply", None),] + choices + extra_choices
+        all_choices = [
+            PromptChoice(u"a", u"Apply", None),
+        ] + choices + extra_choices
 
         # Check for conflicts.
         short_letters = [c.short for c in all_choices]
         if len(short_letters) != len(set(short_letters)):
             # Duplicate short letter has been found.
-            duplicates = [i for i, count in Counter(short_letters).items() if count > 1]
+            duplicates = [
+                i for i, count in Counter(short_letters).items() if count > 1
+            ]
             for short in duplicates:
                 # Keep the first of the choices, removing the rest.
                 dup_choices = [c for c in all_choices if c.short == short]
@@ -928,9 +936,8 @@ def import_files(lib, paths, query):
     # Check the user-specified directories.
     for path in paths:
         if not os.path.exists(syspath(normpath(path))):
-            raise ui.UserError(
-                u"no such file or directory: {0}".format(displayable_path(path))
-            )
+            raise ui.UserError(u"no such file or directory: {0}".format(
+                displayable_path(path)))
 
     # Check parameter consistency.
     if config["import"]["quiet"] and config["import"]["timid"]:
@@ -942,10 +949,8 @@ def import_files(lib, paths, query):
         try:
             loghandler = logging.FileHandler(logpath)
         except IOError:
-            raise ui.UserError(
-                u"could not open log file for writing: "
-                u"{0}".format(displayable_path(logpath))
-            )
+            raise ui.UserError(u"could not open log file for writing: "
+                               u"{0}".format(displayable_path(logpath)))
     else:
         loghandler = None
 
@@ -981,12 +986,16 @@ def import_func(lib, opts, args):
         # need. On Python 3, we need to undo the "helpful" conversion to
         # Unicode strings to get the real bytestring filename.
         if not six.PY2:
-            paths = [p.encode(util.arg_encoding(), "surrogateescape") for p in paths]
+            paths = [
+                p.encode(util.arg_encoding(), "surrogateescape") for p in paths
+            ]
 
     import_files(lib, paths, query)
 
 
-import_cmd = ui.Subcommand(u"import", help=u"import new music", aliases=(u"imp", u"im"))
+import_cmd = ui.Subcommand(u"import",
+                           help=u"import new music",
+                           aliases=(u"imp", u"im"))
 import_cmd.parser.add_option(
     u"-c",
     u"--copy",
@@ -1058,8 +1067,10 @@ import_cmd.parser.add_option(
     help=u"never prompt for input: skip albums instead",
 )
 import_cmd.parser.add_option(
-    u"-l", u"--log", dest="log", help=u"file to log untaggable albums for later review"
-)
+    u"-l",
+    u"--log",
+    dest="log",
+    help=u"file to log untaggable albums for later review")
 import_cmd.parser.add_option(
     u"-s",
     u"--singletons",
@@ -1138,7 +1149,6 @@ import_cmd.parser.add_option(
 import_cmd.func = import_func
 default_commands.append(import_cmd)
 
-
 # list: Query and show library contents.
 
 
@@ -1158,12 +1168,11 @@ def list_func(lib, opts, args):
     list_items(lib, decargs(args), opts.album)
 
 
-list_cmd = ui.Subcommand(u"list", help=u"query the library", aliases=(u"ls",))
+list_cmd = ui.Subcommand(u"list", help=u"query the library", aliases=(u"ls", ))
 list_cmd.parser.usage += u"\n" u"Example: %prog -f '$album: $title' artist:beatles"
 list_cmd.parser.add_all_common_options()
 list_cmd.func = list_func
 default_commands.append(list_cmd)
-
 
 # update: Update library contents according to on-disk tags.
 
@@ -1207,7 +1216,8 @@ def update_items(lib, query, album, move, pretend, fields):
             try:
                 item.read()
             except library.ReadError as exc:
-                log.error(u"error reading {0}: {1}", displayable_path(item.path), exc)
+                log.error(u"error reading {0}: {1}",
+                          displayable_path(item.path), exc)
                 continue
 
             # Special-case album artist when it matches track artist. (Hacky
@@ -1220,9 +1230,9 @@ def update_items(lib, query, album, move, pretend, fields):
                     item._dirty.discard(u"albumartist")
 
             # Check for and display changes.
-            changed = ui.show_model_changes(
-                item, fields=fields or library.Item._media_fields
-            )
+            changed = ui.show_model_changes(item,
+                                            fields=fields
+                                            or library.Item._media_fields)
 
             # Save changes.
             if not pretend:
@@ -1289,9 +1299,12 @@ def update_func(lib, opts, args):
     )
 
 
-update_cmd = ui.Subcommand(
-    u"update", help=u"update the library", aliases=(u"upd", u"up",)
-)
+update_cmd = ui.Subcommand(u"update",
+                           help=u"update the library",
+                           aliases=(
+                               u"upd",
+                               u"up",
+                           ))
 update_cmd.parser.add_album_option()
 update_cmd.parser.add_format_option()
 update_cmd.parser.add_option(
@@ -1308,9 +1321,10 @@ update_cmd.parser.add_option(
     dest="move",
     help=u"don't move files in library",
 )
-update_cmd.parser.add_option(
-    u"-p", u"--pretend", action="store_true", help=u"show all changes but do nothing"
-)
+update_cmd.parser.add_option(u"-p",
+                             u"--pretend",
+                             action="store_true",
+                             help=u"show all changes but do nothing")
 update_cmd.parser.add_option(
     u"-F",
     u"--field",
@@ -1321,7 +1335,6 @@ update_cmd.parser.add_option(
 )
 update_cmd.func = update_func
 default_commands.append(update_cmd)
-
 
 # remove: Remove items from library, delete files.
 
@@ -1368,19 +1381,20 @@ def remove_func(lib, opts, args):
     remove_items(lib, decargs(args), opts.album, opts.delete, opts.force)
 
 
-remove_cmd = ui.Subcommand(
-    u"remove", help=u"remove matching items from the library", aliases=(u"rm",)
-)
-remove_cmd.parser.add_option(
-    u"-d", u"--delete", action="store_true", help=u"also remove files from disk"
-)
-remove_cmd.parser.add_option(
-    u"-f", u"--force", action="store_true", help=u"do not ask when removing items"
-)
+remove_cmd = ui.Subcommand(u"remove",
+                           help=u"remove matching items from the library",
+                           aliases=(u"rm", ))
+remove_cmd.parser.add_option(u"-d",
+                             u"--delete",
+                             action="store_true",
+                             help=u"also remove files from disk")
+remove_cmd.parser.add_option(u"-f",
+                             u"--force",
+                             action="store_true",
+                             help=u"do not ask when removing items")
 remove_cmd.parser.add_album_option()
 remove_cmd.func = remove_func
 default_commands.append(remove_cmd)
-
 
 # stats: Show library/query statistics.
 
@@ -1430,23 +1444,21 @@ Album artists: {7}""".format(
             len(artists),
             len(albums),
             len(album_artists),
-        ),
-    )
+        ), )
 
 
 def stats_func(lib, opts, args):
     show_stats(lib, decargs(args), opts.exact)
 
 
-stats_cmd = ui.Subcommand(
-    u"stats", help=u"show statistics about the library or a query"
-)
-stats_cmd.parser.add_option(
-    u"-e", u"--exact", action="store_true", help=u"exact size and time"
-)
+stats_cmd = ui.Subcommand(u"stats",
+                          help=u"show statistics about the library or a query")
+stats_cmd.parser.add_option(u"-e",
+                            u"--exact",
+                            action="store_true",
+                            help=u"exact size and time")
 stats_cmd.func = stats_func
 default_commands.append(stats_cmd)
-
 
 # version: Show current beets version.
 
@@ -1465,7 +1477,6 @@ def show_version(lib, opts, args):
 version_cmd = ui.Subcommand(u"version", help=u"output version information")
 version_cmd.func = show_version
 default_commands.append(version_cmd)
-
 
 # modify: Declaratively change metadata.
 
@@ -1489,7 +1500,8 @@ def modify_items(lib, mods, dels, query, write, move, album, confirm):
 
     # Apply changes *temporarily*, preview them, and collect modified
     # objects.
-    print_(u"Modifying {0} {1}s.".format(len(objs), u"album" if album else u"item"))
+    print_(u"Modifying {0} {1}s.".format(len(objs),
+                                         u"album" if album else u"item"))
     changed = []
     for obj in objs:
         if print_and_modify(obj, mods, dels) and obj not in changed:
@@ -1574,7 +1586,9 @@ def modify_func(lib, opts, args):
     )
 
 
-modify_cmd = ui.Subcommand(u"modify", help=u"change metadata fields", aliases=(u"mod",))
+modify_cmd = ui.Subcommand(u"modify",
+                           help=u"change metadata fields",
+                           aliases=(u"mod", ))
 modify_cmd.parser.add_option(
     u"-m",
     u"--move",
@@ -1605,17 +1619,24 @@ modify_cmd.parser.add_option(
 )
 modify_cmd.parser.add_album_option()
 modify_cmd.parser.add_format_option(target="item")
-modify_cmd.parser.add_option(
-    u"-y", u"--yes", action="store_true", help=u"skip confirmation"
-)
+modify_cmd.parser.add_option(u"-y",
+                             u"--yes",
+                             action="store_true",
+                             help=u"skip confirmation")
 modify_cmd.func = modify_func
 default_commands.append(modify_cmd)
-
 
 # move: Move/copy files to the library or a new base directory.
 
 
-def move_items(lib, dest, query, copy, album, pretend, confirm=False, export=False):
+def move_items(lib,
+               dest,
+               query,
+               copy,
+               album,
+               pretend,
+               confirm=False,
+               export=False):
     """Moves or copies items to a new base directory, given by dest. If
     dest is None, then the library's base directory is used, making the
     command "consolidate" files.
@@ -1651,23 +1672,18 @@ def move_items(lib, dest, query, copy, album, pretend, confirm=False, export=Fal
 
     if pretend:
         if album:
-            show_path_changes(
-                [
-                    (item.path, item.destination(basedir=dest))
-                    for obj in objs
-                    for item in obj.items()
-                ]
-            )
+            show_path_changes([(item.path, item.destination(basedir=dest))
+                               for obj in objs for item in obj.items()])
         else:
-            show_path_changes(
-                [(obj.path, obj.destination(basedir=dest)) for obj in objs]
-            )
+            show_path_changes([(obj.path, obj.destination(basedir=dest))
+                               for obj in objs])
     else:
         if confirm:
             objs = ui.input_select_objects(
                 u"Really %s" % act,
                 objs,
-                lambda o: show_path_changes([(o.path, o.destination(basedir=dest))]),
+                lambda o: show_path_changes([(o.path,
+                                              o.destination(basedir=dest))]),
             )
 
         for obj in objs:
@@ -1675,7 +1691,9 @@ def move_items(lib, dest, query, copy, album, pretend, confirm=False, export=Fal
 
             if export:
                 # Copy without affecting the database.
-                obj.move(operation=MoveOperation.COPY, basedir=dest, store=False)
+                obj.move(operation=MoveOperation.COPY,
+                         basedir=dest,
+                         store=False)
             else:
                 # Ordinary move/copy: store the new path.
                 if copy:
@@ -1703,13 +1721,19 @@ def move_func(lib, opts, args):
     )
 
 
-move_cmd = ui.Subcommand(u"move", help=u"move or copy items", aliases=(u"mv",))
-move_cmd.parser.add_option(
-    u"-d", u"--dest", metavar="DIR", dest="dest", help=u"destination directory"
-)
-move_cmd.parser.add_option(
-    u"-c", u"--copy", default=False, action="store_true", help=u"copy instead of moving"
-)
+move_cmd = ui.Subcommand(u"move",
+                         help=u"move or copy items",
+                         aliases=(u"mv", ))
+move_cmd.parser.add_option(u"-d",
+                           u"--dest",
+                           metavar="DIR",
+                           dest="dest",
+                           help=u"destination directory")
+move_cmd.parser.add_option(u"-c",
+                           u"--copy",
+                           default=False,
+                           action="store_true",
+                           help=u"copy instead of moving")
 move_cmd.parser.add_option(
     u"-p",
     u"--pretend",
@@ -1735,7 +1759,6 @@ move_cmd.parser.add_album_option()
 move_cmd.func = move_func
 default_commands.append(move_cmd)
 
-
 # write: Write tags into files.
 
 
@@ -1755,13 +1778,13 @@ def write_items(lib, query, pretend, force):
         try:
             clean_item = library.Item.from_path(item.path)
         except library.ReadError as exc:
-            log.error(u"error reading {0}: {1}", displayable_path(item.path), exc)
+            log.error(u"error reading {0}: {1}", displayable_path(item.path),
+                      exc)
             continue
 
         # Check for and display changes.
-        changed = ui.show_model_changes(
-            item, clean_item, library.Item._media_tag_fields, force
-        )
+        changed = ui.show_model_changes(item, clean_item,
+                                        library.Item._media_tag_fields, force)
         if (changed or force) and not pretend:
             # We use `try_sync` here to keep the mtime up to date in the
             # database.
@@ -1773,9 +1796,10 @@ def write_func(lib, opts, args):
 
 
 write_cmd = ui.Subcommand(u"write", help=u"write tag information to files")
-write_cmd.parser.add_option(
-    u"-p", u"--pretend", action="store_true", help=u"show all changes but do nothing"
-)
+write_cmd.parser.add_option(u"-p",
+                            u"--pretend",
+                            action="store_true",
+                            help=u"show all changes but do nothing")
 write_cmd.parser.add_option(
     u"-f",
     u"--force",
@@ -1784,7 +1808,6 @@ write_cmd.parser.add_option(
 )
 write_cmd.func = write_func
 default_commands.append(write_cmd)
-
 
 # config: Show and edit user configuration.
 
@@ -1838,19 +1861,22 @@ def config_edit():
         raise ui.UserError(message)
 
 
-config_cmd = ui.Subcommand(u"config", help=u"show or edit the user configuration")
+config_cmd = ui.Subcommand(u"config",
+                           help=u"show or edit the user configuration")
 config_cmd.parser.add_option(
     u"-p",
     u"--paths",
     action="store_true",
     help=u"show files that configuration was loaded from",
 )
-config_cmd.parser.add_option(
-    u"-e", u"--edit", action="store_true", help=u"edit user configuration with $EDITOR"
-)
-config_cmd.parser.add_option(
-    u"-d", u"--defaults", action="store_true", help=u"include the default configuration"
-)
+config_cmd.parser.add_option(u"-e",
+                             u"--edit",
+                             action="store_true",
+                             help=u"edit user configuration with $EDITOR")
+config_cmd.parser.add_option(u"-d",
+                             u"--defaults",
+                             action="store_true",
+                             help=u"include the default configuration")
 config_cmd.parser.add_option(
     u"-c",
     u"--clear",
@@ -1862,7 +1888,6 @@ config_cmd.parser.add_option(
 config_cmd.func = config_func
 default_commands.append(config_cmd)
 
-
 # completion: print completion script
 
 
@@ -1870,10 +1895,8 @@ def print_completion(*args):
     for line in completion_script(default_commands + plugins.commands()):
         print_(line, end=u"")
     if not any(map(os.path.isfile, BASH_COMPLETION_PATHS)):
-        log.warning(
-            u"Warning: Unable to find the bash-completion package. "
-            u"Command line completion might not work."
-        )
+        log.warning(u"Warning: Unable to find the bash-completion package. "
+                    u"Command line completion might not work.")
 
 
 BASH_COMPLETION_PATHS = map(
@@ -1920,12 +1943,14 @@ def completion_script(commands):
             else:
                 option_type = u"opts"
 
-            options[name][option_type].extend(opts._short_opts + opts._long_opts)
+            options[name][option_type].extend(opts._short_opts +
+                                              opts._long_opts)
 
     # Add global options
     options["_global"] = {
         u"flags": [u"-v", u"--verbose"],
-        u"opts": u"-l --library -c --config -d --directory -h --help".split(u" "),
+        u"opts":
+        u"-l --library -c --config -d --directory -h --help".split(u" "),
     }
 
     # Add flags common to all commands
@@ -1946,8 +1971,9 @@ def completion_script(commands):
 
     # Fields
     yield u"  fields='%s'\n" % " ".join(
-        set(list(library.Item._fields.keys()) + list(library.Album._fields.keys()))
-    )
+        set(
+            list(library.Item._fields.keys()) +
+            list(library.Album._fields.keys())))
 
     # Command options
     for cmd, opts in options.items():
@@ -1965,8 +1991,8 @@ def completion_script(commands):
 
 
 completion_cmd = ui.Subcommand(
-    "completion", help=u"print shell script that provides command line completion"
-)
+    "completion",
+    help=u"print shell script that provides command line completion")
 completion_cmd.func = print_completion
 completion_cmd.hide = True
 default_commands.append(completion_cmd)

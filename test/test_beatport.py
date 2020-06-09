@@ -39,32 +39,46 @@ class BeatportTest(_common.TestCase, TestHelper):
         those required for the tests on this class.
         """
         return {
-            "id": 1742984,
-            "type": "release",
-            "name": "Charade",
-            "slug": "charade",
-            "releaseDate": "2016-04-11",
-            "publishDate": "2016-04-11",
-            "audioFormat": "",
-            "category": "Release",
-            "currentStatus": "General Content",
-            "catalogNumber": "GR089",
-            "description": "",
+            "id":
+            1742984,
+            "type":
+            "release",
+            "name":
+            "Charade",
+            "slug":
+            "charade",
+            "releaseDate":
+            "2016-04-11",
+            "publishDate":
+            "2016-04-11",
+            "audioFormat":
+            "",
+            "category":
+            "Release",
+            "currentStatus":
+            "General Content",
+            "catalogNumber":
+            "GR089",
+            "description":
+            "",
             "label": {
                 "id": 24539,
                 "name": "Gravitas Recordings",
                 "type": "label",
                 "slug": "gravitas-recordings",
             },
-            "artists": [
-                {
-                    "id": 326158,
-                    "name": "Supersillyus",
-                    "slug": "supersillyus",
-                    "type": "artist",
-                }
-            ],
-            "genres": [{"id": 9, "name": "Breaks", "slug": "breaks", "type": "genre"}],
+            "artists": [{
+                "id": 326158,
+                "name": "Supersillyus",
+                "slug": "supersillyus",
+                "type": "artist",
+            }],
+            "genres": [{
+                "id": 9,
+                "name": "Breaks",
+                "slug": "breaks",
+                "type": "genre"
+            }],
         }
 
     def _make_tracks_response(self):
@@ -77,20 +91,34 @@ class BeatportTest(_common.TestCase, TestHelper):
         """
         return [
             {
-                "id": 7817567,
-                "type": "track",
-                "sku": "track-7817567",
-                "name": "Mirage a Trois",
-                "trackNumber": 1,
-                "mixName": "Original Mix",
-                "title": "Mirage a Trois (Original Mix)",
-                "slug": "mirage-a-trois-original-mix",
-                "releaseDate": "2016-04-11",
-                "publishDate": "2016-04-11",
-                "currentStatus": "General Content",
-                "length": "7:05",
-                "lengthMs": 425421,
-                "bpm": 90,
+                "id":
+                7817567,
+                "type":
+                "track",
+                "sku":
+                "track-7817567",
+                "name":
+                "Mirage a Trois",
+                "trackNumber":
+                1,
+                "mixName":
+                "Original Mix",
+                "title":
+                "Mirage a Trois (Original Mix)",
+                "slug":
+                "mirage-a-trois-original-mix",
+                "releaseDate":
+                "2016-04-11",
+                "publishDate":
+                "2016-04-11",
+                "currentStatus":
+                "General Content",
+                "length":
+                "7:05",
+                "lengthMs":
+                425421,
+                "bpm":
+                90,
                 "key": {
                     "standard": {
                         "letter": "G",
@@ -100,25 +128,24 @@ class BeatportTest(_common.TestCase, TestHelper):
                     },
                     "shortName": "Gmin",
                 },
-                "artists": [
-                    {
-                        "id": 326158,
-                        "name": "Supersillyus",
-                        "slug": "supersillyus",
-                        "type": "artist",
-                    }
-                ],
-                "genres": [
-                    {"id": 9, "name": "Breaks", "slug": "breaks", "type": "genre"}
-                ],
-                "subGenres": [
-                    {
-                        "id": 209,
-                        "name": "Glitch Hop",
-                        "slug": "glitch-hop",
-                        "type": "subgenre",
-                    }
-                ],
+                "artists": [{
+                    "id": 326158,
+                    "name": "Supersillyus",
+                    "slug": "supersillyus",
+                    "type": "artist",
+                }],
+                "genres": [{
+                    "id": 9,
+                    "name": "Breaks",
+                    "slug": "breaks",
+                    "type": "genre"
+                }],
+                "subGenres": [{
+                    "id": 209,
+                    "name": "Glitch Hop",
+                    "slug": "glitch-hop",
+                    "type": "subgenre",
+                }],
                 "release": {
                     "id": 1742984,
                     "name": "Charade",
@@ -134,20 +161,34 @@ class BeatportTest(_common.TestCase, TestHelper):
                 },
             },
             {
-                "id": 7817568,
-                "type": "track",
-                "sku": "track-7817568",
-                "name": "Aeon Bahamut",
-                "trackNumber": 2,
-                "mixName": "Original Mix",
-                "title": "Aeon Bahamut (Original Mix)",
-                "slug": "aeon-bahamut-original-mix",
-                "releaseDate": "2016-04-11",
-                "publishDate": "2016-04-11",
-                "currentStatus": "General Content",
-                "length": "7:38",
-                "lengthMs": 458000,
-                "bpm": 100,
+                "id":
+                7817568,
+                "type":
+                "track",
+                "sku":
+                "track-7817568",
+                "name":
+                "Aeon Bahamut",
+                "trackNumber":
+                2,
+                "mixName":
+                "Original Mix",
+                "title":
+                "Aeon Bahamut (Original Mix)",
+                "slug":
+                "aeon-bahamut-original-mix",
+                "releaseDate":
+                "2016-04-11",
+                "publishDate":
+                "2016-04-11",
+                "currentStatus":
+                "General Content",
+                "length":
+                "7:38",
+                "lengthMs":
+                458000,
+                "bpm":
+                100,
                 "key": {
                     "standard": {
                         "letter": "G",
@@ -157,25 +198,24 @@ class BeatportTest(_common.TestCase, TestHelper):
                     },
                     "shortName": "Gmaj",
                 },
-                "artists": [
-                    {
-                        "id": 326158,
-                        "name": "Supersillyus",
-                        "slug": "supersillyus",
-                        "type": "artist",
-                    }
-                ],
-                "genres": [
-                    {"id": 9, "name": "Breaks", "slug": "breaks", "type": "genre"}
-                ],
-                "subGenres": [
-                    {
-                        "id": 209,
-                        "name": "Glitch Hop",
-                        "slug": "glitch-hop",
-                        "type": "subgenre",
-                    }
-                ],
+                "artists": [{
+                    "id": 326158,
+                    "name": "Supersillyus",
+                    "slug": "supersillyus",
+                    "type": "artist",
+                }],
+                "genres": [{
+                    "id": 9,
+                    "name": "Breaks",
+                    "slug": "breaks",
+                    "type": "genre"
+                }],
+                "subGenres": [{
+                    "id": 209,
+                    "name": "Glitch Hop",
+                    "slug": "glitch-hop",
+                    "type": "subgenre",
+                }],
                 "release": {
                     "id": 1742984,
                     "name": "Charade",
@@ -191,20 +231,34 @@ class BeatportTest(_common.TestCase, TestHelper):
                 },
             },
             {
-                "id": 7817569,
-                "type": "track",
-                "sku": "track-7817569",
-                "name": "Trancendental Medication",
-                "trackNumber": 3,
-                "mixName": "Original Mix",
-                "title": "Trancendental Medication (Original Mix)",
-                "slug": "trancendental-medication-original-mix",
-                "releaseDate": "2016-04-11",
-                "publishDate": "2016-04-11",
-                "currentStatus": "General Content",
-                "length": "1:08",
-                "lengthMs": 68571,
-                "bpm": 141,
+                "id":
+                7817569,
+                "type":
+                "track",
+                "sku":
+                "track-7817569",
+                "name":
+                "Trancendental Medication",
+                "trackNumber":
+                3,
+                "mixName":
+                "Original Mix",
+                "title":
+                "Trancendental Medication (Original Mix)",
+                "slug":
+                "trancendental-medication-original-mix",
+                "releaseDate":
+                "2016-04-11",
+                "publishDate":
+                "2016-04-11",
+                "currentStatus":
+                "General Content",
+                "length":
+                "1:08",
+                "lengthMs":
+                68571,
+                "bpm":
+                141,
                 "key": {
                     "standard": {
                         "letter": "F",
@@ -214,25 +268,24 @@ class BeatportTest(_common.TestCase, TestHelper):
                     },
                     "shortName": "Fmaj",
                 },
-                "artists": [
-                    {
-                        "id": 326158,
-                        "name": "Supersillyus",
-                        "slug": "supersillyus",
-                        "type": "artist",
-                    }
-                ],
-                "genres": [
-                    {"id": 9, "name": "Breaks", "slug": "breaks", "type": "genre"}
-                ],
-                "subGenres": [
-                    {
-                        "id": 209,
-                        "name": "Glitch Hop",
-                        "slug": "glitch-hop",
-                        "type": "subgenre",
-                    }
-                ],
+                "artists": [{
+                    "id": 326158,
+                    "name": "Supersillyus",
+                    "slug": "supersillyus",
+                    "type": "artist",
+                }],
+                "genres": [{
+                    "id": 9,
+                    "name": "Breaks",
+                    "slug": "breaks",
+                    "type": "genre"
+                }],
+                "subGenres": [{
+                    "id": 209,
+                    "name": "Glitch Hop",
+                    "slug": "glitch-hop",
+                    "type": "subgenre",
+                }],
                 "release": {
                     "id": 1742984,
                     "name": "Charade",
@@ -248,20 +301,34 @@ class BeatportTest(_common.TestCase, TestHelper):
                 },
             },
             {
-                "id": 7817570,
-                "type": "track",
-                "sku": "track-7817570",
-                "name": "A List of Instructions for When I'm Human",
-                "trackNumber": 4,
-                "mixName": "Original Mix",
-                "title": "A List of Instructions for When I'm Human (Original Mix)",
-                "slug": "a-list-of-instructions-for-when-im-human-original-mix",
-                "releaseDate": "2016-04-11",
-                "publishDate": "2016-04-11",
-                "currentStatus": "General Content",
-                "length": "6:57",
-                "lengthMs": 417913,
-                "bpm": 88,
+                "id":
+                7817570,
+                "type":
+                "track",
+                "sku":
+                "track-7817570",
+                "name":
+                "A List of Instructions for When I'm Human",
+                "trackNumber":
+                4,
+                "mixName":
+                "Original Mix",
+                "title":
+                "A List of Instructions for When I'm Human (Original Mix)",
+                "slug":
+                "a-list-of-instructions-for-when-im-human-original-mix",
+                "releaseDate":
+                "2016-04-11",
+                "publishDate":
+                "2016-04-11",
+                "currentStatus":
+                "General Content",
+                "length":
+                "6:57",
+                "lengthMs":
+                417913,
+                "bpm":
+                88,
                 "key": {
                     "standard": {
                         "letter": "A",
@@ -271,25 +338,24 @@ class BeatportTest(_common.TestCase, TestHelper):
                     },
                     "shortName": "Amin",
                 },
-                "artists": [
-                    {
-                        "id": 326158,
-                        "name": "Supersillyus",
-                        "slug": "supersillyus",
-                        "type": "artist",
-                    }
-                ],
-                "genres": [
-                    {"id": 9, "name": "Breaks", "slug": "breaks", "type": "genre"}
-                ],
-                "subGenres": [
-                    {
-                        "id": 209,
-                        "name": "Glitch Hop",
-                        "slug": "glitch-hop",
-                        "type": "subgenre",
-                    }
-                ],
+                "artists": [{
+                    "id": 326158,
+                    "name": "Supersillyus",
+                    "slug": "supersillyus",
+                    "type": "artist",
+                }],
+                "genres": [{
+                    "id": 9,
+                    "name": "Breaks",
+                    "slug": "breaks",
+                    "type": "genre"
+                }],
+                "subGenres": [{
+                    "id": 209,
+                    "name": "Glitch Hop",
+                    "slug": "glitch-hop",
+                    "type": "subgenre",
+                }],
                 "release": {
                     "id": 1742984,
                     "name": "Charade",
@@ -305,20 +371,34 @@ class BeatportTest(_common.TestCase, TestHelper):
                 },
             },
             {
-                "id": 7817571,
-                "type": "track",
-                "sku": "track-7817571",
-                "name": "The Great Shenanigan",
-                "trackNumber": 5,
-                "mixName": "Original Mix",
-                "title": "The Great Shenanigan (Original Mix)",
-                "slug": "the-great-shenanigan-original-mix",
-                "releaseDate": "2016-04-11",
-                "publishDate": "2016-04-11",
-                "currentStatus": "General Content",
-                "length": "9:49",
-                "lengthMs": 589875,
-                "bpm": 123,
+                "id":
+                7817571,
+                "type":
+                "track",
+                "sku":
+                "track-7817571",
+                "name":
+                "The Great Shenanigan",
+                "trackNumber":
+                5,
+                "mixName":
+                "Original Mix",
+                "title":
+                "The Great Shenanigan (Original Mix)",
+                "slug":
+                "the-great-shenanigan-original-mix",
+                "releaseDate":
+                "2016-04-11",
+                "publishDate":
+                "2016-04-11",
+                "currentStatus":
+                "General Content",
+                "length":
+                "9:49",
+                "lengthMs":
+                589875,
+                "bpm":
+                123,
                 "key": {
                     "standard": {
                         "letter": "E",
@@ -328,25 +408,24 @@ class BeatportTest(_common.TestCase, TestHelper):
                     },
                     "shortName": "E&#9837;maj",
                 },
-                "artists": [
-                    {
-                        "id": 326158,
-                        "name": "Supersillyus",
-                        "slug": "supersillyus",
-                        "type": "artist",
-                    }
-                ],
-                "genres": [
-                    {"id": 9, "name": "Breaks", "slug": "breaks", "type": "genre"}
-                ],
-                "subGenres": [
-                    {
-                        "id": 209,
-                        "name": "Glitch Hop",
-                        "slug": "glitch-hop",
-                        "type": "subgenre",
-                    }
-                ],
+                "artists": [{
+                    "id": 326158,
+                    "name": "Supersillyus",
+                    "slug": "supersillyus",
+                    "type": "artist",
+                }],
+                "genres": [{
+                    "id": 9,
+                    "name": "Breaks",
+                    "slug": "breaks",
+                    "type": "genre"
+                }],
+                "subGenres": [{
+                    "id": 209,
+                    "name": "Glitch Hop",
+                    "slug": "glitch-hop",
+                    "type": "subgenre",
+                }],
                 "release": {
                     "id": 1742984,
                     "name": "Charade",
@@ -362,20 +441,34 @@ class BeatportTest(_common.TestCase, TestHelper):
                 },
             },
             {
-                "id": 7817572,
-                "type": "track",
-                "sku": "track-7817572",
-                "name": "Charade",
-                "trackNumber": 6,
-                "mixName": "Original Mix",
-                "title": "Charade (Original Mix)",
-                "slug": "charade-original-mix",
-                "releaseDate": "2016-04-11",
-                "publishDate": "2016-04-11",
-                "currentStatus": "General Content",
-                "length": "7:05",
-                "lengthMs": 425423,
-                "bpm": 123,
+                "id":
+                7817572,
+                "type":
+                "track",
+                "sku":
+                "track-7817572",
+                "name":
+                "Charade",
+                "trackNumber":
+                6,
+                "mixName":
+                "Original Mix",
+                "title":
+                "Charade (Original Mix)",
+                "slug":
+                "charade-original-mix",
+                "releaseDate":
+                "2016-04-11",
+                "publishDate":
+                "2016-04-11",
+                "currentStatus":
+                "General Content",
+                "length":
+                "7:05",
+                "lengthMs":
+                425423,
+                "bpm":
+                123,
                 "key": {
                     "standard": {
                         "letter": "A",
@@ -385,25 +478,24 @@ class BeatportTest(_common.TestCase, TestHelper):
                     },
                     "shortName": "Amaj",
                 },
-                "artists": [
-                    {
-                        "id": 326158,
-                        "name": "Supersillyus",
-                        "slug": "supersillyus",
-                        "type": "artist",
-                    }
-                ],
-                "genres": [
-                    {"id": 9, "name": "Breaks", "slug": "breaks", "type": "genre"}
-                ],
-                "subGenres": [
-                    {
-                        "id": 209,
-                        "name": "Glitch Hop",
-                        "slug": "glitch-hop",
-                        "type": "subgenre",
-                    }
-                ],
+                "artists": [{
+                    "id": 326158,
+                    "name": "Supersillyus",
+                    "slug": "supersillyus",
+                    "type": "artist",
+                }],
+                "genres": [{
+                    "id": 9,
+                    "name": "Breaks",
+                    "slug": "breaks",
+                    "type": "genre"
+                }],
+                "subGenres": [{
+                    "id": 209,
+                    "name": "Glitch Hop",
+                    "slug": "glitch-hop",
+                    "type": "subgenre",
+                }],
                 "release": {
                     "id": 1742984,
                     "name": "Charade",
@@ -512,7 +604,8 @@ class BeatportTest(_common.TestCase, TestHelper):
         self.assertEqual(self.album.name, self.test_album["album"])
 
     def test_catalog_number_applied(self):
-        self.assertEqual(self.album.catalog_number, self.test_album["catalognum"])
+        self.assertEqual(self.album.catalog_number,
+                         self.test_album["catalognum"])
 
     def test_label_applied(self):
         self.assertEqual(self.album.label_name, self.test_album["label"])
@@ -521,7 +614,8 @@ class BeatportTest(_common.TestCase, TestHelper):
         self.assertEqual(self.album.category, "Release")
 
     def test_album_url_applied(self):
-        self.assertEqual(self.album.url, "https://beatport.com/release/charade/1742984")
+        self.assertEqual(self.album.url,
+                         "https://beatport.com/release/charade/1742984")
 
     # Test BeatportTrack.
     def test_title_applied(self):
@@ -534,7 +628,8 @@ class BeatportTest(_common.TestCase, TestHelper):
 
     def test_length_applied(self):
         for track, test_track in zip(self.tracks, self.test_tracks):
-            self.assertEqual(int(track.length.total_seconds()), int(test_track.length))
+            self.assertEqual(int(track.length.total_seconds()),
+                             int(test_track.length))
 
     def test_track_url_applied(self):
         # Specify beatport ids here because an 'item.id' is beets-internal.
@@ -550,10 +645,8 @@ class BeatportTest(_common.TestCase, TestHelper):
         for track, test_track, id in zip(self.tracks, self.test_tracks, ids):
             self.assertEqual(
                 track.url,
-                "https://beatport.com/track/"
-                + test_track.url
-                + "/"
-                + six.text_type(id),
+                "https://beatport.com/track/" + test_track.url + "/" +
+                six.text_type(id),
             )
 
     def test_bpm_applied(self):
@@ -571,23 +664,24 @@ class BeatportTest(_common.TestCase, TestHelper):
 
 class BeatportResponseEmptyTest(_common.TestCase, TestHelper):
     def _make_tracks_response(self):
-        return [
-            {
-                "id": 7817567,
-                "name": "Mirage a Trois",
-                "genres": [
-                    {"id": 9, "name": "Breaks", "slug": "breaks", "type": "genre"}
-                ],
-                "subGenres": [
-                    {
-                        "id": 209,
-                        "name": "Glitch Hop",
-                        "slug": "glitch-hop",
-                        "type": "subgenre",
-                    }
-                ],
-            }
-        ]
+        return [{
+            "id":
+            7817567,
+            "name":
+            "Mirage a Trois",
+            "genres": [{
+                "id": 9,
+                "name": "Breaks",
+                "slug": "breaks",
+                "type": "genre"
+            }],
+            "subGenres": [{
+                "id": 209,
+                "name": "Glitch Hop",
+                "slug": "glitch-hop",
+                "type": "subgenre",
+            }],
+        }]
 
     def setUp(self):
         self.setup_beets()
@@ -618,7 +712,8 @@ class BeatportResponseEmptyTest(_common.TestCase, TestHelper):
 
         self.test_tracks[0]["subGenres"] = []
 
-        self.assertEqual(tracks[0].genre, self.test_tracks[0]["genres"][0]["name"])
+        self.assertEqual(tracks[0].genre,
+                         self.test_tracks[0]["genres"][0]["name"])
 
     def test_genre_empty(self):
         """No 'genre' is provided. Test if 'sub_genre' is applied.
@@ -628,7 +723,8 @@ class BeatportResponseEmptyTest(_common.TestCase, TestHelper):
 
         self.test_tracks[0]["genres"] = []
 
-        self.assertEqual(tracks[0].genre, self.test_tracks[0]["subGenres"][0]["name"])
+        self.assertEqual(tracks[0].genre,
+                         self.test_tracks[0]["subGenres"][0]["name"])
 
 
 def suite():

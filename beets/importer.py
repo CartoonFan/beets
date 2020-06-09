@@ -45,12 +45,9 @@ from beets.util import normpath
 from beets.util import pipeline
 from beets.util import sorted_walk
 from beets.util import syspath
-
 """Provides the basic, interface-agnostic workflow for importing and
 autotagging music files.
 """
-
-
 
 action = Enum("action", ["SKIP", "ASIS", "TRACKS", "APPLY", "ALBUMS", "RETAG"])
 # The RETAG action represents "don't apply any match, but do record
@@ -303,7 +300,8 @@ class ImportSession(object):
         self.set_config(config["import"])
 
         # Set up the pipeline.
-        stages = [read_tasks(self)] if self.query is None else [query_tasks(self)]
+        stages = [read_tasks(self)
+                  ] if self.query is None else [query_tasks(self)]
         # In pretend mode, just log what would otherwise be imported.
         if self.config["pretend"]:
             stages += [log_files(self)]
@@ -350,10 +348,10 @@ class ImportSession(object):
         been imported in a previous session.
         """
         if self.is_resuming(toppath) and all(
-            progress_element(toppath, p) for p in paths
-        ):
+                progress_element(toppath, p) for p in paths):
             return True
-        return bool(self.config["incremental"] and tuple(paths) in self.history_dirs)
+        return bool(self.config["incremental"]
+                    and tuple(paths) in self.history_dirs)
 
     @property
     def history_dirs(self):
@@ -367,15 +365,15 @@ class ImportSession(object):
         """
         return not any(
             path not in self._merged_items and path not in self._merged_dirs
-            for path in paths
-        )
+            for path in paths)
 
     def mark_merged(self, paths):
         """Mark paths and directories as merged for future reimport tasks.
         """
         self._merged_items.update(paths)
         dirs = {
-            os.path.dirname(path) if os.path.isfile(path) else path for path in paths
+            os.path.dirname(path) if os.path.isfile(path) else path
+            for path in paths
         }
 
         self._merged_dirs.update(dirs)
@@ -488,11 +486,11 @@ class ImportTask(BaseImportTask):
         # Not part of the task structure:
         assert choice != action.APPLY  # Only used internally.
         if choice in (
-            action.SKIP,
-            action.ASIS,
-            action.TRACKS,
-            action.ALBUMS,
-            action.RETAG,
+                action.SKIP,
+                action.ASIS,
+                action.TRACKS,
+                action.ALBUMS,
+                action.RETAG,
         ):
             self.choice_flag = choice
             self.match = None
@@ -571,7 +569,8 @@ class ImportTask(BaseImportTask):
         for item in duplicate_items:
             item.remove()
             if lib.directory in util.ancestry(item.path):
-                log.debug(u"deleting duplicate {0}", util.displayable_path(item.path))
+                log.debug(u"deleting duplicate {0}",
+                          util.displayable_path(item.path))
                 util.remove(item.path)
                 util.prune_dirs(os.path.dirname(item.path), lib.directory)
 
@@ -581,9 +580,8 @@ class ImportTask(BaseImportTask):
         """
         for field, view in config["import"]["set_fields"].items():
             value = view.get()
-            log.debug(
-                u"Set field {1}={2} for {0}", displayable_path(self.paths), field, value
-            )
+            log.debug(u"Set field {1}={2} for {0}",
+                      displayable_path(self.paths), field, value)
             self.album[field] = value
         self.album.store()
 
@@ -594,10 +592,8 @@ class ImportTask(BaseImportTask):
         if session.want_resume:
             self.save_progress()
         if session.config["incremental"] and not (
-            # Should we skip recording to incremental list?
-            self.skip
-            and session.config["incremental_skip_later"]
-        ):
+                # Should we skip recording to incremental list?
+                self.skip and session.config["incremental_skip_later"]):
             self.save_history()
 
         self.cleanup(
@@ -654,7 +650,8 @@ class ImportTask(BaseImportTask):
         candidate IDs are stored in self.search_ids: if present, the
         initial lookup is restricted to only those IDs.
         """
-        artist, album, prop = autotag.tag_album(self.items, search_ids=self.search_ids)
+        artist, album, prop = autotag.tag_album(self.items,
+                                                search_ids=self.search_ids)
         self.cur_artist = artist
         self.cur_album = album
         self.candidates = prop.candidates
@@ -672,12 +669,10 @@ class ImportTask(BaseImportTask):
 
         duplicates = []
         task_paths = {i.path for i in self.items if i}
-        duplicate_query = dbcore.AndQuery(
-            (
-                dbcore.MatchQuery("albumartist", artist),
-                dbcore.MatchQuery("album", album),
-            )
-        )
+        duplicate_query = dbcore.AndQuery((
+            dbcore.MatchQuery("albumartist", artist),
+            dbcore.MatchQuery("album", album),
+        ))
 
         for album in lib.albums(duplicate_query):
             # Check whether the album paths are all present in the task
@@ -699,11 +694,10 @@ class ImportTask(BaseImportTask):
         if self.choice_flag == action.ASIS:
             # Taking metadata "as-is". Guess whether this album is VA.
             plur_albumartist, freq = util.plurality(
-                [i.albumartist or i.artist for i in self.items]
-            )
+                [i.albumartist or i.artist for i in self.items])
             if freq == len(self.items) or (
-                freq > 1 and float(freq) / len(self.items) >= SINGLE_ARTIST_THRESH
-            ):
+                    freq > 1
+                    and float(freq) / len(self.items) >= SINGLE_ARTIST_THRESH):
                 # Single-artist album.
                 changes["albumartist"] = plur_albumartist
                 changes["comp"] = False
@@ -743,11 +737,9 @@ class ImportTask(BaseImportTask):
                 # move in-library files. (Out-of-library files are
                 # copied/moved as usual).
                 old_path = item.path
-                if (
-                    operation != MoveOperation.MOVE
-                    and self.replaced_items[item]
-                    and session.lib.directory in util.ancestry(old_path)
-                ):
+                if (operation != MoveOperation.MOVE
+                        and self.replaced_items[item]
+                        and session.lib.directory in util.ancestry(old_path)):
                     item.move()
                     # We moved the item, so remove the
                     # now-nonexistent file from old_paths.
@@ -786,7 +778,8 @@ class ImportTask(BaseImportTask):
         self.replaced_albums = defaultdict(list)
         replaced_album_ids = set()
         for item in self.imported_items():
-            dup_items = list(lib.items(dbcore.query.BytesQuery("path", item.path)))
+            dup_items = list(
+                lib.items(dbcore.query.BytesQuery("path", item.path)))
             self.replaced_items[item] = dup_items
             for dup_item in dup_items:
                 if not dup_item.album_id or dup_item.album_id in replaced_album_ids:
@@ -822,7 +815,8 @@ class ImportTask(BaseImportTask):
                 if dup_item.added and dup_item.added != item.added:
                     item.added = dup_item.added
                     log.debug(
-                        u"Reimported item added {0} " u"from item {1} for {2}",
+                        u"Reimported item added {0} "
+                        u"from item {1} for {2}",
                         item.added,
                         dup_item.id,
                         displayable_path(item.path),
@@ -843,9 +837,8 @@ class ImportTask(BaseImportTask):
         """
         for item in self.imported_items():
             for dup_item in self.replaced_items[item]:
-                log.debug(
-                    u"Replacing item {0}: {1}", dup_item.id, displayable_path(item.path)
-                )
+                log.debug(u"Replacing item {0}: {1}", dup_item.id,
+                          displayable_path(item.path))
                 dup_item.remove()
         log.debug(
             u"{0} of {1} items replaced",
@@ -923,9 +916,10 @@ class SingletonImportTask(ImportTask):
         artist, title = self.chosen_ident()
 
         found_items = []
-        query = dbcore.AndQuery(
-            (dbcore.MatchQuery("artist", artist), dbcore.MatchQuery("title", title),)
-        )
+        query = dbcore.AndQuery((
+            dbcore.MatchQuery("artist", artist),
+            dbcore.MatchQuery("title", title),
+        ))
         for other_item in lib.items(query):
             # Existing items not considered duplicates.
             if other_item.path != self.item.path:
@@ -960,9 +954,8 @@ class SingletonImportTask(ImportTask):
         """
         for field, view in config["import"]["set_fields"].items():
             value = view.get()
-            log.debug(
-                u"Set field {1}={2} for {0}", displayable_path(self.paths), field, value
-            )
+            log.debug(u"Set field {1}={2} for {0}",
+                      displayable_path(self.paths), field, value)
             self.item[field] = value
         self.item.store()
 
@@ -1035,7 +1028,8 @@ class ArchiveImportTask(SentinelImportTask):
         if not os.path.isfile(path):
             return False
 
-        return any(path_test(util.py3_path(path)) for path_test, _ in cls.handlers())
+        return any(
+            path_test(util.py3_path(path)) for path_test, _ in cls.handlers())
 
     @classmethod
     def handlers(cls):
@@ -1067,9 +1061,8 @@ class ArchiveImportTask(SentinelImportTask):
         """Removes the temporary directory the archive was extracted to.
         """
         if self.extracted:
-            log.debug(
-                u"Removing extracted directory: {0}", displayable_path(self.toppath)
-            )
+            log.debug(u"Removing extracted directory: {0}",
+                      displayable_path(self.toppath))
             shutil.rmtree(self.toppath)
 
     def extract(self):
@@ -1184,7 +1177,8 @@ class ImportTaskFactory(object):
         """Return a `SingletonImportTask` for the music file.
         """
         if self.session.already_imported(self.toppath, [path]):
-            log.debug(u"Skipping previously-imported path: {0}", displayable_path(path))
+            log.debug(u"Skipping previously-imported path: {0}",
+                      displayable_path(path))
             self.skipped += 1
             return None
 
@@ -1207,7 +1201,8 @@ class ImportTaskFactory(object):
             dirs = list({os.path.dirname(p) for p in paths})
 
         if self.session.already_imported(self.toppath, dirs):
-            log.debug(u"Skipping previously-imported path: {0}", displayable_path(dirs))
+            log.debug(u"Skipping previously-imported path: {0}",
+                      displayable_path(dirs))
             self.skipped += 1
             return None
 
@@ -1235,9 +1230,8 @@ class ImportTaskFactory(object):
         assert self.is_archive
 
         if not (self.session.config["move"] or self.session.config["copy"]):
-            log.warning(
-                u"Archive importing requires either " u"'copy' or 'move' to be enabled."
-            )
+            log.warning(u"Archive importing requires either "
+                        u"'copy' or 'move' to be enabled.")
             return
 
         log.debug(u"Extracting archive: {0}", displayable_path(self.toppath))
@@ -1268,7 +1262,8 @@ class ImportTaskFactory(object):
             elif isinstance(exc.reason, mediafile.UnreadableFileError):
                 log.warning(u"unreadable file: {0}", displayable_path(path))
             else:
-                log.error(u"error reading {0}: {1}", displayable_path(path), exc)
+                log.error(u"error reading {0}: {1}", displayable_path(path),
+                          exc)
 
 
 # Pipeline utilities
@@ -1308,7 +1303,8 @@ def read_tasks(session):
         skipped += task_factory.skipped
 
         if not task_factory.imported:
-            log.warning(u"No files imported from {0}", displayable_path(toppath))
+            log.warning(u"No files imported from {0}",
+                        displayable_path(toppath))
 
     # Show skipped directories (due to incremental/resume).
     if skipped:
@@ -1396,9 +1392,8 @@ def user_query(session, task):
                 yield from task.handle_created(session)
             yield SentinelImportTask(task.toppath, task.paths)
 
-        return _extend_pipeline(
-            emitter(task), lookup_candidates(session), user_query(session)
-        )
+        return _extend_pipeline(emitter(task), lookup_candidates(session),
+                                user_query(session))
 
     # As albums: group items by albums and create task for each album
     if task.choice_flag is action.ALBUMS:
@@ -1423,13 +1418,11 @@ def user_query(session, task):
         # Record merged paths in the session so they are not reimported
         session.mark_merged(duplicate_paths)
 
-        merged_task = ImportTask(
-            None, task.paths + duplicate_paths, task.items + duplicate_items
-        )
+        merged_task = ImportTask(None, task.paths + duplicate_paths,
+                                 task.items + duplicate_items)
 
-        return _extend_pipeline(
-            [merged_task], lookup_candidates(session), user_query(session)
-        )
+        return _extend_pipeline([merged_task], lookup_candidates(session),
+                                user_query(session))
 
     apply_choice(session, task)
     return task
@@ -1443,18 +1436,22 @@ def resolve_duplicates(session, task):
         return
     found_duplicates = task.find_duplicates(session.lib)
     if found_duplicates:
-        log.debug(u"found duplicates: {}".format([o.id for o in found_duplicates]))
+        log.debug(u"found duplicates: {}".format(
+            [o.id for o in found_duplicates]))
 
         # Get the default action to follow from config.
-        duplicate_action = config["import"]["duplicate_action"].as_choice(
-            {
-                u"skip": u"s",
-                u"keep": u"k",
-                u"remove": u"r",
-                u"merge": u"m",
-                u"ask": u"a",
-            }
-        )
+        duplicate_action = config["import"]["duplicate_action"].as_choice({
+            u"skip":
+            u"s",
+            u"keep":
+            u"k",
+            u"remove":
+            u"r",
+            u"merge":
+            u"m",
+            u"ask":
+            u"a",
+        })
         log.debug(u"default action for duplicates: {0}", duplicate_action)
 
         if duplicate_action == u"s":
@@ -1553,7 +1550,9 @@ def manipulate_files(session, task):
             operation = None
 
         task.manipulate_files(
-            operation, write=session.config["write"], session=session,
+            operation,
+            write=session.config["write"],
+            session=session,
         )
 
     # Progress, cleanup, and event.
@@ -1621,9 +1620,10 @@ def albums_in_dir(path):
     ignore = config["ignore"].as_str_seq()
     ignore_hidden = config["ignore_hidden"].get(bool)
 
-    for root, dirs, files in sorted_walk(
-        path, ignore=ignore, ignore_hidden=ignore_hidden, logger=log
-    ):
+    for root, dirs, files in sorted_walk(path,
+                                         ignore=ignore,
+                                         ignore_hidden=ignore_hidden,
+                                         logger=log):
         items = [os.path.join(root, f) for f in files]
         # If we're currently collapsing the constituent directories in a
         # multi-disc album, check whether we should continue collapsing
@@ -1631,8 +1631,8 @@ def albums_in_dir(path):
         # and move on to the next directory. If not, stop collapsing.
         if collapse_paths:
             if (is_subdir_of_any_in_list(root, collapse_paths)) or (
-                collapse_pat and collapse_pat.match(os.path.basename(root))
-            ):
+                    collapse_pat
+                    and collapse_pat.match(os.path.basename(root))):
                 # Still collapsing.
                 collapse_paths.append(root)
                 collapse_items += items
@@ -1670,8 +1670,7 @@ def albums_in_dir(path):
                         if match:
                             match_group = re.escape(match.group(1))
                             subdir_pat = re.compile(
-                                b"".join([b"^", match_group, br"\d"]), re.I
-                            )
+                                b"".join([b"^", match_group, br"\d"]), re.I)
                         else:
                             start_collapsing = False
                             break
@@ -1692,8 +1691,7 @@ def albums_in_dir(path):
                 # Set the current pattern to match directories with the same
                 # prefix as this one, followed by a digit.
                 collapse_pat = re.compile(
-                    b"".join([b"^", re.escape(match.group(1)), br"\d"]), re.I
-                )
+                    b"".join([b"^", re.escape(match.group(1)), br"\d"]), re.I)
                 break
 
         # If either of the above heuristics indicated that this is the

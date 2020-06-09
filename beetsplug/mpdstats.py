@@ -35,7 +35,6 @@ from beets.util import displayable_path
 RETRIES = 10
 RETRY_INTERVAL = 5
 
-
 mpd_config = config["mpd"]
 
 
@@ -75,7 +74,8 @@ class MPDClientWrapper(object):
             try:
                 self.client.password(password)
             except mpd.CommandError as e:
-                raise ui.UserError(u"could not authenticate to MPD: {0}".format(e))
+                raise ui.UserError(
+                    u"could not authenticate to MPD: {0}".format(e))
 
     def disconnect(self):
         """Disconnect from the MPD.
@@ -147,9 +147,8 @@ class MPDStats(object):
         """Calculate a new rating for a song based on play count, skip count,
         old rating and the fact if it was skipped or not.
         """
-        rolling = (
-            (rating - rating / 2.0) if skipped else (rating + (1.0 - rating) / 2.0)
-        )
+        rolling = ((rating - rating / 2.0) if skipped else
+                   (rating + (1.0 - rating) / 2.0))
 
         stable = (play_count + 1.0) / (play_count + skip_count + 2.0)
         return self.rating_mix * stable + (1.0 - self.rating_mix) * rolling
@@ -290,9 +289,9 @@ class MPDStats(object):
             "beets_item": self.get_item(path),
         }
 
-        self.update_item(
-            self.now_playing["beets_item"], "last_played", value=int(time.time())
-        )
+        self.update_item(self.now_playing["beets_item"],
+                         "last_played",
+                         value=int(time.time()))
 
     def run(self):
         self.mpd.connect()
@@ -323,22 +322,19 @@ class MPDStatsPlugin(plugins.BeetsPlugin):
 
     def __init__(self):
         super(MPDStatsPlugin, self).__init__()
-        mpd_config.add(
-            {
-                "music_directory": config["directory"].as_filename(),
-                "rating": True,
-                "rating_mix": 0.75,
-                "host": os.environ.get("MPD_HOST", u"localhost"),
-                "port": int(os.environ.get("MPD_PORT", 6600)),
-                "password": u"",
-            }
-        )
+        mpd_config.add({
+            "music_directory": config["directory"].as_filename(),
+            "rating": True,
+            "rating_mix": 0.75,
+            "host": os.environ.get("MPD_HOST", u"localhost"),
+            "port": int(os.environ.get("MPD_PORT", 6600)),
+            "password": u"",
+        })
         mpd_config["password"].redact = True
 
     def commands(self):
-        cmd = ui.Subcommand(
-            "mpdstats", help=u"run a MPD client to gather play statistics"
-        )
+        cmd = ui.Subcommand("mpdstats",
+                            help=u"run a MPD client to gather play statistics")
         cmd.parser.add_option(
             u"--host",
             dest="host",

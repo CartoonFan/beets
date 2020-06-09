@@ -32,7 +32,8 @@ def random_func(lib, opts, args):
     query = decargs(args)
     objs = list(lib.albums(query)) if opts.album else list(lib.items(query))
     # Print a random subset.
-    objs = random_objs(objs, opts.album, opts.number, opts.time, opts.equal_chance)
+    objs = random_objs(objs, opts.album, opts.number, opts.time,
+                       opts.equal_chance)
     for obj in objs:
         print_(format(obj))
 

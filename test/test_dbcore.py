@@ -76,7 +76,7 @@ class ModelFixture1(dbcore.Model):
 
 
 class DatabaseFixture1(dbcore.Database):
-    _models = (ModelFixture1,)
+    _models = (ModelFixture1, )
 
 
 class ModelFixture2(ModelFixture1):
@@ -88,7 +88,7 @@ class ModelFixture2(ModelFixture1):
 
 
 class DatabaseFixture2(dbcore.Database):
-    _models = (ModelFixture2,)
+    _models = (ModelFixture2, )
 
 
 class ModelFixture3(ModelFixture1):
@@ -101,7 +101,7 @@ class ModelFixture3(ModelFixture1):
 
 
 class DatabaseFixture3(dbcore.Database):
-    _models = (ModelFixture3,)
+    _models = (ModelFixture3, )
 
 
 class ModelFixture4(ModelFixture1):
@@ -115,7 +115,7 @@ class ModelFixture4(ModelFixture1):
 
 
 class DatabaseFixture4(dbcore.Database):
-    _models = (ModelFixture4,)
+    _models = (ModelFixture4, )
 
 
 class AnotherModelFixture(ModelFixture1):
@@ -136,7 +136,7 @@ class ModelFixture5(ModelFixture1):
 
 
 class DatabaseFixture5(dbcore.Database):
-    _models = (ModelFixture5,)
+    _models = (ModelFixture5, )
 
 
 class DatabaseFixtureTwoModels(dbcore.Database):
@@ -167,8 +167,7 @@ class MigrationTest(unittest.TestCase):
 
         # Add an item to the old library.
         old_lib._connection().execute(
-            "insert into test (field_one, field_two) values (4, 2)"
-        )
+            "insert into test (field_one, field_two) values (4, 2)")
         old_lib._connection().commit()
         del old_lib
 
@@ -351,9 +350,8 @@ class ModelTest(unittest.TestCase):
     def test_items(self):
         model = ModelFixture1(self.db)
         model.id = 5
-        self.assertEqual(
-            {("id", 5), ("field_one", 0), ("field_two", "")}, set(model.items())
-        )
+        self.assertEqual({("id", 5), ("field_one", 0), ("field_two", "")},
+                         set(model.items()))
 
     def test_delete_internal_field(self):
         model = dbcore.Model()
@@ -458,10 +456,10 @@ class ParseTest(unittest.TestCase):
 class QueryParseTest(unittest.TestCase):
     def pqp(self, part):
         return dbcore.queryparse.parse_query_part(
-            part, {"year": dbcore.query.NumericQuery}, {":": dbcore.query.RegexpQuery},
-        )[
-            :-1
-        ]  # remove the negate flag
+            part,
+            {"year": dbcore.query.NumericQuery},
+            {":": dbcore.query.RegexpQuery},
+        )[:-1]  # remove the negate flag
 
     def test_one_basic_term(self):
         q = "test"
@@ -555,7 +553,10 @@ class QueryFromStringsTest(unittest.TestCase):
 
 class SortFromStringsTest(unittest.TestCase):
     def sfs(self, strings):
-        return dbcore.queryparse.sort_from_strings(ModelFixture1, strings,)
+        return dbcore.queryparse.sort_from_strings(
+            ModelFixture1,
+            strings,
+        )
 
     def test_zero_parts(self):
         s = self.sfs([])
@@ -588,7 +589,10 @@ class SortFromStringsTest(unittest.TestCase):
 
 class ParseSortedQueryTest(unittest.TestCase):
     def psq(self, parts):
-        return dbcore.parse_sorted_query(ModelFixture1, parts.split(),)
+        return dbcore.parse_sorted_query(
+            ModelFixture1,
+            parts.split(),
+        )
 
     def test_and_query(self):
         q, s = self.psq("foo bar")
@@ -702,8 +706,7 @@ class ResultsIteratorTest(unittest.TestCase):
 
     def test_no_results(self):
         self.assertIsNone(
-            self.db._fetch(ModelFixture1, dbcore.query.FalseQuery()).get()
-        )
+            self.db._fetch(ModelFixture1, dbcore.query.FalseQuery()).get())
 
 
 def suite():

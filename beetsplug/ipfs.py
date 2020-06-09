@@ -32,21 +32,26 @@ from beets.plugins import BeetsPlugin
 class IPFSPlugin(BeetsPlugin):
     def __init__(self):
         super(IPFSPlugin, self).__init__()
-        self.config.add(
-            {"auto": True, "nocopy": False,}
-        )
+        self.config.add({
+            "auto": True,
+            "nocopy": False,
+        })
 
         if self.config["auto"]:
             self.import_stages = [self.auto_add]
 
     def commands(self):
         cmd = ui.Subcommand("ipfs", help="interact with ipfs")
-        cmd.parser.add_option(
-            "-a", "--add", dest="add", action="store_true", help="Add to ipfs"
-        )
-        cmd.parser.add_option(
-            "-g", "--get", dest="get", action="store_true", help="Get from ipfs"
-        )
+        cmd.parser.add_option("-a",
+                              "--add",
+                              dest="add",
+                              action="store_true",
+                              help="Add to ipfs")
+        cmd.parser.add_option("-g",
+                              "--get",
+                              dest="get",
+                              action="store_true",
+                              help="Get from ipfs")
         cmd.parser.add_option(
             "-p",
             "--publish",
@@ -80,7 +85,8 @@ class IPFSPlugin(BeetsPlugin):
             if opts.add:
                 for album in lib.albums(ui.decargs(args)):
                     if len(album.items()) == 0:
-                        self._log.info("{0} does not contain items, aborting", album)
+                        self._log.info("{0} does not contain items, aborting",
+                                       album)
 
                     self.ipfs_add(album)
                     album.store()
@@ -178,13 +184,15 @@ class IPFSPlugin(BeetsPlugin):
             cmd.append(_hash)
             util.command_output(cmd)
         except (OSError, subprocess.CalledProcessError) as err:
-            self._log.error("Failed to get {0} from ipfs.\n{1}", _hash, err.output)
+            self._log.error("Failed to get {0} from ipfs.\n{1}", _hash,
+                            err.output)
             return False
 
         self._log.info("Getting {0} from ipfs", _hash)
-        imp = ui.commands.TerminalImportSession(
-            lib, loghandler=None, query=None, paths=[_hash]
-        )
+        imp = ui.commands.TerminalImportSession(lib,
+                                                loghandler=None,
+                                                query=None,
+                                                paths=[_hash])
         imp.run()
         shutil.rmtree(_hash)
 
@@ -241,7 +249,8 @@ class IPFSPlugin(BeetsPlugin):
                 added_album.store()
 
     def already_added(self, check, jlib):
-        return any(jalbum.mb_albumid == check.mb_albumid for jalbum in jlib.albums())
+        return any(jalbum.mb_albumid == check.mb_albumid
+                   for jalbum in jlib.albums())
 
     def ipfs_list(self, lib, args):
         fmt = config["format_album"].get()
@@ -286,7 +295,8 @@ class IPFSPlugin(BeetsPlugin):
                     break
             except AttributeError:
                 pass
-            item_path = os.path.basename(item.path).decode(util._fsencoding(), "ignore")
+            item_path = os.path.basename(item.path).decode(
+                util._fsencoding(), "ignore")
             # Clear current path from item
             item.path = "/ipfs/{0}/{1}".format(album.ipfs, item_path)
 

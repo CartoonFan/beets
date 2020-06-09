@@ -44,7 +44,8 @@ def api_url(host, port, endpoint):
     if not host.startswith("http://") and not host.startswith("https://"):
         hostname_list.insert(0, "http://")
     hostname = "".join(hostname_list)
-    joined = urljoin("{hostname}:{port}".format(hostname=hostname, port=port), endpoint)
+    joined = urljoin("{hostname}:{port}".format(hostname=hostname, port=port),
+                     endpoint)
 
     scheme, netloc, path, query_string, fragment = urlsplit(joined)
     query_params = parse_qs(query_string)
@@ -84,13 +85,11 @@ def create_headers(user_id, token=None):
     """
     headers = {}
 
-    authorization = (
-        'MediaBrowser UserId="{user_id}", '
-        'Client="other", '
-        'Device="beets", '
-        'DeviceId="beets", '
-        'Version="0.0.0"'
-    ).format(user_id=user_id)
+    authorization = ('MediaBrowser UserId="{user_id}", '
+                     'Client="other", '
+                     'Device="beets", '
+                     'DeviceId="beets", '
+                     'Version="0.0.0"').format(user_id=user_id)
 
     headers["x-emby-authorization"] = authorization
 
@@ -142,14 +141,12 @@ class EmbyUpdate(BeetsPlugin):
         super(EmbyUpdate, self).__init__()
 
         # Adding defaults.
-        config["emby"].add(
-            {
-                u"host": u"http://localhost",
-                u"port": 8096,
-                u"apikey": None,
-                u"password": None,
-            }
-        )
+        config["emby"].add({
+            u"host": u"http://localhost",
+            u"port": 8096,
+            u"apikey": None,
+            u"password": None,
+        })
 
         self.register_listener("database_change", self.listen_for_db_change)
 

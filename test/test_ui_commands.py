@@ -51,7 +51,12 @@ class QueryTest(_common.TestCase):
     def add_album(self, items):
         return self.lib.add_album(items)
 
-    def check_do_query(self, num_items, num_albums, q=(), album=False, also_items=True):
+    def check_do_query(self,
+                       num_items,
+                       num_albums,
+                       q=(),
+                       album=False,
+                       also_items=True):
         items, albums = commands._do_query(self.lib, q, album, also_items)
         self.assertEqual(len(items), num_items)
         self.assertEqual(len(albums), num_albums)

@@ -37,22 +37,16 @@ def filter_to_be_removed(items, keys):
         dont_remove = []
         for artist, album, title in keys:
             for item in items:
-                if (
-                    artist == item["artist"]
-                    and album == item["album"]
-                    and title == item["title"]
-                ):
+                if (artist == item["artist"] and album == item["album"]
+                        and title == item["title"]):
                     dont_remove.append(item)
         return [item for item in items if item not in dont_remove]
     else:
 
         def to_be_removed(item):
-            return not any(
-                artist == item["artist"]
-                and album == item["album"]
-                and title == item["title"]
-                for artist, album, title in keys
-            )
+            return not any(artist == item["artist"] and album == item["album"]
+                           and title == item["title"]
+                           for artist, album, title in keys)
 
         return [item for item in items if to_be_removed(item)]
 
@@ -60,30 +54,27 @@ def filter_to_be_removed(items, keys):
 class SubsonicPlaylistPlugin(BeetsPlugin):
     def __init__(self):
         super(SubsonicPlaylistPlugin, self).__init__()
-        self.config.add(
-            {
-                "delete": False,
-                "playlist_ids": [],
-                "playlist_names": [],
-                "username": "",
-                "password": "",
-            }
-        )
+        self.config.add({
+            "delete": False,
+            "playlist_ids": [],
+            "playlist_names": [],
+            "username": "",
+            "password": "",
+        })
         self.config["password"].redact = True
 
     def update_tags(self, playlist_dict, lib):
         with lib.transaction():
             for query, playlist_tag in playlist_dict.items():
-                query = AndQuery(
-                    [
-                        MatchQuery("artist", query[0]),
-                        MatchQuery("album", query[1]),
-                        MatchQuery("title", query[2]),
-                    ]
-                )
+                query = AndQuery([
+                    MatchQuery("artist", query[0]),
+                    MatchQuery("album", query[1]),
+                    MatchQuery("title", query[2]),
+                ])
                 items = lib.items(query)
                 if not items:
-                    self._log.warn(u"{} | track not found ({})", playlist_tag, query)
+                    self._log.warn(u"{} | track not found ({})", playlist_tag,
+                                   query)
                     continue
                 for item in items:
                     item.subsonic_playlist = playlist_tag
@@ -98,9 +89,8 @@ class SubsonicPlaylistPlugin(BeetsPlugin):
             return
 
         name = playlist.attrib.get("name", "undefined")
-        tracks = [
-            (t.attrib["artist"], t.attrib["album"], t.attrib["title"]) for t in playlist
-        ]
+        tracks = [(t.attrib["artist"], t.attrib["album"], t.attrib["title"])
+                  for t in playlist]
         return name, tracks
 
     def commands(self):
@@ -108,7 +98,8 @@ class SubsonicPlaylistPlugin(BeetsPlugin):
             self.config.set_args(opts)
             ids = self.config["playlist_ids"].as_str_seq()
             if self.config["playlist_names"].as_str_seq():
-                playlists = ElementTree.fromstring(self.send("getPlaylists").text)[0]
+                playlists = ElementTree.fromstring(
+                    self.send("getPlaylists").text)[0]
                 if playlists.attrib.get("code", "200") != "200":
                     alt_error = "error getting playlists," " but no error message found"
                     self._log.warn(playlists.attrib.get("message", alt_error))
@@ -123,7 +114,8 @@ class SubsonicPlaylistPlugin(BeetsPlugin):
             # delete old tags
             if self.config["delete"]:
                 existing = list(lib.items('subsonic_playlist:";"'))
-                to_be_removed = filter_to_be_removed(existing, playlist_dict.keys())
+                to_be_removed = filter_to_be_removed(existing,
+                                                     playlist_dict.keys())
                 for item in to_be_removed:
                     item["subsonic_playlist"] = ""
                     with lib.transaction():
@@ -131,9 +123,8 @@ class SubsonicPlaylistPlugin(BeetsPlugin):
 
             self.update_tags(playlist_dict, lib)
 
-        subsonicplaylist_cmds = Subcommand(
-            "subsonicplaylist", help=u"import a subsonic playlist"
-        )
+        subsonicplaylist_cmds = Subcommand("subsonicplaylist",
+                                           help=u"import a subsonic playlist")
         subsonicplaylist_cmds.parser.add_option(
             u"-d",
             u"--delete",
@@ -145,7 +136,8 @@ class SubsonicPlaylistPlugin(BeetsPlugin):
 
     def generate_token(self):
         salt = "".join(random.choices(string.ascii_lowercase + string.digits))
-        return md5((self.config["password"].get() + salt).encode()).hexdigest(), salt
+        return md5(
+            (self.config["password"].get() + salt).encode()).hexdigest(), salt
 
     def send(self, endpoint, params=None):
         if params is None:
@@ -156,11 +148,8 @@ class SubsonicPlaylistPlugin(BeetsPlugin):
         params["s"] = b
         params["v"] = "1.12.0"
         params["c"] = "beets"
-        return requests.get(
-            "{}/rest/{}?{}".format(
-                self.config["base_url"].get(), endpoint, urlencode(params)
-            )
-        )
+        return requests.get("{}/rest/{}?{}".format(
+            self.config["base_url"].get(), endpoint, urlencode(params)))
 
     def get_playlists(self, ids):
         output = {}

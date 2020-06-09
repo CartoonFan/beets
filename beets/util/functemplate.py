@@ -140,7 +140,10 @@ def compile_func(arg_names, statements, name="_the_func", debug=False):
         args = ast.arguments(**args_fields)
 
     func_def = ast.FunctionDef(
-        name=name, args=args, body=statements, decorator_list=[],
+        name=name,
+        args=args,
+        body=statements,
+        decorator_list=[],
     )
 
     # The ast.Module signature changed in 3.8 to accept a list of types to
@@ -254,8 +257,7 @@ class Call(object):
                             ],
                         )
                     ],
-                )
-            )
+                ))
 
         subexpr_call = ex_call(FUNCTION_PREFIX + ident, arg_exprs)
         return [subexpr_call], varnames, funcnames
@@ -335,12 +337,12 @@ class Parser(object):
         self.parts = []
 
     # Common parsing resources.
-    special_chars = (SYMBOL_DELIM, FUNC_DELIM, GROUP_OPEN, GROUP_CLOSE, ESCAPE_CHAR)
-    special_char_re = re.compile(
-        r"[%s]|\Z" % u"".join(re.escape(c) for c in special_chars)
-    )
+    special_chars = (SYMBOL_DELIM, FUNC_DELIM, GROUP_OPEN, GROUP_CLOSE,
+                     ESCAPE_CHAR)
+    special_char_re = re.compile(r"[%s]|\Z" %
+                                 u"".join(re.escape(c) for c in special_chars))
     escapable_chars = (SYMBOL_DELIM, FUNC_DELIM, GROUP_CLOSE, ARG_SEP)
-    terminator_chars = (GROUP_CLOSE,)
+    terminator_chars = (GROUP_CLOSE, )
 
     def parse_expression(self):
         """Parse a template expression starting at ``pos``. Resulting
@@ -353,13 +355,10 @@ class Parser(object):
         extra_special_chars = ()
         special_char_re = self.special_char_re
         if self.in_argument:
-            extra_special_chars = (ARG_SEP,)
-            special_char_re = re.compile(
-                r"[%s]|\Z"
-                % u"".join(
-                    re.escape(c) for c in self.special_chars + extra_special_chars
-                )
-            )
+            extra_special_chars = (ARG_SEP, )
+            special_char_re = re.compile(r"[%s]|\Z" % u"".join(
+                re.escape(c)
+                for c in self.special_chars + extra_special_chars))
 
         text_parts = []
 
@@ -370,9 +369,9 @@ class Parser(object):
                 # A non-special character. Skip to the next special
                 # character, treating the interstice as literal text.
                 next_pos = (
-                    special_char_re.search(self.string[self.pos :]).start() + self.pos
-                )
-                text_parts.append(self.string[self.pos : next_pos])
+                    special_char_re.search(self.string[self.pos:]).start() +
+                    self.pos)
+                text_parts.append(self.string[self.pos:next_pos])
                 self.pos = next_pos
                 continue
 
@@ -386,9 +385,8 @@ class Parser(object):
                 break
 
             next_char = self.string[self.pos + 1]
-            if char == ESCAPE_CHAR and next_char in (
-                self.escapable_chars + extra_special_chars
-            ):
+            if char == ESCAPE_CHAR and next_char in (self.escapable_chars +
+                                                     extra_special_chars):
                 # An escaped special character ($$, $}, etc.). Note that
                 # ${ is not an escape sequence: this is ambiguous with
                 # the start of a symbol and it's not necessary (just
@@ -448,19 +446,21 @@ class Parser(object):
             closer = self.string.find(GROUP_CLOSE, self.pos)
             if closer in [-1, self.pos]:
                 # No closing brace found or identifier is empty.
-                self.parts.append(self.string[start_pos : self.pos])
+                self.parts.append(self.string[start_pos:self.pos])
             else:
                 # Closer found.
-                ident = self.string[self.pos : closer]
+                ident = self.string[self.pos:closer]
                 self.pos = closer + 1
-                self.parts.append(Symbol(ident, self.string[start_pos : self.pos]))
+                self.parts.append(
+                    Symbol(ident, self.string[start_pos:self.pos]))
 
         else:
             # A bare-word symbol.
             ident = self._parse_ident()
             if ident:
                 # Found a real symbol.
-                self.parts.append(Symbol(ident, self.string[start_pos : self.pos]))
+                self.parts.append(
+                    Symbol(ident, self.string[start_pos:self.pos]))
             else:
                 # A standalone $.
                 self.parts.append(SYMBOL_DELIM)
@@ -484,24 +484,25 @@ class Parser(object):
 
         if self.pos >= len(self.string):
             # Identifier terminates string.
-            self.parts.append(self.string[start_pos : self.pos])
+            self.parts.append(self.string[start_pos:self.pos])
             return
 
         if self.string[self.pos] != GROUP_OPEN:
             # Argument list not opened.
-            self.parts.append(self.string[start_pos : self.pos])
+            self.parts.append(self.string[start_pos:self.pos])
             return
 
         # Skip past opening brace and try to parse an argument list.
         self.pos += 1
         args = self.parse_argument_list()
-        if self.pos >= len(self.string) or self.string[self.pos] != GROUP_CLOSE:
+        if self.pos >= len(
+                self.string) or self.string[self.pos] != GROUP_CLOSE:
             # Arguments unclosed.
-            self.parts.append(self.string[start_pos : self.pos])
+            self.parts.append(self.string[start_pos:self.pos])
             return
 
         self.pos += 1  # Move past closing brace.
-        self.parts.append(Call(ident, args, self.string[start_pos : self.pos]))
+        self.parts.append(Call(ident, args, self.string[start_pos:self.pos]))
 
     def parse_argument_list(self):
         """Parse a list of arguments starting at ``pos``, returning a
@@ -513,14 +514,15 @@ class Parser(object):
         expressions = []
 
         while self.pos < len(self.string):
-            subparser = Parser(self.string[self.pos :], in_argument=True)
+            subparser = Parser(self.string[self.pos:], in_argument=True)
             subparser.parse_expression()
 
             # Extract and advance past the parsed expression.
             expressions.append(Expression(subparser.parts))
             self.pos += subparser.pos
 
-            if self.pos >= len(self.string) or self.string[self.pos] == GROUP_CLOSE:
+            if self.pos >= len(
+                    self.string) or self.string[self.pos] == GROUP_CLOSE:
                 # Argument list terminated by EOF or closing brace.
                 break
 
@@ -535,7 +537,7 @@ class Parser(object):
         """Parse an identifier and return it (possibly an empty string).
         Updates ``pos``.
         """
-        remainder = self.string[self.pos :]
+        remainder = self.string[self.pos:]
         ident = re.match(r"\w*", remainder).group(0)
         self.pos += len(ident)
         return ident
@@ -549,7 +551,7 @@ def _parse(template):
     parser.parse_expression()
 
     parts = parser.parts
-    remainder = parser.string[parser.pos :]
+    remainder = parser.string[parser.pos:]
     if remainder:
         parts.append(remainder)
     return Expression(parts)
@@ -612,7 +614,10 @@ class Template(object):
         for funcname in funcnames:
             argnames.append(FUNCTION_PREFIX + funcname)
 
-        func = compile_func(argnames, [ast.Return(ast.List(expressions, ast.Load()))],)
+        func = compile_func(
+            argnames,
+            [ast.Return(ast.List(expressions, ast.Load()))],
+        )
 
         def wrapper_func(values={}, functions={}):
             args = {}

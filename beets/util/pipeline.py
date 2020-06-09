@@ -173,7 +173,7 @@ def stage(func):
         task = None
         while True:
             task = yield task
-            task = func(*(args + (task,)))
+            task = func(*(args + (task, )))
 
     return coro
 
@@ -197,7 +197,7 @@ def mutator_stage(func):
         task = None
         while True:
             task = yield task
-            func(*(args + (task,)))
+            func(*(args + (task, )))
 
     return coro
 
@@ -391,7 +391,7 @@ class Pipeline(object):
                 self.stages.append(stage)
             else:
                 # Default to one thread per stage.
-                self.stages.append((stage,))
+                self.stages.append((stage, ))
 
     def run_sequential(self):
         """Run the pipeline sequentially in the current thread. The
@@ -417,8 +417,8 @@ class Pipeline(object):
         for i in range(1, queue_count):
             for coro in self.stages[i]:
                 threads.append(
-                    MiddlePipelineThread(coro, queues[i - 1], queues[i], threads)
-                )
+                    MiddlePipelineThread(coro, queues[i - 1], queues[i],
+                                         threads))
 
         # Last stage.
         for coro in self.stages[-1]:

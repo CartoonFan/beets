@@ -78,13 +78,14 @@ class FtInTitlePlugin(plugins.BeetsPlugin):
     def __init__(self):
         super(FtInTitlePlugin, self).__init__()
 
-        self.config.add(
-            {"auto": True, "drop": False, "format": u"feat. {0}",}
-        )
+        self.config.add({
+            "auto": True,
+            "drop": False,
+            "format": u"feat. {0}",
+        })
 
         self._command = ui.Subcommand(
-            "ftintitle", help=u"move featured artists to the title field"
-        )
+            "ftintitle", help=u"move featured artists to the title field")
 
         self._command.parser.add_option(
             u"-d",

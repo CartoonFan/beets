@@ -52,24 +52,26 @@ class TestHelper(helper.TestHelper):
 
 class AnyFieldQueryTest(_common.LibTestCase):
     def test_no_restriction(self):
-        q = dbcore.query.AnyFieldQuery(
-            "title", beets.library.Item._fields.keys(), dbcore.query.SubstringQuery
-        )
+        q = dbcore.query.AnyFieldQuery("title",
+                                       beets.library.Item._fields.keys(),
+                                       dbcore.query.SubstringQuery)
         self.assertEqual(self.lib.items(q).get().title, "the title")
 
     def test_restriction_completeness(self):
-        q = dbcore.query.AnyFieldQuery("title", [u"title"], dbcore.query.SubstringQuery)
+        q = dbcore.query.AnyFieldQuery("title", [u"title"],
+                                       dbcore.query.SubstringQuery)
         self.assertEqual(self.lib.items(q).get().title, u"the title")
 
     def test_restriction_soundness(self):
-        q = dbcore.query.AnyFieldQuery(
-            "title", [u"artist"], dbcore.query.SubstringQuery
-        )
+        q = dbcore.query.AnyFieldQuery("title", [u"artist"],
+                                       dbcore.query.SubstringQuery)
         self.assertEqual(self.lib.items(q).get(), None)
 
     def test_eq(self):
-        q1 = dbcore.query.AnyFieldQuery("foo", [u"bar"], dbcore.query.SubstringQuery)
-        q2 = dbcore.query.AnyFieldQuery("foo", [u"bar"], dbcore.query.SubstringQuery)
+        q1 = dbcore.query.AnyFieldQuery("foo", [u"bar"],
+                                        dbcore.query.SubstringQuery)
+        q2 = dbcore.query.AnyFieldQuery("foo", [u"bar"],
+                                        dbcore.query.SubstringQuery)
         self.assertEqual(q1, q2)
 
         q2.query_class = None
@@ -111,7 +113,11 @@ class DummyDataTestCase(_common.TestCase, AssertsMixin):
         self.lib.add_album(items[:2])
 
     def assert_items_matched_all(self, results):
-        self.assert_items_matched(results, [u"foo bar", u"baz qux", u"beets 4 eva",])
+        self.assert_items_matched(results, [
+            u"foo bar",
+            u"baz qux",
+            u"beets 4 eva",
+        ])
 
 
 class GetTest(DummyDataTestCase):
@@ -183,12 +189,18 @@ class GetTest(DummyDataTestCase):
     def test_unkeyed_term_matches_multiple_columns(self):
         q = u"baz"
         results = self.lib.items(q)
-        self.assert_items_matched(results, [u"foo bar", u"baz qux",])
+        self.assert_items_matched(results, [
+            u"foo bar",
+            u"baz qux",
+        ])
 
     def test_unkeyed_regexp_matches_multiple_columns(self):
         q = u":z$"
         results = self.lib.items(q)
-        self.assert_items_matched(results, [u"foo bar", u"baz qux",])
+        self.assert_items_matched(results, [
+            u"foo bar",
+            u"baz qux",
+        ])
 
     def test_keyed_term_matches_only_one_column(self):
         q = u"title:baz"
@@ -198,12 +210,16 @@ class GetTest(DummyDataTestCase):
     def test_keyed_regexp_matches_only_one_column(self):
         q = u"title::baz"
         results = self.lib.items(q)
-        self.assert_items_matched(results, [u"baz qux",])
+        self.assert_items_matched(results, [
+            u"baz qux",
+        ])
 
     def test_multiple_terms_narrow_search(self):
         q = u"qux baz"
         results = self.lib.items(q)
-        self.assert_items_matched(results, [u"baz qux",])
+        self.assert_items_matched(results, [
+            u"baz qux",
+        ])
 
     def test_multiple_regexps_narrow_search(self):
         q = u":baz :qux"
@@ -223,7 +239,10 @@ class GetTest(DummyDataTestCase):
     def test_year_range(self):
         q = u"year:2000..2002"
         results = self.lib.items(q)
-        self.assert_items_matched(results, [u"foo bar", u"baz qux",])
+        self.assert_items_matched(results, [
+            u"foo bar",
+            u"baz qux",
+        ])
 
     def test_singleton_true(self):
         q = u"singleton:true"
@@ -384,7 +403,8 @@ class PathQueryTest(_common.LibTestCase, TestHelper, AssertsMixin):
 
         # We have to create function samefile as it does not exist on
         # Windows and python 2.7
-        self.patcher_samefile = patch("beets.library.os.path.samefile", create=True)
+        self.patcher_samefile = patch("beets.library.os.path.samefile",
+                                      create=True)
         self.patcher_samefile.start().return_value = True
 
     def tearDown(self):
@@ -492,9 +512,9 @@ class PathQueryTest(_common.LibTestCase, TestHelper, AssertsMixin):
         self.assert_albums_matched(results, [u"album with underscore"])
 
     def test_escape_percent(self):
-        self.add_album(
-            path=b"/a/%/title.mp3", title=u"with percent", album=u"album with percent"
-        )
+        self.add_album(path=b"/a/%/title.mp3",
+                       title=u"with percent",
+                       album=u"album with percent")
         q = u"path:/a/%"
         results = self.lib.items(q)
         self.assert_items_matched(results, [u"with percent"])
@@ -867,26 +887,25 @@ class NotQueryTest(DummyDataTestCase):
         # round trip
         not_not_q = dbcore.query.NotQuery(not_q)
         self.assertEqual(
-            {i.title for i in self.lib.items(q)},
-            {i.title for i in self.lib.items(not_not_q)},
+            {i.title
+             for i in self.lib.items(q)},
+            {i.title
+             for i in self.lib.items(not_not_q)},
         )
 
     def test_type_and(self):
         # not(a and b) <-> not(a) or not(b)
-        q = dbcore.query.AndQuery(
-            [
-                dbcore.query.BooleanQuery(u"comp", True),
-                dbcore.query.NumericQuery(u"year", u"2002"),
-            ],
-        )
+        q = dbcore.query.AndQuery([
+            dbcore.query.BooleanQuery(u"comp", True),
+            dbcore.query.NumericQuery(u"year", u"2002"),
+        ], )
         not_results = self.lib.items(dbcore.query.NotQuery(q))
         self.assert_items_matched(not_results, [u"foo bar", u"beets 4 eva"])
         self.assertNegationProperties(q)
 
     def test_type_anyfield(self):
-        q = dbcore.query.AnyFieldQuery(
-            u"foo", [u"title", u"artist", u"album"], dbcore.query.SubstringQuery
-        )
+        q = dbcore.query.AnyFieldQuery(u"foo", [u"title", u"artist", u"album"],
+                                       dbcore.query.SubstringQuery)
         not_results = self.lib.items(dbcore.query.NotQuery(q))
         self.assert_items_matched(not_results, [u"baz qux"])
         self.assertNegationProperties(q)
@@ -902,7 +921,8 @@ class NotQueryTest(DummyDataTestCase):
         not_results = self.lib.items(dbcore.query.NotQuery(q))
         # query date is in the past, thus the 'not' results should contain all
         # items
-        self.assert_items_matched(not_results, [u"foo bar", u"baz qux", u"beets 4 eva"])
+        self.assert_items_matched(not_results,
+                                  [u"foo bar", u"baz qux", u"beets 4 eva"])
         self.assertNegationProperties(q)
 
     def test_type_false(self):
@@ -931,12 +951,10 @@ class NotQueryTest(DummyDataTestCase):
 
     def test_type_or(self):
         # not(a or b) <-> not(a) and not(b)
-        q = dbcore.query.OrQuery(
-            [
-                dbcore.query.BooleanQuery(u"comp", True),
-                dbcore.query.NumericQuery(u"year", u"2002"),
-            ]
-        )
+        q = dbcore.query.OrQuery([
+            dbcore.query.BooleanQuery(u"comp", True),
+            dbcore.query.NumericQuery(u"year", u"2002"),
+        ])
         not_results = self.lib.items(dbcore.query.NotQuery(q))
         self.assert_items_matched(not_results, [u"beets 4 eva"])
         self.assertNegationProperties(q)

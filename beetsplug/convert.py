@@ -72,7 +72,8 @@ def get_format(fmt=None):
         command = format_info["command"]
         extension = format_info.get("extension", fmt)
     except KeyError:
-        raise ui.UserError(u'convert: format {0} needs the "command" field'.format(fmt))
+        raise ui.UserError(
+            u'convert: format {0} needs the "command" field'.format(fmt))
     except ConfigTypeError:
         command = config["convert"]["formats"][fmt].get(str)
         extension = fmt
@@ -84,8 +85,7 @@ def get_format(fmt=None):
     elif "opts" in keys:
         # Undocumented option for backwards compatibility with < 1.3.1.
         command = u"ffmpeg -i $source -y {0} $dest".format(
-            config["convert"]["opts"].as_str()
-        )
+            config["convert"]["opts"].as_str())
     if "extension" in keys:
         extension = config["convert"]["extension"].as_str()
 
@@ -102,10 +102,8 @@ def should_transcode(item, fmt):
             query, _ = parse_query_string(query_string, Item)
             if query.match(item):
                 return False
-    if (
-        config["convert"]["never_convert_lossy_files"]
-        and item.format.lower() not in LOSSLESS_FORMATS
-    ):
+    if (config["convert"]["never_convert_lossy_files"]
+            and item.format.lower() not in LOSSLESS_FORMATS):
         return False
     maxbr = config["convert"]["max_bitrate"].get(int)
     return fmt.lower() != item.format.lower() or item.bitrate >= 1000 * maxbr
@@ -114,52 +112,53 @@ def should_transcode(item, fmt):
 class ConvertPlugin(BeetsPlugin):
     def __init__(self):
         super(ConvertPlugin, self).__init__()
-        self.config.add(
-            {
-                u"dest": None,
-                u"pretend": False,
-                u"link": False,
-                u"hardlink": False,
-                u"threads": util.cpu_count(),
-                u"format": u"mp3",
-                u"id3v23": u"inherit",
-                u"formats": {
-                    u"aac": {
-                        u"command": u"ffmpeg -i $source -y -vn -acodec aac "
-                        u"-aq 1 $dest",
-                        u"extension": u"m4a",
-                    },
-                    u"alac": {
-                        u"command": u"ffmpeg -i $source -y -vn -acodec alac $dest",
-                        u"extension": u"m4a",
-                    },
-                    u"flac": u"ffmpeg -i $source -y -vn -acodec flac $dest",
-                    u"mp3": u"ffmpeg -i $source -y -vn -aq 2 $dest",
-                    u"opus": u"ffmpeg -i $source -y -vn -acodec libopus -ab 96k $dest",
-                    u"ogg": u"ffmpeg -i $source -y -vn -acodec libvorbis -aq 3 $dest",
-                    u"wma": u"ffmpeg -i $source -y -vn -acodec wmav2 -vn $dest",
+        self.config.add({
+            u"dest": None,
+            u"pretend": False,
+            u"link": False,
+            u"hardlink": False,
+            u"threads": util.cpu_count(),
+            u"format": u"mp3",
+            u"id3v23": u"inherit",
+            u"formats": {
+                u"aac": {
+                    u"command": u"ffmpeg -i $source -y -vn -acodec aac "
+                    u"-aq 1 $dest",
+                    u"extension": u"m4a",
                 },
-                u"max_bitrate": 500,
-                u"auto": False,
-                u"tmpdir": None,
-                u"quiet": False,
-                u"embed": True,
-                u"paths": {},
-                u"no_convert": u"",
-                u"never_convert_lossy_files": False,
-                u"copy_album_art": False,
-                u"album_art_maxwidth": 0,
-            }
-        )
+                u"alac": {
+                    u"command": u"ffmpeg -i $source -y -vn -acodec alac $dest",
+                    u"extension": u"m4a",
+                },
+                u"flac": u"ffmpeg -i $source -y -vn -acodec flac $dest",
+                u"mp3": u"ffmpeg -i $source -y -vn -aq 2 $dest",
+                u"opus":
+                u"ffmpeg -i $source -y -vn -acodec libopus -ab 96k $dest",
+                u"ogg":
+                u"ffmpeg -i $source -y -vn -acodec libvorbis -aq 3 $dest",
+                u"wma": u"ffmpeg -i $source -y -vn -acodec wmav2 -vn $dest",
+            },
+            u"max_bitrate": 500,
+            u"auto": False,
+            u"tmpdir": None,
+            u"quiet": False,
+            u"embed": True,
+            u"paths": {},
+            u"no_convert": u"",
+            u"never_convert_lossy_files": False,
+            u"copy_album_art": False,
+            u"album_art_maxwidth": 0,
+        })
         self.early_import_stages = [self.auto_convert]
 
         self.register_listener("import_task_files", self._cleanup)
 
     def commands(self):
         cmd = ui.Subcommand("convert", help=u"convert to external location")
-        cmd.parser.add_option(
-            "-p", "--pretend", action="store_true", help=u"show actions but do nothing"
-        )
+        cmd.parser.add_option("-p",
+                              "--pretend",
+                              action="store_true",
+                              help=u"show actions but do nothing")
         cmd.parser.add_option(
             "-t",
             "--threads",
@@ -176,9 +175,10 @@ class ConvertPlugin(BeetsPlugin):
             help=u"keep only the converted \
                               and move the old files",
         )
-        cmd.parser.add_option(
-            "-d", "--dest", action="store", help=u"set the destination directory"
-        )
+        cmd.parser.add_option("-d",
+                              "--dest",
+                              action="store",
+                              help=u"set the destination directory")
         cmd.parser.add_option(
             "-f",
             "--format",
@@ -255,7 +255,10 @@ class ConvertPlugin(BeetsPlugin):
         args = shlex.split(command)
         encode_cmd = []
         for i, arg in enumerate(args):
-            args[i] = Template(arg).safe_substitute({"source": source, "dest": dest,})
+            args[i] = Template(arg).safe_substitute({
+                "source": source,
+                "dest": dest,
+            })
             if six.PY2:
                 encode_cmd.append(args[i])
             else:
@@ -269,9 +272,8 @@ class ConvertPlugin(BeetsPlugin):
             util.command_output(encode_cmd)
         except subprocess.CalledProcessError as exc:
             # Something went wrong (probably Ctrl+C), remove temporary files
-            self._log.info(
-                u"Encoding {0} failed. Cleaning up...", util.displayable_path(source)
-            )
+            self._log.info(u"Encoding {0} failed. Cleaning up...",
+                           util.displayable_path(source))
             self._log.debug(
                 u"Command {0} exited with status {1}: {2}",
                 args,
@@ -282,24 +284,22 @@ class ConvertPlugin(BeetsPlugin):
             util.prune_dirs(os.path.dirname(dest))
             raise
         except OSError as exc:
-            raise ui.UserError(
-                u"convert: couldn't invoke '{0}': {1}".format(
-                    u" ".join(ui.decargs(args)), exc
-                )
-            )
+            raise ui.UserError(u"convert: couldn't invoke '{0}': {1}".format(
+                u" ".join(ui.decargs(args)), exc))
 
         if not (quiet or pretend):
-            self._log.info(u"Finished encoding {0}", util.displayable_path(source))
+            self._log.info(u"Finished encoding {0}",
+                           util.displayable_path(source))
 
     def convert_item(
-        self,
-        dest_dir,
-        keep_new,
-        path_formats,
-        fmt,
-        pretend=False,
-        link=False,
-        hardlink=False,
+            self,
+            dest_dir,
+            keep_new,
+            path_formats,
+            fmt,
+            pretend=False,
+            link=False,
+            hardlink=False,
     ):
         """A pipeline thread that converts `Item` objects from a
         library.
@@ -308,7 +308,8 @@ class ConvertPlugin(BeetsPlugin):
         item, original, converted = None, None, None
         while True:
             item = yield (item, original, converted)
-            dest = item.destination(basedir=dest_dir, path_formats=path_formats)
+            dest = item.destination(basedir=dest_dir,
+                                    path_formats=path_formats)
 
             # When keeping the new file in the library, we first move the
             # current (pristine) file to the destination. We'll then copy it
@@ -346,7 +347,8 @@ class ConvertPlugin(BeetsPlugin):
                         util.displayable_path(original),
                     )
                 else:
-                    self._log.info(u"Moving to {0}", util.displayable_path(original))
+                    self._log.info(u"Moving to {0}",
+                                   util.displayable_path(original))
                     util.move(item.path, original)
 
             if should_transcode(item, fmt):
@@ -368,13 +370,11 @@ class ConvertPlugin(BeetsPlugin):
                     )
                 else:
                     # No transcoding necessary.
-                    msg = (
-                        "Hardlinking"
-                        if hardlink
-                        else ("Linking" if link else "Copying")
-                    )
+                    msg = ("Hardlinking" if hardlink else
+                           ("Linking" if link else "Copying"))
 
-                    self._log.info(u"{1} {0}", util.displayable_path(item.path), msg)
+                    self._log.info(u"{1} {0}",
+                                   util.displayable_path(item.path), msg)
 
                     if hardlink:
                         util.hardlink(original, converted)
@@ -416,13 +416,23 @@ class ConvertPlugin(BeetsPlugin):
                     )
 
             if keep_new:
-                plugins.send("after_convert", item=item, dest=dest, keepnew=True)
+                plugins.send("after_convert",
+                             item=item,
+                             dest=dest,
+                             keepnew=True)
             else:
-                plugins.send("after_convert", item=item, dest=converted, keepnew=False)
+                plugins.send("after_convert",
+                             item=item,
+                             dest=converted,
+                             keepnew=False)
 
-    def copy_album_art(
-        self, album, dest_dir, path_formats, pretend=False, link=False, hardlink=False
-    ):
+    def copy_album_art(self,
+                       album,
+                       dest_dir,
+                       path_formats,
+                       pretend=False,
+                       link=False,
+                       hardlink=False):
         """Copies or converts the associated cover art of the album. Album must
         have at least one track.
         """
@@ -436,7 +446,8 @@ class ConvertPlugin(BeetsPlugin):
 
         # Get the destination of the first item (track) of the album, we use
         # this function to format the path accordingly to path_formats.
-        dest = album_item.destination(basedir=dest_dir, path_formats=path_formats)
+        dest = album_item.destination(basedir=dest_dir,
+                                      path_formats=path_formats)
 
         # Remove item from the path.
         dest = os.path.join(*util.components(dest)[:-1])
@@ -465,10 +476,8 @@ class ConvertPlugin(BeetsPlugin):
             if size:
                 resize = size[0] > maxwidth
             else:
-                self._log.warning(
-                    u"Could not get size of image (please see "
-                    u"documentation for dependencies)."
-                )
+                self._log.warning(u"Could not get size of image (please see "
+                                  u"documentation for dependencies).")
 
         # Either copy or resize (while copying) the image.
         if resize:
@@ -490,7 +499,8 @@ class ConvertPlugin(BeetsPlugin):
                     msg,
                 )
             else:
-                msg = "Hardlinking" if hardlink else ("Linking" if link else "Copying")
+                msg = "Hardlinking" if hardlink else (
+                    "Linking" if link else "Copying")
 
                 self._log.info(
                     u"{2} cover art from {0} to {1}",
@@ -552,13 +562,12 @@ class ConvertPlugin(BeetsPlugin):
 
         if opts.album and self.config["copy_album_art"]:
             for album in albums:
-                self.copy_album_art(album, dest, path_formats, pretend, link, hardlink)
+                self.copy_album_art(album, dest, path_formats, pretend, link,
+                                    hardlink)
 
         convert = [
-            self.convert_item(
-                dest, opts.keep_new, path_formats, fmt, pretend, link, hardlink
-            )
-            for _ in range(threads)
+            self.convert_item(dest, opts.keep_new, path_formats, fmt, pretend,
+                              link, hardlink) for _ in range(threads)
         ]
         pipe = util.pipeline.Pipeline([iter(items), convert])
         pipe.run_parallel()

@@ -129,7 +129,7 @@ class ReadEvent(WaitableEvent):
         self.bufsize = bufsize
 
     def waitables(self):
-        return (self.fd,), (), ()
+        return (self.fd, ), (), ()
 
     def fire(self):
         return self.fd.read(self.bufsize)
@@ -143,7 +143,7 @@ class WriteEvent(WaitableEvent):
         self.data = data
 
     def waitable(self):
-        return (), (self.fd,), ()
+        return (), (self.fd, ), ()
 
     def fire(self):
         self.fd.write(self.data)
@@ -180,7 +180,8 @@ def _event_select(events):
                 waitable_to_event[("x", waitable)] = event
 
     # If we have a any sleeping threads, determine how long to sleep.
-    timeout = max(earliest_wakeup - time.time(), 0.0) if earliest_wakeup else None
+    timeout = max(earliest_wakeup -
+                  time.time(), 0.0) if earliest_wakeup else None
     # Perform select() if we have any waitables.
     if rlist or wlist or xlist:
         rready, wready, xready = select.select(rlist, wlist, xlist, timeout)
@@ -351,12 +352,12 @@ def run(root_coro):
                 try:
                     value = event.fire()
                 except socket.error as exc:
-                    if isinstance(exc.args, tuple) and exc.args[0] == errno.EPIPE:
+                    if isinstance(exc.args,
+                                  tuple) and exc.args[0] == errno.EPIPE:
                         # Broken pipe. Remote host disconnected.
                         pass
-                    elif (
-                        isinstance(exc.args, tuple) and exc.args[0] == errno.ECONNRESET
-                    ):
+                    elif (isinstance(exc.args, tuple)
+                          and exc.args[0] == errno.ECONNRESET):
                         # Connection was reset by peer.
                         pass
                     else:
@@ -503,7 +504,7 @@ class AcceptEvent(WaitableEvent):
         self.listener = listener
 
     def waitables(self):
-        return (self.listener.sock,), (), ()
+        return (self.listener.sock, ), (), ()
 
     def fire(self):
         sock, addr = self.listener.sock.accept()
@@ -520,7 +521,7 @@ class ReceiveEvent(WaitableEvent):
         self.bufsize = bufsize
 
     def waitables(self):
-        return (self.conn.sock,), (), ()
+        return (self.conn.sock, ), (), ()
 
     def fire(self):
         return self.conn.sock.recv(self.bufsize)
@@ -537,7 +538,7 @@ class SendEvent(WaitableEvent):
         self.sendall = sendall
 
     def waitables(self):
-        return (), (self.conn.sock,), ()
+        return (), (self.conn.sock, ), ()
 
     def fire(self):
         if self.sendall:

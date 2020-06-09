@@ -39,10 +39,11 @@ class ExportPluginTest(unittest.TestCase, TestHelper):
 
     def execute_command(self, format_type, artist):
         query = ",".join(self.test_values.keys())
-        return self.run_with_output("export", "-f", format_type, "-i", query, artist)
+        return self.run_with_output("export", "-f", format_type, "-i", query,
+                                    artist)
 
     def create_item(self):
-        (item,) = self.add_item_fixtures()
+        (item, ) = self.add_item_fixtures()
         item.artist = "xartist"
         item.title = self.test_values["title"]
         item.album = self.test_values["album"]

@@ -62,9 +62,8 @@ class MusicBrainzAPIError(util.HumanReadableException):
         super(MusicBrainzAPIError, self).__init__(reason, verb, tb)
 
     def get_message(self):
-        return u"{0} in {1} with query {2}".format(
-            self._reasonstr(), self.verb, repr(self.query)
-        )
+        return u"{0} in {1} with query {2}".format(self._reasonstr(),
+                                                   self.verb, repr(self.query))
 
 
 log = logging.getLogger("beets")
@@ -121,7 +120,9 @@ def _preferred_alias(aliases):
     # Search configured locales in order.
     for locale in config["import"]["languages"].as_str_seq():
         # Find matching primary aliases for this locale.
-        matches = [a for a in aliases if a["locale"] == locale and "primary" in a]
+        matches = [
+            a for a in aliases if a["locale"] == locale and "primary" in a
+        ]
         # Skip to the next locale if we have no matches
         if not matches:
             continue
@@ -190,9 +191,11 @@ def _flatten_artist_credit(credit):
     )
 
 
-def track_info(
-    recording, index=None, medium=None, medium_index=None, medium_total=None
-):
+def track_info(recording,
+               index=None,
+               medium=None,
+               medium_index=None,
+               medium_total=None):
     """Translates a MusicBrainz recording result dictionary into a beets
     ``TrackInfo`` object. Three parameters are optional and are used
     only for tracks that appear on releases (non-singletons): ``index``,
@@ -214,8 +217,7 @@ def track_info(
     if recording.get("artist-credit"):
         # Get the artist names.
         info.artist, info.artist_sort, info.artist_credit = _flatten_artist_credit(
-            recording["artist-credit"]
-        )
+            recording["artist-credit"])
 
         # Get the ID and sort name of the first artist.
         artist = recording["artist-credit"][0]["artist"]
@@ -235,14 +237,16 @@ def track_info(
         if "disambiguation" in work_relation["work"]:
             info.work_disambig = work_relation["work"]["disambiguation"]
 
-        for artist_relation in work_relation["work"].get("artist-relation-list", ()):
+        for artist_relation in work_relation["work"].get(
+                "artist-relation-list", ()):
             if "type" in artist_relation:
                 type = artist_relation["type"]
                 if type == "lyricist":
                     lyricist.append(artist_relation["artist"]["name"])
                 elif type == "composer":
                     composer.append(artist_relation["artist"]["name"])
-                    composer_sort.append(artist_relation["artist"]["sort-name"])
+                    composer_sort.append(
+                        artist_relation["artist"]["sort-name"])
     if lyricist:
         info.lyricist = u", ".join(lyricist)
     if composer:
@@ -289,8 +293,7 @@ def album_info(release):
     """
     # Get artist name using join phrases.
     artist_name, artist_sort_name, artist_credit_name = _flatten_artist_credit(
-        release["artist-credit"]
-    )
+        release["artist-credit"])
 
     # Basic info.
     track_infos = []
@@ -303,7 +306,8 @@ def album_info(release):
             continue
 
         all_tracks = medium["track-list"]
-        if "data-track-list" in medium and not config["match"]["ignore_data_tracks"]:
+        if "data-track-list" in medium and not config["match"][
+                "ignore_data_tracks"]:
             all_tracks += medium["data-track-list"]
         track_count = len(all_tracks)
 
@@ -312,17 +316,13 @@ def album_info(release):
 
         for track in all_tracks:
 
-            if (
-                "title" in track["recording"]
-                and track["recording"]["title"] in SKIPPED_TRACKS
-            ):
+            if ("title" in track["recording"]
+                    and track["recording"]["title"] in SKIPPED_TRACKS):
                 continue
 
-            if (
-                "video" in track["recording"]
-                and track["recording"]["video"] == "true"
-                and config["match"]["ignore_video_tracks"]
-            ):
+            if ("video" in track["recording"]
+                    and track["recording"]["video"] == "true"
+                    and config["match"]["ignore_video_tracks"]):
                 continue
 
             # Basic information from the recording.
@@ -345,8 +345,7 @@ def album_info(release):
             if track.get("artist-credit"):
                 # Get the artist names.
                 ti.artist, ti.artist_sort, ti.artist_credit = _flatten_artist_credit(
-                    track["artist-credit"]
-                )
+                    track["artist-credit"])
                 ti.artist_id = track["artist-credit"][0]["artist"]["id"]
             if track.get("length"):
                 ti.length = int(track["length"]) / (1000.0)
@@ -374,7 +373,8 @@ def album_info(release):
 
     # Get the disambiguation strings at the release and release group level.
     if release["release-group"].get("disambiguation"):
-        info.releasegroupdisambig = release["release-group"].get("disambiguation")
+        info.releasegroupdisambig = release["release-group"].get(
+            "disambiguation")
     if release.get("disambiguation"):
         info.albumdisambig = release.get("disambiguation")
 
@@ -392,19 +392,12 @@ def album_info(release):
         rel_primarytype = release["release-group"]["primary-type"]
         if rel_primarytype:
             log.debug("primary MB release type: " + rel_primarytype.lower())
-    if (
-        "secondary-type-list" in release["release-group"]
-        and release["release-group"]["secondary-type-list"]
-    ):
-        log.debug(
-            "secondary MB release type(s): "
-            + ", ".join(
-                [
-                    secondarytype.lower()
-                    for secondarytype in release["release-group"]["secondary-type-list"]
-                ]
-            )
-        )
+    if ("secondary-type-list" in release["release-group"]
+            and release["release-group"]["secondary-type-list"]):
+        log.debug("secondary MB release type(s): " + ", ".join([
+            secondarytype.lower() for secondarytype in release["release-group"]
+            ["secondary-type-list"]
+        ]))
 
     # Release events.
     info.country, release_date = _preferred_release_event(release)
@@ -474,12 +467,10 @@ def match_album(artist, album, tracks=None, extra_tags=None):
     try:
         log.debug(u"Searching for MusicBrainz releases with: {!r}", criteria)
         res = musicbrainzngs.search_releases(
-            limit=config["musicbrainz"]["searchlimit"].get(int), **criteria
-        )
+            limit=config["musicbrainz"]["searchlimit"].get(int), **criteria)
     except musicbrainzngs.MusicBrainzError as exc:
-        raise MusicBrainzAPIError(
-            exc, "release search", criteria, traceback.format_exc()
-        )
+        raise MusicBrainzAPIError(exc, "release search", criteria,
+                                  traceback.format_exc())
     for release in res["release-list"]:
         # The search result is missing some data (namely, the tracks),
         # so we just use the ID and fetch the rest of the information.
@@ -502,12 +493,10 @@ def match_track(artist, title):
 
     try:
         res = musicbrainzngs.search_recordings(
-            limit=config["musicbrainz"]["searchlimit"].get(int), **criteria
-        )
+            limit=config["musicbrainz"]["searchlimit"].get(int), **criteria)
     except musicbrainzngs.MusicBrainzError as exc:
-        raise MusicBrainzAPIError(
-            exc, "recording search", criteria, traceback.format_exc()
-        )
+        raise MusicBrainzAPIError(exc, "recording search", criteria,
+                                  traceback.format_exc())
     for recording in res["recording-list"]:
         yield track_info(recording)
 
@@ -538,9 +527,8 @@ def album_for_id(releaseid):
         log.debug(u"Album ID match failed.")
         return None
     except musicbrainzngs.MusicBrainzError as exc:
-        raise MusicBrainzAPIError(
-            exc, u"get release by ID", albumid, traceback.format_exc()
-        )
+        raise MusicBrainzAPIError(exc, u"get release by ID", albumid,
+                                  traceback.format_exc())
     return album_info(res["release"])
 
 
@@ -558,7 +546,6 @@ def track_for_id(releaseid):
         log.debug(u"Track ID match failed.")
         return None
     except musicbrainzngs.MusicBrainzError as exc:
-        raise MusicBrainzAPIError(
-            exc, u"get recording by ID", trackid, traceback.format_exc()
-        )
+        raise MusicBrainzAPIError(exc, u"get recording by ID", trackid,
+                                  traceback.format_exc())
     return track_info(res["recording"])

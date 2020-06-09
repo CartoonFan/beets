@@ -56,7 +56,8 @@ class PluginLogFilter(logging.Filter):
         self.prefix = u"{0}: ".format(plugin.name)
 
     def filter(self, record):
-        if hasattr(record.msg, "msg") and isinstance(record.msg.msg, six.string_types):
+        if hasattr(record.msg, "msg") and isinstance(record.msg.msg,
+                                                     six.string_types):
             # A _LogMessage from our hacked-up Logging replacement.
             record.msg.msg = self.prefix + record.msg.msg
         elif isinstance(record.msg, six.string_types):
@@ -102,7 +103,8 @@ class BeetsPlugin(object):
         """Adjust all the stages in `stages` to WARNING logging level.
         """
         return [
-            self._set_log_level_and_params(logging.WARNING, stage) for stage in stages
+            self._set_log_level_and_params(logging.WARNING, stage)
+            for stage in stages
         ]
 
     def get_early_import_stages(self):
@@ -149,7 +151,8 @@ class BeetsPlugin(object):
                     if exc.args[0].startswith(func.__name__):
                         # caused by 'func' and not stuff internal to 'func'
                         kwargs = {
-                            arg: val for arg, val in kwargs.items() if arg in func_args
+                            arg: val
+                            for arg, val in kwargs.items() if arg in func_args
                         }
                         return func(*args, **kwargs)
                     else:
@@ -290,17 +293,15 @@ def load_plugins(names=()):
                     raise
             else:
                 for obj in getattr(namespace, name).__dict__.values():
-                    if (
-                        isinstance(obj, type)
-                        and issubclass(obj, BeetsPlugin)
-                        and obj != BeetsPlugin
-                        and obj not in _classes
-                    ):
+                    if (isinstance(obj, type) and issubclass(obj, BeetsPlugin)
+                            and obj != BeetsPlugin and obj not in _classes):
                         _classes.add(obj)
 
         except Exception:
             log.warning(
-                u"** error loading plugin {}:\n{}", name, traceback.format_exc(),
+                u"** error loading plugin {}:\n{}",
+                name,
+                traceback.format_exc(),
             )
 
 
@@ -355,8 +356,7 @@ def types(model_cls):
                 raise PluginConflictException(
                     u"Plugin {0} defines flexible field {1} "
                     u"which has already been defined with "
-                    u"another type.".format(plugin.name, field)
-                )
+                    u"another type.".format(plugin.name, field))
         types.update(plugin_types)
     return types
 
@@ -397,7 +397,8 @@ def candidates(items, artist, album, va_likely, extra_tags=None):
     """Gets MusicBrainz candidates for an album from each plugin.
     """
     for plugin in find_plugins():
-        yield from plugin.candidates(items, artist, album, va_likely, extra_tags)
+        yield from plugin.candidates(items, artist, album, va_likely,
+                                     extra_tags)
 
 
 def item_candidates(item, artist, title):
@@ -517,7 +518,8 @@ def feat_tokens(for_artist=True):
     feat_words = ["ft", "featuring", "feat", "feat.", "ft."]
     if for_artist:
         feat_words += ["with", "vs", "and", "con", "&"]
-    return r"(?<=\s)(?:{0})(?=\s)".format("|".join(re.escape(x) for x in feat_words))
+    return r"(?<=\s)(?:{0})(?=\s)".format("|".join(
+        re.escape(x) for x in feat_words))
 
 
 def sanitize_choices(choices, choices_all):
@@ -719,7 +721,8 @@ class MetadataSourcePlugin(object):
         :return: Album/track ID.
         :rtype: str
         """
-        self._log.debug(u"Searching {} for {} '{}'", self.data_source, url_type, id_)
+        self._log.debug(u"Searching {} for {} '{}'", self.data_source,
+                        url_type, id_)
         match = re.search(self.id_regex["pattern"].format(url_type), str(id_))
         if match:
             id_ = match.group(self.id_regex["match_group"])
@@ -763,17 +766,17 @@ class MetadataSourcePlugin(object):
         :return: Candidate TrackInfo objects.
         :rtype: list[beets.autotag.hooks.TrackInfo]
         """
-        tracks = self._search_api(
-            query_type="track", keywords=title, filters={"artist": artist}
-        )
+        tracks = self._search_api(query_type="track",
+                                  keywords=title,
+                                  filters={"artist": artist})
         return [self.track_for_id(track_data=track) for track in tracks]
 
     def album_distance(self, items, album_info, mapping):
-        return get_distance(
-            data_source=self.data_source, info=album_info, config=self.config
-        )
+        return get_distance(data_source=self.data_source,
+                            info=album_info,
+                            config=self.config)
 
     def track_distance(self, item, track_info):
-        return get_distance(
-            data_source=self.data_source, info=track_info, config=self.config
-        )
+        return get_distance(data_source=self.data_source,
+                            info=track_info,
+                            config=self.config)

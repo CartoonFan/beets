@@ -27,12 +27,10 @@ from beets.util import link
 from beets.util import mkdirall
 from beets.util import normpath
 from beets.util import syspath
-
 """Write paths of imported files in various formats to ease later import in a
 music player. Also allow printing the new file locations to stdout in case
 one wants to manually add music to a player by its path.
 """
-
 
 M3U_DEFAULT_NAME = "imported.m3u"
 
@@ -44,10 +42,8 @@ def _build_m3u_filename(basename):
     basename = re.sub(r"[\s,/\\'\"]", "_", basename)
     date = datetime.datetime.now().strftime("%Y%m%d_%Hh%M")
     return normpath(
-        os.path.join(
-            config["importfeeds"]["dir"].as_filename(), date + "_" + basename + ".m3u"
-        )
-    )
+        os.path.join(config["importfeeds"]["dir"].as_filename(),
+                     date + "_" + basename + ".m3u"))
 
 
 def _write_m3u(m3u_path, items_paths):
@@ -63,15 +59,13 @@ class ImportFeedsPlugin(BeetsPlugin):
     def __init__(self):
         super(ImportFeedsPlugin, self).__init__()
 
-        self.config.add(
-            {
-                "formats": [],
-                "m3u_name": u"imported.m3u",
-                "dir": None,
-                "relative_to": None,
-                "absolute_path": False,
-            }
-        )
+        self.config.add({
+            "formats": [],
+            "m3u_name": u"imported.m3u",
+            "dir": None,
+            "relative_to": None,
+            "absolute_path": False,
+        })
 
         relative_to = self.config["relative_to"].get()
         if relative_to:

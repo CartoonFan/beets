@@ -18,9 +18,10 @@ from beets.plugins import BeetsPlugin
 class ImportAddedPlugin(BeetsPlugin):
     def __init__(self):
         super(ImportAddedPlugin, self).__init__()
-        self.config.add(
-            {"preserve_mtimes": False, "preserve_write_mtimes": False,}
-        )
+        self.config.add({
+            "preserve_mtimes": False,
+            "preserve_write_mtimes": False,
+        })
 
         # item.id for new items that were reimported
         self.reimported_item_ids = None
@@ -51,20 +52,12 @@ class ImportAddedPlugin(BeetsPlugin):
         return album.path in self.replaced_album_paths
 
     def record_if_inplace(self, task, session):
-        if not (
-            session.config["copy"]
-            or session.config["move"]
-            or session.config["link"]
-            or session.config["hardlink"]
-        ):
-            self._log.debug(
-                u"In place import detected, recording mtimes from " u"source paths"
-            )
-            items = (
-                [task.item]
-                if isinstance(task, importer.SingletonImportTask)
-                else task.items
-            )
+        if not (session.config["copy"] or session.config["move"]
+                or session.config["link"] or session.config["hardlink"]):
+            self._log.debug(u"In place import detected, recording mtimes from "
+                            u"source paths")
+            items = ([task.item] if isinstance(
+                task, importer.SingletonImportTask) else task.items)
             for item in items:
                 self.record_import_mtime(item, item.path, item.path)
 
@@ -96,7 +89,8 @@ class ImportAddedPlugin(BeetsPlugin):
         mtime = os.stat(util.syspath(source)).st_mtime
         self.item_mtime[destination] = mtime
         self._log.debug(
-            u"Recorded mtime {0} for item '{1}' imported from " u"'{2}'",
+            u"Recorded mtime {0} for item '{1}' imported from "
+            u"'{2}'",
             mtime,
             util.displayable_path(destination),
             util.displayable_path(source),
@@ -131,7 +125,8 @@ class ImportAddedPlugin(BeetsPlugin):
     def update_item_times(self, lib, item):
         if self.reimported_item(item):
             self._log.debug(
-                u"Item '{0}' is reimported, skipping import of " u"added date.",
+                u"Item '{0}' is reimported, skipping import of "
+                u"added date.",
                 util.displayable_path(item.path),
             )
             return

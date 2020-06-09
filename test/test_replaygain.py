@@ -108,22 +108,20 @@ class ReplayGainCliTestBase(TestHelper):
 
         # Skip the test if rg_track_peak and rg_track gain is None, assuming
         # that it could only happen if the decoder plugins are missing.
-        if all(
-            i.rg_track_peak is None and i.rg_track_gain is None
-            for i in self.lib.items()
-        ):
+        if all(i.rg_track_peak is None and i.rg_track_gain is None
+               for i in self.lib.items()):
             self.skipTest(u"decoder plugins could not be loaded.")
 
         for item in self.lib.items():
             self.assertIsNotNone(item.rg_track_peak)
             self.assertIsNotNone(item.rg_track_gain)
             mediafile = MediaFile(item.path)
-            self.assertAlmostEqual(
-                mediafile.rg_track_peak, item.rg_track_peak, places=6
-            )
-            self.assertAlmostEqual(
-                mediafile.rg_track_gain, item.rg_track_gain, places=2
-            )
+            self.assertAlmostEqual(mediafile.rg_track_peak,
+                                   item.rg_track_peak,
+                                   places=6)
+            self.assertAlmostEqual(mediafile.rg_track_gain,
+                                   item.rg_track_gain,
+                                   places=2)
 
     def test_cli_skips_calculated_tracks(self):
         self.run_command(u"replaygain")
@@ -233,9 +231,8 @@ class ReplayGainLdnsCliMalformedTest(TestHelper, unittest.TestCase):
 
         # Patch call to return nothing, bypassing the bs1770gain installation
         # check.
-        call_patch.return_value = CommandOutput(
-            stdout=b"bs1770gain 0.0.0, ", stderr=b""
-        )
+        call_patch.return_value = CommandOutput(stdout=b"bs1770gain 0.0.0, ",
+                                                stderr=b"")
         try:
             self.load_plugins("replaygain")
         except Exception:

@@ -54,13 +54,18 @@ def edit(filename, log):
     try:
         subprocess.call(cmd)
     except OSError as exc:
-        raise ui.UserError(u"could not run editor command {!r}: {}".format(cmd[0], exc))
+        raise ui.UserError(u"could not run editor command {!r}: {}".format(
+            cmd[0], exc))
 
 
 def dump(arg):
     """Dump a sequence of dictionaries as YAML for editing.
     """
-    return yaml.safe_dump_all(arg, allow_unicode=True, default_flow_style=False,)
+    return yaml.safe_dump_all(
+        arg,
+        allow_unicode=True,
+        default_flow_style=False,
+    )
 
 
 def load(s):
@@ -75,9 +80,7 @@ def load(s):
             if not isinstance(d, dict):
                 raise ParseError(
                     u"each entry must be a dictionary; found {}".format(
-                        type(d).__name__
-                    )
-                )
+                        type(d).__name__))
 
             # Convert all keys to strings. They started out as strings,
             # but the user may have inadvertently messed this up.
@@ -147,22 +150,20 @@ class EditPlugin(plugins.BeetsPlugin):
     def __init__(self):
         super(EditPlugin, self).__init__()
 
-        self.config.add(
-            {
-                # The default fields to edit.
-                "albumfields": "album albumartist",
-                "itemfields": "track title artist album",
-                # Silently ignore any changes to these fields.
-                "ignore_fields": "id path",
-            }
-        )
+        self.config.add({
+            # The default fields to edit.
+            "albumfields": "album albumartist",
+            "itemfields": "track title artist album",
+            # Silently ignore any changes to these fields.
+            "ignore_fields": "id path",
+        })
 
-        self.register_listener(
-            "before_choose_candidate", self.before_choose_candidate_listener
-        )
+        self.register_listener("before_choose_candidate",
+                               self.before_choose_candidate_listener)
 
     def commands(self):
-        edit_command = ui.Subcommand("edit", help=u"interactively edit metadata")
+        edit_command = ui.Subcommand("edit",
+                                     help=u"interactively edit metadata")
         edit_command.parser.add_option(
             u"-f",
             u"--field",
@@ -171,7 +172,10 @@ class EditPlugin(plugins.BeetsPlugin):
             help=u"edit this field also",
         )
         edit_command.parser.add_option(
-            u"--all", action="store_true", dest="all", help=u"edit all fields",
+            u"--all",
+            action="store_true",
+            dest="all",
+            help=u"edit all fields",
         )
         edit_command.parser.add_album_option()
         edit_command.func = self._edit_command
@@ -238,9 +242,10 @@ class EditPlugin(plugins.BeetsPlugin):
         if six.PY2:
             new = NamedTemporaryFile(mode="w", suffix=".yaml", delete=False)
         else:
-            new = NamedTemporaryFile(
-                mode="w", suffix=".yaml", delete=False, encoding="utf-8"
-            )
+            new = NamedTemporaryFile(mode="w",
+                                     suffix=".yaml",
+                                     delete=False,
+                                     encoding="utf-8")
         old_str = dump(old_data)
         new.write(old_str)
         if six.PY2:
@@ -284,7 +289,8 @@ class EditPlugin(plugins.BeetsPlugin):
                     return False
 
                 # Confirm the changes.
-                choice = ui.input_options((u"continue Editing", u"apply", u"cancel"))
+                choice = ui.input_options(
+                    (u"continue Editing", u"apply", u"cancel"))
                 if choice == u"a":  # Apply.
                     return True
                 elif choice == u"c":  # Cancel.
@@ -292,7 +298,8 @@ class EditPlugin(plugins.BeetsPlugin):
                 elif choice == u"e":  # Keep editing.
                     # Reset the temporary changes to the objects. I we have a
                     # copy from above, use that, else reload from the database.
-                    objs = [(old_obj or obj) for old_obj, obj in zip(objs_old, objs)]
+                    objs = [(old_obj or obj)
+                            for old_obj, obj in zip(objs_old, objs)]
                     for obj in objs:
                         if not obj.id < 0:
                             obj.load()
@@ -310,9 +317,8 @@ class EditPlugin(plugins.BeetsPlugin):
         are temporary.
         """
         if len(old_data) != len(new_data):
-            self._log.warning(
-                u"number of objects changed from {} to {}", len(old_data), len(new_data)
-            )
+            self._log.warning(u"number of objects changed from {} to {}",
+                              len(old_data), len(new_data))
 
         obj_by_id = {o.id: o for o in objs}
         ignore_fields = self.config["ignore_fields"].as_str_seq()
@@ -349,8 +355,8 @@ class EditPlugin(plugins.BeetsPlugin):
         choices = [PromptChoice("d", "eDit", self.importer_edit)]
         if task.candidates:
             choices.append(
-                PromptChoice("c", "edit Candidates", self.importer_edit_candidate)
-            )
+                PromptChoice("c", "edit Candidates",
+                             self.importer_edit_candidate))
 
         return choices
 

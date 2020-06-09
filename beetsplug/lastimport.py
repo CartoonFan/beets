@@ -33,13 +33,15 @@ API_URL = "https://ws.audioscrobbler.com/2.0/"
 class LastImportPlugin(plugins.BeetsPlugin):
     def __init__(self):
         super(LastImportPlugin, self).__init__()
-        config["lastfm"].add(
-            {"user": "", "api_key": plugins.LASTFM_KEY,}
-        )
+        config["lastfm"].add({
+            "user": "",
+            "api_key": plugins.LASTFM_KEY,
+        })
         config["lastfm"]["api_key"].redact = True
-        self.config.add(
-            {"per_page": 500, "retry_limit": 3,}
-        )
+        self.config.add({
+            "per_page": 500,
+            "retry_limit": 3,
+        })
         self.item_types = {
             "play_count": types.INTEGER,
         }
@@ -64,7 +66,12 @@ class CustomUser(pylast.User):
     def __init__(self, *args, **kwargs):
         super(CustomUser, self).__init__(*args, **kwargs)
 
-    def _get_things(self, method, thing, thing_type, params=None, cacheable=True):
+    def _get_things(self,
+                    method,
+                    thing,
+                    thing_type,
+                    params=None,
+                    cacheable=True):
         """Returns a list of the most played thing_types by this thing, in a
         tuple with the total number of pages of results. Includes an MBID, if
         found.
@@ -87,9 +94,11 @@ class CustomUser(pylast.User):
 
         return seq, total_pages
 
-    def get_top_tracks_by_page(
-        self, period=pylast.PERIOD_OVERALL, limit=None, page=1, cacheable=True
-    ):
+    def get_top_tracks_by_page(self,
+                               period=pylast.PERIOD_OVERALL,
+                               limit=None,
+                               page=1,
+                               cacheable=True):
         """Returns the top tracks played by a user, in a tuple with the total
         number of pages of results.
         * period: The period of time. Possible values:
@@ -107,9 +116,8 @@ class CustomUser(pylast.User):
         if limit:
             params["limit"] = limit
 
-        return self._get_things(
-            "getTopTracks", "track", pylast.Track, params, cacheable
-        )
+        return self._get_things("getTopTracks", "track", pylast.Track, params,
+                                cacheable)
 
 
 def import_lastfm(lib, log):
@@ -179,17 +187,17 @@ def fetch_tracks(user, page, limit):
     """
     network = pylast.LastFMNetwork(api_key=config["lastfm"]["api_key"])
     user_obj = CustomUser(user, network)
-    results, total_pages = user_obj.get_top_tracks_by_page(limit=limit, page=page)
+    results, total_pages = user_obj.get_top_tracks_by_page(limit=limit,
+                                                           page=page)
     return (
-        [
-            {
-                "mbid": track.item.mbid if track.item.mbid else "",
-                "artist": {"name": track.item.artist.name},
-                "name": track.item.title,
-                "playcount": track.weight,
-            }
-            for track in results
-        ],
+        [{
+            "mbid": track.item.mbid if track.item.mbid else "",
+            "artist": {
+                "name": track.item.artist.name
+            },
+            "name": track.item.title,
+            "playcount": track.weight,
+        } for track in results],
         total_pages,
     )
 
@@ -213,36 +221,34 @@ def process_tracks(lib, tracks, log):
 
         # First try to query by musicbrainz's trackid
         if trackid:
-            song = lib.items(dbcore.query.MatchQuery("mb_trackid", trackid)).get()
+            song = lib.items(dbcore.query.MatchQuery("mb_trackid",
+                                                     trackid)).get()
 
         # If not, try just artist/title
         if song is None:
             log.debug(u"no album match, trying by artist/title")
-            query = dbcore.AndQuery(
-                [
-                    dbcore.query.SubstringQuery("artist", artist),
-                    dbcore.query.SubstringQuery("title", title),
-                ]
-            )
+            query = dbcore.AndQuery([
+                dbcore.query.SubstringQuery("artist", artist),
+                dbcore.query.SubstringQuery("title", title),
+            ])
             song = lib.items(query).get()
 
         # Last resort, try just replacing to utf-8 quote
         if song is None:
             title = title.replace("'", u"\u2019")
             log.debug(u"no title match, trying utf-8 single quote")
-            query = dbcore.AndQuery(
-                [
-                    dbcore.query.SubstringQuery("artist", artist),
-                    dbcore.query.SubstringQuery("title", title),
-                ]
-            )
+            query = dbcore.AndQuery([
+                dbcore.query.SubstringQuery("artist", artist),
+                dbcore.query.SubstringQuery("title", title),
+            ])
             song = lib.items(query).get()
 
         if song is not None:
             count = int(song.get("play_count", 0))
             new_count = int(tracks[num]["playcount"])
             log.debug(
-                u"match: {0} - {1} ({2}) " u"updating: play_count {3} => {4}",
+                u"match: {0} - {1} ({2}) "
+                u"updating: play_count {3} => {4}",
                 song.artist,
                 song.title,
                 song.album,

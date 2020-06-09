@@ -63,7 +63,6 @@ except ImportError:
         pass
 
 
-
 DIV_RE = re.compile(r"<(/?)div>?", re.I)
 COMMENT_RE = re.compile(r"<!--.*-->", re.S)
 TAG_RE = re.compile(r"<[^>]*>")
@@ -119,7 +118,6 @@ epub_tocdepth = 1
 epub_tocdup = False
 """
 
-
 # Utilities.
 
 
@@ -174,11 +172,11 @@ def extract_text_in(html, starttag):
                 pos = match.end()
         else:  # Opening tag.
             if level == 0:
-                parts.append(html[pos : match.start()])
+                parts.append(html[pos:match.start()])
             level += 1
 
         if level == -1:
-            parts.append(html[pos : match.start()])
+            parts.append(html[pos:match.start()])
             break
     else:
         print(u"no closing tag found!")
@@ -294,7 +292,11 @@ class Backend(object):
             # We're not overly worried about the NSA MITMing our lyrics scraper
             with warnings.catch_warnings():
                 warnings.simplefilter("ignore")
-                r = requests.get(url, verify=False, headers={"User-Agent": USER_AGENT,})
+                r = requests.get(url,
+                                 verify=False,
+                                 headers={
+                                     "User-Agent": USER_AGENT,
+                                 })
         except requests.RequestException as exc:
             self._log.debug(u"lyrics request failed: {0}", exc)
             return
@@ -337,7 +339,8 @@ class MusiXmatch(SymbolsReplaced):
         if not html:
             return
         if "We detected that your IP is blocked" in html:
-            self._log.warning(u"we are blocked at MusixMatch: url %s failed" % url)
+            self._log.warning(u"we are blocked at MusixMatch: url %s failed" %
+                              url)
             return
         html_part = html.split('<p class="mxm-lyrics__content')[-1]
         lyrics = extract_text_between(html_part, ">", "</p>")
@@ -373,7 +376,8 @@ class Genius(Backend):
         try:
             page = requests.get(page_url)
         except requests.RequestException as exc:
-            self._log.debug(u"Genius page request for {0} failed: {1}", page_url, exc)
+            self._log.debug(u"Genius page request for {0} failed: {1}",
+                            page_url, exc)
             return None
         html = BeautifulSoup(page.text, "html.parser")
 
@@ -387,12 +391,13 @@ class Genius(Backend):
         lyrics_div = html.find("div", class_="lyrics")
         if not lyrics_div:
             self._log.debug(u"Received unusual song page html")
-            verse_div = html.find("div", class_=re.compile("Lyrics__Container"))
+            verse_div = html.find("div",
+                                  class_=re.compile("Lyrics__Container"))
             if not verse_div:
                 if html.find(
-                    "div",
-                    class_=re.compile("LyricsPlaceholder__Message"),
-                    string="This song is an instrumental",
+                        "div",
+                        class_=re.compile("LyricsPlaceholder__Message"),
+                        string="This song is an instrumental",
                 ):
                     self._log.debug("Detected instrumental")
                     return "[Instrumental]"
@@ -403,7 +408,8 @@ class Genius(Backend):
             lyrics_div = verse_div.parent
             for br in lyrics_div.find_all("br"):
                 br.replace_with("\n")
-            ads = lyrics_div.find_all("div", class_=re.compile("InreadAd__Container"))
+            ads = lyrics_div.find_all("div",
+                                      class_=re.compile("InreadAd__Container"))
             for ad in ads:
                 ad.replace_with("\n")
 
@@ -413,7 +419,9 @@ class Genius(Backend):
         search_url = self.base_url + "/search"
         data = {"q": title + " " + artist.lower()}
         try:
-            response = requests.get(search_url, data=data, headers=self.headers)
+            response = requests.get(search_url,
+                                    data=data,
+                                    headers=self.headers)
         except requests.RequestException as exc:
             self._log.debug(u"Genius API request failed: {0}", exc)
             return None
@@ -427,9 +435,8 @@ class Genius(Backend):
         for hit in json["response"]["hits"]:
             # Genius uses zero-width characters to denote lowercase
             # artist names.
-            hit_artist = (
-                hit["result"]["primary_artist"]["name"].strip(u"\u200b").lower()
-            )
+            hit_artist = (hit["result"]["primary_artist"]["name"].strip(
+                u"\u200b").lower())
 
             if hit_artist == artist.lower():
                 return self.lyrics_from_song_page(hit["result"]["url"])
@@ -511,20 +518,17 @@ def scrape_lyrics_from_html(html):
 
     def is_text_notcode(text):
         length = len(text)
-        return (
-            length > 20
-            and text.count(" ") > length / 25
-            and (text.find("{") == -1 or text.find(";") == -1)
-        )
+        return (length > 20 and text.count(" ") > length / 25
+                and (text.find("{") == -1 or text.find(";") == -1))
 
     html = _scrape_strip_cruft(html)
     html = _scrape_merge_paragraphs(html)
 
     # extract all long text blocks that are not code
     try:
-        soup = BeautifulSoup(
-            html, "html.parser", parse_only=SoupStrainer(text=is_text_notcode)
-        )
+        soup = BeautifulSoup(html,
+                             "html.parser",
+                             parse_only=SoupStrainer(text=is_text_notcode))
     except HTMLParseError:
         return None
 
@@ -566,7 +570,8 @@ class Google(Backend):
             bad_triggers_occ += [artist]
 
         for item in bad_triggers:
-            bad_triggers_occ += [item] * len(re.findall(r"\W%s\W" % item, text, re.I))
+            bad_triggers_occ += [item] * len(
+                re.findall(r"\W%s\W" % item, text, re.I))
 
         if bad_triggers_occ:
             self._log.debug(u"Bad triggers detected: {0}", bad_triggers_occ)
@@ -580,7 +585,8 @@ class Google(Backend):
         pat = r"([^,\(]*)\((.*?)\)"  # Remove content within parentheses
         text = re.sub(pat, r"\g<1>", text).strip()
         try:
-            text = unicodedata.normalize("NFKD", text).encode("ascii", "ignore")
+            text = unicodedata.normalize("NFKD",
+                                         text).encode("ascii", "ignore")
             text = six.text_type(re.sub(r"[-\s]+", " ", text.decode("utf-8")))
         except UnicodeDecodeError:
             self._log.exception(u"Failing to normalize '{0}'", text)
@@ -595,7 +601,8 @@ class Google(Backend):
         """
         title = self.slugify(title.lower())
         artist = self.slugify(artist.lower())
-        sitename = re.search(u"//([^/]+)/.*", self.slugify(url_link.lower())).group(1)
+        sitename = re.search(u"//([^/]+)/.*",
+                             self.slugify(url_link.lower())).group(1)
         url_title = self.slugify(url_title.lower())
 
         # Check if URL title contains song title (exact match)
@@ -605,10 +612,9 @@ class Google(Backend):
         # or try extracting song title from URL title and check if
         # they are close enough
         tokens = (
-            [by + "_" + artist for by in self.BY_TRANS]
-            + [artist, sitename, sitename.replace("www.", "")]
-            + self.LYRICS_TRANS
-        )
+            [by + "_" + artist for by in self.BY_TRANS] +
+            [artist, sitename, sitename.replace("www.", "")] +
+            self.LYRICS_TRANS)
         tokens = [re.escape(t) for t in tokens]
         song_title = re.sub(u"(%s)" % u"|".join(tokens), u"", url_title)
 
@@ -642,7 +648,8 @@ class Google(Backend):
             for item in data["items"]:
                 url_link = item["link"]
                 url_title = item.get("title", u"")
-                if not self.is_page_candidate(url_link, url_title, title, artist):
+                if not self.is_page_candidate(url_link, url_title, title,
+                                              artist):
                     continue
                 html = self.fetch_url(url_link)
                 lyrics = scrape_lyrics_from_html(html)
@@ -650,7 +657,8 @@ class Google(Backend):
                     continue
 
                 if self.is_lyrics(lyrics, artist):
-                    self._log.debug(u"got lyrics from {0}", item["displayLink"])
+                    self._log.debug(u"got lyrics from {0}",
+                                    item["displayLink"])
                     return lyrics
 
 
@@ -666,22 +674,30 @@ class LyricsPlugin(plugins.BeetsPlugin):
     def __init__(self):
         super(LyricsPlugin, self).__init__()
         self.import_stages = [self.imported]
-        self.config.add(
-            {
-                "auto": True,
-                "bing_client_secret": None,
-                "bing_lang_from": [],
-                "bing_lang_to": None,
-                "google_API_key": None,
-                "google_engine_ID": u"009217259823014548361:lndtuqkycfu",
-                "genius_api_key": "Ryq93pUGm8bM6eUWwD_M3NOFFDAtp2yEE7W"
-                "76V-uFL5jks5dNvcGCdarqFjDhP9c",
-                "fallback": None,
-                "force": False,
-                "local": False,
-                "sources": self.SOURCES,
-            }
-        )
+        self.config.add({
+            "auto":
+            True,
+            "bing_client_secret":
+            None,
+            "bing_lang_from": [],
+            "bing_lang_to":
+            None,
+            "google_API_key":
+            None,
+            "google_engine_ID":
+            u"009217259823014548361:lndtuqkycfu",
+            "genius_api_key":
+            "Ryq93pUGm8bM6eUWwD_M3NOFFDAtp2yEE7W"
+            "76V-uFL5jks5dNvcGCdarqFjDhP9c",
+            "fallback":
+            None,
+            "force":
+            False,
+            "local":
+            False,
+            "sources":
+            self.SOURCES,
+        })
         self.config["bing_client_secret"].redact = True
         self.config["google_API_key"].redact = True
         self.config["google_engine_ID"].redact = True
@@ -697,9 +713,8 @@ class LyricsPlugin(plugins.BeetsPlugin):
         self.rest = None
 
         available_sources = list(self.SOURCES)
-        sources = plugins.sanitize_choices(
-            self.config["sources"].as_str_seq(), available_sources
-        )
+        sources = plugins.sanitize_choices(self.config["sources"].as_str_seq(),
+                                           available_sources)
 
         if "google" in sources:
             if not self.config["google_API_key"].get():
@@ -707,21 +722,19 @@ class LyricsPlugin(plugins.BeetsPlugin):
                 # configuration includes `google`. This way, the source
                 # is silent by default but can be enabled just by
                 # setting an API key.
-                self._log.debug(u"Disabling google source: " u"no API key configured.")
+                self._log.debug(u"Disabling google source: "
+                                u"no API key configured.")
                 sources.remove("google")
             elif not HAS_BEAUTIFUL_SOUP:
-                self._log.warning(
-                    u"To use the google lyrics source, you must "
-                    u"install the beautifulsoup4 module. See "
-                    u"the documentation for further details."
-                )
+                self._log.warning(u"To use the google lyrics source, you must "
+                                  u"install the beautifulsoup4 module. See "
+                                  u"the documentation for further details.")
                 sources.remove("google")
 
         if "genius" in sources and not HAS_BEAUTIFUL_SOUP:
             self._log.debug(
                 u"The Genius backend requires BeautifulSoup, which is not "
-                u"installed, so the source is disabled."
-            )
+                u"installed, so the source is disabled.")
             sources.remove("genius")
 
         self.config["bing_lang_from"] = [
@@ -730,14 +743,13 @@ class LyricsPlugin(plugins.BeetsPlugin):
         self.bing_auth_token = None
 
         if not HAS_LANGDETECT and self.config["bing_client_secret"].get():
-            self._log.warning(
-                u"To use bing translations, you need to "
-                u"install the langdetect module. See the "
-                u"documentation for further details."
-            )
+            self._log.warning(u"To use bing translations, you need to "
+                              u"install the langdetect module. See the "
+                              u"documentation for further details.")
 
         self.backends = [
-            self.SOURCE_BACKENDS[source](self.config, self._log) for source in sources
+            self.SOURCE_BACKENDS[source](self.config, self._log)
+            for source in sources
         ]
 
     def get_bing_access_token(self):
@@ -750,15 +762,13 @@ class LyricsPlugin(plugins.BeetsPlugin):
 
         oauth_url = "https://datamarket.accesscontrol.windows.net/v2/OAuth2-13"
         oauth_token = json.loads(
-            requests.post(oauth_url, data=urllib.parse.urlencode(params)).content
-        )
+            requests.post(oauth_url,
+                          data=urllib.parse.urlencode(params)).content)
         if "access_token" in oauth_token:
             return "Bearer " + oauth_token["access_token"]
         else:
-            self._log.warning(
-                u"Could not get Bing Translate API access token."
-                u' Check your "bing_client_secret" password'
-            )
+            self._log.warning(u"Could not get Bing Translate API access token."
+                              u' Check your "bing_client_secret" password')
 
     def commands(self):
         cmd = ui.Subcommand("lyrics", help="fetch song lyrics")
@@ -806,7 +816,10 @@ class LyricsPlugin(plugins.BeetsPlugin):
             for item in items:
                 if not (opts.local_only or self.config["local"]):
                     self.fetch_item_lyrics(
-                        lib, item, write, opts.force_refetch or self.config["force"],
+                        lib,
+                        item,
+                        write,
+                        opts.force_refetch or self.config["force"],
                     )
                 if item.lyrics:
                     if opts.printlyr:
@@ -817,15 +830,13 @@ class LyricsPlugin(plugins.BeetsPlugin):
                 # flush last artist & write to ReST
                 self.writerest(opts.writerest)
                 ui.print_(u"ReST files generated. to build, use one of:")
-                ui.print_(u"  sphinx-build -b html %s _build/html" % opts.writerest)
-                ui.print_(u"  sphinx-build -b epub %s _build/epub" % opts.writerest)
+                ui.print_(u"  sphinx-build -b html %s _build/html" %
+                          opts.writerest)
+                ui.print_(u"  sphinx-build -b epub %s _build/epub" %
+                          opts.writerest)
                 ui.print_(
-                    (
-                        u"  sphinx-build -b latex %s _build/latex "
-                        u"&& make -C _build/latex all-pdf"
-                    )
-                    % opts.writerest
-                )
+                    (u"  sphinx-build -b latex %s _build/latex "
+                     u"&& make -C _build/latex all-pdf") % opts.writerest)
 
         cmd.func = func
         return [cmd]
@@ -853,13 +864,15 @@ class LyricsPlugin(plugins.BeetsPlugin):
             self.rest += u"%s\n%s\n\n" % (tmpalbum, u"-" * len(tmpalbum))
         title_str = u":index:`%s`" % item.title.strip()
         block = u"| " + item.lyrics.replace(u"\n", u"\n| ")
-        self.rest += u"%s\n%s\n\n%s\n\n" % (title_str, u"~" * len(title_str), block)
+        self.rest += u"%s\n%s\n\n%s\n\n" % (title_str, u"~" * len(title_str),
+                                            block)
 
     def writerest(self, directory):
         """Write self.rest to a ReST file
         """
         if self.rest is not None and self.artist is not None:
-            path = os.path.join(directory, "artists", slug(self.artist) + u".rst")
+            path = os.path.join(directory, "artists",
+                                slug(self.artist) + u".rst")
             with open(path, "wb") as output:
                 output.write(self.rest.encode("utf-8"))
 
@@ -888,7 +901,8 @@ class LyricsPlugin(plugins.BeetsPlugin):
         """
         if self.config["auto"]:
             for item in task.imported_items():
-                self.fetch_item_lyrics(session.lib, item, False, self.config["force"])
+                self.fetch_item_lyrics(session.lib, item, False,
+                                       self.config["force"])
 
     def fetch_item_lyrics(self, lib, item, write, force):
         """Fetch and store lyrics for a single item. If ``write``, then the
@@ -912,12 +926,10 @@ class LyricsPlugin(plugins.BeetsPlugin):
             if HAS_LANGDETECT and self.config["bing_client_secret"].get():
                 lang_from = langdetect.detect(lyrics)
                 if self.config["bing_lang_to"].get() != lang_from and (
-                    not self.config["bing_lang_from"]
-                    or (lang_from in self.config["bing_lang_from"].as_str_seq())
-                ):
+                        not self.config["bing_lang_from"] or
+                    (lang_from in self.config["bing_lang_from"].as_str_seq())):
                     lyrics = self.append_translation(
-                        lyrics, self.config["bing_lang_to"]
-                    )
+                        lyrics, self.config["bing_lang_to"])
         else:
             self._log.info(u"lyrics not found: {0}", item)
             fallback = self.config["fallback"].get()
@@ -937,9 +949,8 @@ class LyricsPlugin(plugins.BeetsPlugin):
         for backend in self.backends:
             lyrics = backend.fetch(artist, title)
             if lyrics:
-                self._log.debug(
-                    u"got lyrics from backend: {0}", backend.__class__.__name__
-                )
+                self._log.debug(u"got lyrics from backend: {0}",
+                                backend.__class__.__name__)
                 return _scrape_strip_cruft(lyrics, True)
 
     def append_translation(self, text, to_lang):
@@ -950,18 +961,19 @@ class LyricsPlugin(plugins.BeetsPlugin):
         if self.bing_auth_token:
             # Extract unique lines to limit API request size per song
             text_lines = set(text.split("\n"))
-            url = (
-                "https://api.microsofttranslator.com/v2/Http.svc/"
-                "Translate?text=%s&to=%s" % ("|".join(text_lines), to_lang)
-            )
-            r = requests.get(url, headers={"Authorization ": self.bing_auth_token})
+            url = ("https://api.microsofttranslator.com/v2/Http.svc/"
+                   "Translate?text=%s&to=%s" % ("|".join(text_lines), to_lang))
+            r = requests.get(url,
+                             headers={"Authorization ": self.bing_auth_token})
             if r.status_code != 200:
-                self._log.debug("translation API error {}: {}", r.status_code, r.text)
+                self._log.debug("translation API error {}: {}", r.status_code,
+                                r.text)
                 if "token has expired" in r.text:
                     self.bing_auth_token = None
                     return self.append_translation(text, to_lang)
                 return text
-            lines_translated = ElementTree.fromstring(r.text.encode("utf-8")).text
+            lines_translated = ElementTree.fromstring(
+                r.text.encode("utf-8")).text
             # Use a translation mapping dict to build resulting lyrics
             translations = dict(zip(text_lines, lines_translated.split("|")))
             result = ""

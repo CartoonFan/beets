@@ -45,24 +45,22 @@ class DuplicatesPlugin(BeetsPlugin):
     def __init__(self):
         super(DuplicatesPlugin, self).__init__()
 
-        self.config.add(
-            {
-                "album": False,
-                "checksum": "",
-                "copy": "",
-                "count": False,
-                "delete": False,
-                "format": "",
-                "full": False,
-                "keys": [],
-                "merge": False,
-                "move": "",
-                "path": False,
-                "tiebreak": {},
-                "strict": False,
-                "tag": "",
-            }
-        )
+        self.config.add({
+            "album": False,
+            "checksum": "",
+            "copy": "",
+            "count": False,
+            "delete": False,
+            "format": "",
+            "full": False,
+            "keys": [],
+            "merge": False,
+            "move": "",
+            "path": False,
+            "tiebreak": {},
+            "strict": False,
+            "tag": "",
+        })
 
         self._command = Subcommand("duplicates", help=__doc__, aliases=["dup"])
         self._command.parser.add_option(
@@ -173,11 +171,8 @@ class DuplicatesPlugin(BeetsPlugin):
 
             # Default format string for count mode.
             if count and not fmt:
-                fmt = (
-                    u"$albumartist - $album"
-                    if album
-                    else u"$albumartist - $album - $title"
-                )
+                fmt = (u"$albumartist - $album"
+                       if album else u"$albumartist - $album - $title")
                 fmt += u": {0}"
 
             if checksum:
@@ -186,12 +181,12 @@ class DuplicatesPlugin(BeetsPlugin):
                 keys = [k]
 
             for obj_id, obj_count, objs in self._duplicates(
-                items,
-                keys=keys,
-                full=full,
-                strict=strict,
-                tiebreak=tiebreak,
-                merge=merge,
+                    items,
+                    keys=keys,
+                    full=full,
+                    strict=strict,
+                    tiebreak=tiebreak,
+                    merge=merge,
             ):
                 if obj_id:  # Skip empty IDs.
                     for o in objs:
@@ -207,9 +202,13 @@ class DuplicatesPlugin(BeetsPlugin):
         self._command.func = _dup
         return [self._command]
 
-    def _process_item(
-        self, item, copy=False, move=False, delete=False, tag=False, fmt=u""
-    ):
+    def _process_item(self,
+                      item,
+                      copy=False,
+                      move=False,
+                      delete=False,
+                      tag=False,
+                      fmt=u""):
         """Process Item `item`.
         """
         print_(format(item, fmt))
@@ -225,7 +224,8 @@ class DuplicatesPlugin(BeetsPlugin):
             try:
                 k, v = tag.split("=")
             except Exception:
-                raise UserError(u"{}: can't parse k=v tag: {}".format(PLUGIN, tag))
+                raise UserError(u"{}: can't parse k=v tag: {}".format(
+                    PLUGIN, tag))
             setattr(item, k, v)
             item.store()
 
@@ -239,7 +239,8 @@ class DuplicatesPlugin(BeetsPlugin):
         checksum = getattr(item, key, False)
         if not checksum:
             self._log.debug(
-                u"key {0} on item {1} not cached:" u"computing checksum",
+                u"key {0} on item {1} not cached:"
+                u"computing checksum",
                 key,
                 displayable_path(item.path),
             )
@@ -247,14 +248,15 @@ class DuplicatesPlugin(BeetsPlugin):
                 checksum = command_output(args).stdout
                 setattr(item, key, checksum)
                 item.store()
-                self._log.debug(u"computed checksum for {0} using {1}", item.title, key)
+                self._log.debug(u"computed checksum for {0} using {1}",
+                                item.title, key)
             except subprocess.CalledProcessError as e:
-                self._log.debug(
-                    u"failed to checksum {0}: {1}", displayable_path(item.path), e
-                )
+                self._log.debug(u"failed to checksum {0}: {1}",
+                                displayable_path(item.path), e)
         else:
             self._log.debug(
-                u"key {0} on item {1} cached:" u"not computing checksum",
+                u"key {0} on item {1} cached:"
+                u"not computing checksum",
                 key,
                 displayable_path(item.path),
             )
@@ -274,13 +276,15 @@ class DuplicatesPlugin(BeetsPlugin):
             values = [v for v in values if v not in (None, "")]
             if strict and len(values) < len(keys):
                 self._log.debug(
-                    u"some keys {0} on item {1} are null or empty:" u" skipping",
+                    u"some keys {0} on item {1} are null or empty:"
+                    u" skipping",
                     keys,
                     displayable_path(obj.path),
                 )
             elif not (strict or len(values)):
                 self._log.debug(
-                    u"all keys {0} on item {1} are null or empty:" u" skipping",
+                    u"all keys {0} on item {1} are null or empty:"
+                    u" skipping",
                     keys,
                     displayable_path(obj.path),
                 )
@@ -310,9 +314,8 @@ class DuplicatesPlugin(BeetsPlugin):
                     # Avoid a Unicode warning by avoiding comparison
                     # between a bytes object and the empty Unicode
                     # string ''.
-                    return v is not None and (
-                        v != "" if isinstance(v, six.text_type) else True
-                    )
+                    return v is not None and (v != "" if isinstance(
+                        v, six.text_type) else True)
 
                 fields = Item.all_keys()
                 key = lambda x: sum(1 for f in fields if truthy(getattr(x, f)))
@@ -373,7 +376,8 @@ class DuplicatesPlugin(BeetsPlugin):
         for the relevant strategies.
         """
         kind = Item if all(isinstance(o, Item) for o in objs) else Album
-        return self._merge_items(objs) if kind is Item else self._merge_albums(objs)
+        return self._merge_items(objs) if kind is Item else self._merge_albums(
+            objs)
 
     def _duplicates(self, objs, keys, full, strict, tiebreak, merge):
         """Generate triples of keys, duplicate counts, and constituent objects.

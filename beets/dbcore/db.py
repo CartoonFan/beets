@@ -319,7 +319,8 @@ class Model(object):
         exception is raised otherwise.
         """
         if not self._db:
-            raise ValueError(u"{0} has no database".format(type(self).__name__))
+            raise ValueError(u"{0} has no database".format(
+                type(self).__name__))
         if need_id and not self.id:
             raise ValueError(u"{0} has no id".format(type(self).__name__))
 
@@ -503,7 +504,8 @@ class Model(object):
         with self._db.transaction() as tx:
             # Main table update.
             if assignments:
-                query = "UPDATE {0} SET {1} WHERE id=?".format(self._table, assignments)
+                query = "UPDATE {0} SET {1} WHERE id=?".format(
+                    self._table, assignments)
                 subvars.append(self.id)
                 tx.mutate(query, subvars)
 
@@ -544,10 +546,11 @@ class Model(object):
         """
         self._check_db()
         with self._db.transaction() as tx:
-            tx.mutate("DELETE FROM {0} WHERE id=?".format(self._table), (self.id,))
+            tx.mutate("DELETE FROM {0} WHERE id=?".format(self._table),
+                      (self.id, ))
             tx.mutate(
-                "DELETE FROM {0} WHERE entity_id=?".format(self._flex_table), (self.id,)
-            )
+                "DELETE FROM {0} WHERE entity_id=?".format(self._flex_table),
+                (self.id, ))
 
     def add(self, db=None):
         """Add the object to the library database. This object must be
@@ -562,7 +565,8 @@ class Model(object):
         self._check_db(False)
 
         with self._db.transaction() as tx:
-            new_id = tx.mutate("INSERT INTO {0} DEFAULT VALUES".format(self._table))
+            new_id = tx.mutate("INSERT INTO {0} DEFAULT VALUES".format(
+                self._table))
             self.id = new_id
             self.added = time.time()
 
@@ -590,7 +594,8 @@ class Model(object):
         # Perform substitution.
         if isinstance(template, six.string_types):
             template = functemplate.template(template)
-        return template.substitute(self.formatted(for_path), self._template_funcs())
+        return template.substitute(self.formatted(for_path),
+                                   self._template_funcs())
 
     # Parsing.
 
@@ -617,7 +622,8 @@ class Results(object):
     constructs LibModel objects that reflect database rows.
     """
 
-    def __init__(self, model_class, rows, db, flex_rows, query=None, sort=None):
+    def __init__(self, model_class, rows, db, flex_rows, query=None,
+                 sort=None):
         """Create a result set that will construct objects of type
         `model_class`.
 
@@ -828,8 +834,8 @@ class Transaction(object):
             # the underlying database file. We surface these exceptions as
             # DBAccessError so the application can abort.
             if e.args[0] in (
-                "attempt to write a readonly database",
-                "unable to open database file",
+                    "attempt to write a readonly database",
+                    "unable to open database file",
             ):
                 raise DBAccessError(e.args[0])
             else:
@@ -944,7 +950,8 @@ class Database(object):
     def load_extension(self, path):
         """Load an SQLite extension into all open connections."""
         if not self.supports_extensions:
-            raise ValueError("this sqlite3 installation does not support extensions")
+            raise ValueError(
+                "this sqlite3 installation does not support extensions")
 
         self._extensions.append(path)
 
@@ -973,7 +980,8 @@ class Database(object):
             columns = []
             for name, typ in fields.items():
                 columns.append("{0} {1}".format(name, typ.sql))
-            setup_sql = "CREATE TABLE {0} ({1});\n".format(table, ", ".join(columns))
+            setup_sql = "CREATE TABLE {0} ({1});\n".format(
+                table, ", ".join(columns))
 
         else:
             # Table exists does not match the field set.
@@ -982,8 +990,7 @@ class Database(object):
                 if name in current_fields:
                     continue
                 setup_sql += "ALTER TABLE {0} ADD COLUMN {1} {2};\n".format(
-                    table, name, typ.sql
-                )
+                    table, name, typ.sql)
 
         with self.transaction() as tx:
             tx.script(setup_sql)
@@ -993,8 +1000,7 @@ class Database(object):
         for the given entity (if they don't exist).
         """
         with self.transaction() as tx:
-            tx.script(
-                """
+            tx.script("""
                 CREATE TABLE IF NOT EXISTS {0} (
                     id INTEGER PRIMARY KEY,
                     entity_id INTEGER,
@@ -1003,10 +1009,7 @@ class Database(object):
                     UNIQUE(entity_id, key) ON CONFLICT REPLACE);
                 CREATE INDEX IF NOT EXISTS {0}_by_entity
                     ON {0} (entity_id);
-                """.format(
-                    flex_table
-                )
-            )
+                """.format(flex_table))
 
     # Querying.
 
@@ -1034,7 +1037,9 @@ class Database(object):
             SELECT * FROM {0} WHERE entity_id IN
                 (SELECT id FROM {1} WHERE {2});
             """.format(
-            model_cls._flex_table, model_cls._table, where or "1",
+            model_cls._flex_table,
+            model_cls._table,
+            where or "1",
         )
 
         with self.transaction() as tx:

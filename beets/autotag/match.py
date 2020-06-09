@@ -41,7 +41,6 @@ VA_ARTISTS = (u"", u"various artists", u"various", u"va", u"unknown")
 # Global logger.
 log = logging.getLogger("beets")
 
-
 # Recommendation enumeration.
 
 
@@ -61,7 +60,6 @@ class Recommendation(OrderedEnum):
 # objects) and a recommendation value.
 
 Proposal = namedtuple("Proposal", ("candidates", "recommendation"))
-
 
 # Primary matching functionality.
 
@@ -146,19 +144,17 @@ def track_distance(item, track_info, incl_artist=False):
 
     # Length.
     if track_info.length:
-        diff = (
-            abs(item.length - track_info.length)
-            - config["match"]["track_length_grace"].as_number()
-        )
-        dist.add_ratio(
-            "track_length", diff, config["match"]["track_length_max"].as_number()
-        )
+        diff = (abs(item.length - track_info.length) -
+                config["match"]["track_length_grace"].as_number())
+        dist.add_ratio("track_length", diff,
+                       config["match"]["track_length_max"].as_number())
 
     # Title.
     dist.add_string("track_title", item.title, track_info.title)
 
     # Artist. Only check if there is actually an artist in the track data.
-    if incl_artist and track_info.artist and item.artist.lower() not in VA_ARTISTS:
+    if incl_artist and track_info.artist and item.artist.lower(
+    ) not in VA_ARTISTS:
         dist.add_string("track_artist", item.artist, track_info.artist)
 
     # Track index.
@@ -226,7 +222,8 @@ def distance(items, album_info, mapping):
         elif album_info.original_year:
             # Prefer matchest closest to the release year.
             diff = abs(likelies["year"] - album_info.year)
-            diff_max = abs(datetime.date.today().year - album_info.original_year)
+            diff_max = abs(datetime.date.today().year -
+                           album_info.original_year)
             dist.add_ratio("year", diff, diff_max)
         else:
             # Full penalty when there is no original year.
@@ -247,17 +244,18 @@ def distance(items, album_info, mapping):
 
     # Catalog number.
     if likelies["catalognum"] and album_info.catalognum:
-        dist.add_string("catalognum", likelies["catalognum"], album_info.catalognum)
+        dist.add_string("catalognum", likelies["catalognum"],
+                        album_info.catalognum)
 
     # Disambiguation.
     if likelies["albumdisambig"] and album_info.albumdisambig:
-        dist.add_string(
-            "albumdisambig", likelies["albumdisambig"], album_info.albumdisambig
-        )
+        dist.add_string("albumdisambig", likelies["albumdisambig"],
+                        album_info.albumdisambig)
 
     # Album ID.
     if likelies["mb_albumid"]:
-        dist.add_equality("album_id", likelies["mb_albumid"], album_info.album_id)
+        dist.add_equality("album_id", likelies["mb_albumid"],
+                          album_info.album_id)
 
     # Tracks.
     dist.tracks = {}
@@ -326,9 +324,8 @@ def _recommendation(results):
     elif len(results) == 1:
         # Only a single candidate.
         rec = Recommendation.low
-    elif (
-        results[1].distance - min_dist >= config["match"]["rec_gap_thresh"].as_number()
-    ):
+    elif (results[1].distance - min_dist >=
+          config["match"]["rec_gap_thresh"].as_number()):
         # Gap between first two candidates is large.
         rec = Recommendation.low
     else:
@@ -344,14 +341,12 @@ def _recommendation(results):
     max_rec_view = config["match"]["max_rec"]
     for key in keys:
         if key in list(max_rec_view.keys()):
-            max_rec = max_rec_view[key].as_choice(
-                {
-                    "strong": Recommendation.strong,
-                    "medium": Recommendation.medium,
-                    "low": Recommendation.low,
-                    "none": Recommendation.none,
-                }
-            )
+            max_rec = max_rec_view[key].as_choice({
+                "strong": Recommendation.strong,
+                "medium": Recommendation.medium,
+                "low": Recommendation.low,
+                "none": Recommendation.none,
+            })
             rec = min(rec, max_rec)
 
     return rec
@@ -368,7 +363,8 @@ def _add_candidate(items, results, info):
     checking the track count, ordering the items, checking for
     duplicates, and calculating the distance.
     """
-    log.debug(u"Candidate: {0} - {1} ({2})", info.artist, info.album, info.album_id)
+    log.debug(u"Candidate: {0} - {1} ({2})", info.artist, info.album,
+              info.album_id)
 
     # Discard albums with zero tracks.
     if not info.tracks:
@@ -400,9 +396,8 @@ def _add_candidate(items, results, info):
             return
 
     log.debug(u"Success. Distance: {0}", dist)
-    results[info.album_id] = hooks.AlbumMatch(
-        dist, info, mapping, extra_items, extra_tracks
-    )
+    results[info.album_id] = hooks.AlbumMatch(dist, info, mapping, extra_items,
+                                              extra_tracks)
 
 
 def tag_album(items, search_artist=None, search_album=None, search_ids=[]):
@@ -473,17 +468,14 @@ def tag_album(items, search_artist=None, search_album=None, search_ids=[]):
             log.debug(u"Additional search terms: {0}", extra_tags)
 
         # Is this album likely to be a "various artist" release?
-        va_likely = (
-            (not consensus["artist"])
-            or (search_artist.lower() in VA_ARTISTS)
-            or any(item.comp for item in items)
-        )
+        va_likely = ((not consensus["artist"])
+                     or (search_artist.lower() in VA_ARTISTS)
+                     or any(item.comp for item in items))
         log.debug(u"Album might be VA: {0}", va_likely)
 
         # Get the results from the data sources.
         for matched_candidate in hooks.album_candidates(
-            items, search_artist, search_album, va_likely, extra_tags
-        ):
+                items, search_artist, search_album, va_likely, extra_tags):
             _add_candidate(items, candidates, matched_candidate)
 
     log.debug(u"Evaluating {0} candidates.", len(candidates))
@@ -513,10 +505,12 @@ def tag_item(item, search_artist=None, search_title=None, search_ids=[]):
             log.debug(u"Searching for track ID: {0}", trackid)
             for track_info in hooks.tracks_for_id(trackid):
                 dist = track_distance(item, track_info, incl_artist=True)
-                candidates[track_info.track_id] = hooks.TrackMatch(dist, track_info)
+                candidates[track_info.track_id] = hooks.TrackMatch(
+                    dist, track_info)
                 # If this is a good match, then don't keep searching.
                 rec = _recommendation(_sort_candidates(candidates.values()))
-                if rec == Recommendation.strong and not config["import"]["timid"]:
+                if rec == Recommendation.strong and not config["import"][
+                        "timid"]:
                     log.debug(u"Track ID match.")
                     return Proposal(_sort_candidates(candidates.values()), rec)
 

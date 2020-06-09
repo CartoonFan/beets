@@ -37,15 +37,18 @@ class ZeroPlugin(BeetsPlugin):
         super(ZeroPlugin, self).__init__()
 
         self.register_listener("write", self.write_event)
-        self.register_listener("import_task_choice", self.import_task_choice_event)
+        self.register_listener("import_task_choice",
+                               self.import_task_choice_event)
 
-        self.config.add(
-            {"auto": True, "fields": [], "keep_fields": [], "update_database": False,}
-        )
+        self.config.add({
+            "auto": True,
+            "fields": [],
+            "keep_fields": [],
+            "update_database": False,
+        })
 
         self.fields_to_progs = {}
         self.warned = False
-
         """Read the bulk of the config into `self.fields_to_progs`.
         After construction, `fields_to_progs` contains all the fields that
         should be zeroed as keys and maps each of those to a list of compiled
@@ -54,7 +57,8 @@ class ZeroPlugin(BeetsPlugin):
         progs is empty, then the associated field is always zeroed.
         """
         if self.config["fields"] and self.config["keep_fields"]:
-            self._log.warning(u"cannot blacklist and whitelist at the same time")
+            self._log.warning(
+                u"cannot blacklist and whitelist at the same time")
         # Blacklist mode.
         elif self.config["fields"]:
             for field in self.config["fields"].as_str_seq():
@@ -62,21 +66,17 @@ class ZeroPlugin(BeetsPlugin):
         # Whitelist mode.
         elif self.config["keep_fields"]:
             for field in MediaFile.fields():
-                if (
-                    field not in self.config["keep_fields"].as_str_seq()
-                    and
-                    # These fields should always be preserved.
-                    field not in ("id", "path", "album_id")
-                ):
+                if (field not in self.config["keep_fields"].as_str_seq() and
+                        # These fields should always be preserved.
+                        field not in ("id", "path", "album_id")):
                     self._set_pattern(field)
 
     def commands(self):
         zero_command = Subcommand("zero", help="set fields to null")
 
         def zero_fields(lib, opts, args):
-            if not (
-                decargs(args) or input_yn(u"Remove fields for all items? (Y/n)", True)
-            ):
+            if not (decargs(args)
+                    or input_yn(u"Remove fields for all items? (Y/n)", True)):
                 return
             for item in lib.items(decargs(args)):
                 self.process_item(item)
@@ -92,8 +92,8 @@ class ZeroPlugin(BeetsPlugin):
             self._log.error(u"invalid field: {0}", field)
         elif field in ("id", "path", "album_id"):
             self._log.warning(
-                u"field '{0}' ignored, zeroing " u"it would be dangerous", field
-            )
+                u"field '{0}' ignored, zeroing "
+                u"it would be dangerous", field)
         else:
             try:
                 for pattern in self.config[field].as_str_seq():

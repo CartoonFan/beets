@@ -37,7 +37,6 @@ def update_kodi(host, port, user, password):
     """Sends request to the Kodi api to start a library refresh.
     """
     url = "http://{0}:{1}/jsonrpc".format(host, port)
-
     """Content-Type: application/json is mandatory
     according to the kodi jsonrpc documentation"""
 
@@ -45,7 +44,10 @@ def update_kodi(host, port, user, password):
 
     # Create the payload. Id seems to be mandatory.
     payload = {"jsonrpc": "2.0", "method": "AudioLibrary.Scan", "id": 1}
-    return requests.post(url, auth=(user, password), json=payload, headers=headers)
+    return requests.post(url,
+                         auth=(user, password),
+                         json=payload,
+                         headers=headers)
 
 
 class KodiUpdate(BeetsPlugin):
@@ -53,9 +55,12 @@ class KodiUpdate(BeetsPlugin):
         super(KodiUpdate, self).__init__()
 
         # Adding defaults.
-        config["kodi"].add(
-            {u"host": u"localhost", u"port": 8080, u"user": u"kodi", u"pwd": u"kodi"}
-        )
+        config["kodi"].add({
+            u"host": u"localhost",
+            u"port": 8080,
+            u"user": u"kodi",
+            u"pwd": u"kodi"
+        })
 
         config["kodi"]["pwd"].redact = True
         self.register_listener("database_change", self.listen_for_db_change)
@@ -85,7 +90,8 @@ class KodiUpdate(BeetsPlugin):
 
         json = r.json()
         if json.get("result") != "OK":
-            self._log.warning(u"Kodi update failed: JSON response was {0!r}", json)
+            self._log.warning(u"Kodi update failed: JSON response was {0!r}",
+                              json)
             return
 
         self._log.info(u"Kodi update triggered")

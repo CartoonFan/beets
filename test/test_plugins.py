@@ -228,13 +228,14 @@ class EventsTest(unittest.TestCase, ImportHelper, TestHelper):
         # Sentinels do not get emitted.
         self.assertEqual(logs.count(u"Sending event: import_task_created"), 1)
 
-        logs = [line for line in logs if not line.startswith(u"Sending event:")]
+        logs = [
+            line for line in logs if not line.startswith(u"Sending event:")
+        ]
         self.assertEqual(
             logs,
             [
                 u"Album: {0}".format(
-                    displayable_path(os.path.join(self.import_dir, b"album"))
-                ),
+                    displayable_path(os.path.join(self.import_dir, b"album"))),
                 u"  {0}".format(displayable_path(self.file_paths[0])),
                 u"  {0}".format(displayable_path(self.file_paths[1])),
             ],
@@ -245,19 +246,19 @@ class EventsTest(unittest.TestCase, ImportHelper, TestHelper):
             def __init__(self):
                 super(ToSingletonPlugin, self).__init__()
 
-                self.register_listener(
-                    "import_task_created", self.import_task_created_event
-                )
+                self.register_listener("import_task_created",
+                                       self.import_task_created_event)
 
             def import_task_created_event(self, session, task):
-                if (
-                    isinstance(task, SingletonImportTask)
-                    or isinstance(task, SentinelImportTask)
-                    or isinstance(task, ArchiveImportTask)
-                ):
+                if (isinstance(task, SingletonImportTask)
+                        or isinstance(task, SentinelImportTask)
+                        or isinstance(task, ArchiveImportTask)):
                     return task
 
-                return [SingletonImportTask(task.toppath, item) for item in task.items]
+                return [
+                    SingletonImportTask(task.toppath, item)
+                    for item in task.items
+                ]
 
         to_singleton_plugin = ToSingletonPlugin
         self.register_plugin(to_singleton_plugin)
@@ -274,7 +275,9 @@ class EventsTest(unittest.TestCase, ImportHelper, TestHelper):
         # Sentinels do not get emitted.
         self.assertEqual(logs.count(u"Sending event: import_task_created"), 1)
 
-        logs = [line for line in logs if not line.startswith(u"Sending event:")]
+        logs = [
+            line for line in logs if not line.startswith(u"Sending event:")
+        ]
         self.assertEqual(
             logs,
             [
@@ -286,10 +289,13 @@ class EventsTest(unittest.TestCase, ImportHelper, TestHelper):
 
 class HelpersTest(unittest.TestCase):
     def test_sanitize_choices(self):
-        self.assertEqual(plugins.sanitize_choices([u"A", u"Z"], (u"A", u"B")), [u"A"])
-        self.assertEqual(plugins.sanitize_choices([u"A", u"A"], (u"A")), [u"A"])
+        self.assertEqual(plugins.sanitize_choices([u"A", u"Z"], (u"A", u"B")),
+                         [u"A"])
+        self.assertEqual(plugins.sanitize_choices([u"A", u"A"], (u"A")),
+                         [u"A"])
         self.assertEqual(
-            plugins.sanitize_choices([u"D", u"*", u"A"], (u"A", u"B", u"C", u"D")),
+            plugins.sanitize_choices([u"D", u"*", u"A"],
+                                     (u"A", u"B", u"C", u"D")),
             [u"D", u"B", u"C", u"A"],
         )
 
@@ -316,10 +322,12 @@ class ListenersTest(unittest.TestCase, TestHelper):
         self.assertEqual(DummyPlugin._raw_listeners["cli_exit"], [d.dummy])
 
         d2 = DummyPlugin()
-        self.assertEqual(DummyPlugin._raw_listeners["cli_exit"], [d.dummy, d2.dummy])
+        self.assertEqual(DummyPlugin._raw_listeners["cli_exit"],
+                         [d.dummy, d2.dummy])
 
         d.register_listener("cli_exit", d2.dummy)
-        self.assertEqual(DummyPlugin._raw_listeners["cli_exit"], [d.dummy, d2.dummy])
+        self.assertEqual(DummyPlugin._raw_listeners["cli_exit"],
+                         [d.dummy, d2.dummy])
 
     @patch("beets.plugins.find_plugins")
     @patch("beets.plugins.inspect")
@@ -335,7 +343,7 @@ class ListenersTest(unittest.TestCase, TestHelper):
                 self.register_listener("event_bar", self.bar)
 
         d = DummyPlugin()
-        mock_find_plugins.return_value = (d,)
+        mock_find_plugins.return_value = (d, )
 
         plugins.send("event")
         d.foo.assert_has_calls([])
@@ -393,7 +401,7 @@ class ListenersTest(unittest.TestCase, TestHelper):
                 test.assertEqual(kwargs, {"foo": 5})
 
         d = DummyPlugin()
-        mock_find_plugins.return_value = (d,)
+        mock_find_plugins.return_value = (d, )
 
         plugins.send("event1", foo=5)
         plugins.send("event2", foo=5)
@@ -412,9 +420,8 @@ class ListenersTest(unittest.TestCase, TestHelper):
         plugins.send("event9", foo=5)
 
 
-class PromptChoicesTest(
-    TerminalImportSessionSetup, unittest.TestCase, ImportHelper, TestHelper
-):
+class PromptChoicesTest(TerminalImportSessionSetup, unittest.TestCase,
+                        ImportHelper, TestHelper):
     def setUp(self):
         self.setup_plugin_loader()
         self.setup_beets()
@@ -422,9 +429,8 @@ class PromptChoicesTest(
         self._setup_import_session()
         self.matcher = AutotagStub().install()
         # keep track of ui.input_option() calls
-        self.input_options_patcher = patch(
-            "beets.ui.input_options", side_effect=ui.input_options
-        )
+        self.input_options_patcher = patch("beets.ui.input_options",
+                                           side_effect=ui.input_options)
         self.mock_input_options = self.input_options_patcher.start()
 
     def tearDown(self):
@@ -439,7 +445,8 @@ class PromptChoicesTest(
         class DummyPlugin(plugins.BeetsPlugin):
             def __init__(self):
                 super(DummyPlugin, self).__init__()
-                self.register_listener("before_choose_candidate", self.return_choices)
+                self.register_listener("before_choose_candidate",
+                                       self.return_choices)
 
             def return_choices(self, session, task):
                 return [
@@ -463,7 +470,9 @@ class PromptChoicesTest(
 
         self.importer.add_choice(action.SKIP)
         self.importer.run()
-        self.mock_input_options.assert_called_once_with(opts, default="a", require=ANY)
+        self.mock_input_options.assert_called_once_with(opts,
+                                                        default="a",
+                                                        require=ANY)
 
     def test_plugin_choices_in_ui_input_options_singleton(self):
         """Test the presence of plugin choices on the prompt (singleton)."""
@@ -471,7 +480,8 @@ class PromptChoicesTest(
         class DummyPlugin(plugins.BeetsPlugin):
             def __init__(self):
                 super(DummyPlugin, self).__init__()
-                self.register_listener("before_choose_candidate", self.return_choices)
+                self.register_listener("before_choose_candidate",
+                                       self.return_choices)
 
             def return_choices(self, session, task):
                 return [
@@ -494,7 +504,9 @@ class PromptChoicesTest(
         config["import"]["singletons"] = True
         self.importer.add_choice(action.SKIP)
         self.importer.run()
-        self.mock_input_options.assert_called_with(opts, default="a", require=ANY)
+        self.mock_input_options.assert_called_with(opts,
+                                                   default="a",
+                                                   require=ANY)
 
     def test_choices_conflicts(self):
         """Test the short letter conflict solving."""
@@ -502,7 +514,8 @@ class PromptChoicesTest(
         class DummyPlugin(plugins.BeetsPlugin):
             def __init__(self):
                 super(DummyPlugin, self).__init__()
-                self.register_listener("before_choose_candidate", self.return_choices)
+                self.register_listener("before_choose_candidate",
+                                       self.return_choices)
 
             def return_choices(self, session, task):
                 return [
@@ -524,10 +537,12 @@ class PromptChoicesTest(
             u"Enter search",
             u"enter Id",
             u"aBort",
-        ) + (u"baZ",)
+        ) + (u"baZ", )
         self.importer.add_choice(action.SKIP)
         self.importer.run()
-        self.mock_input_options.assert_called_once_with(opts, default="a", require=ANY)
+        self.mock_input_options.assert_called_once_with(opts,
+                                                        default="a",
+                                                        require=ANY)
 
     def test_plugin_callback(self):
         """Test that plugin callbacks are being called upon user choice."""
@@ -535,7 +550,8 @@ class PromptChoicesTest(
         class DummyPlugin(plugins.BeetsPlugin):
             def __init__(self):
                 super(DummyPlugin, self).__init__()
-                self.register_listener("before_choose_candidate", self.return_choices)
+                self.register_listener("before_choose_candidate",
+                                       self.return_choices)
 
             def return_choices(self, session, task):
                 return [ui.commands.PromptChoice("f", u"Foo", self.foo)]
@@ -555,7 +571,7 @@ class PromptChoicesTest(
             u"Enter search",
             u"enter Id",
             u"aBort",
-        ) + (u"Foo",)
+        ) + (u"Foo", )
 
         # DummyPlugin.foo() should be called once
         with patch.object(DummyPlugin, "foo", autospec=True) as mock_foo:
@@ -565,7 +581,9 @@ class PromptChoicesTest(
 
         # input_options should be called twice, as foo() returns None
         self.assertEqual(self.mock_input_options.call_count, 2)
-        self.mock_input_options.assert_called_with(opts, default="a", require=ANY)
+        self.mock_input_options.assert_called_with(opts,
+                                                   default="a",
+                                                   require=ANY)
 
     def test_plugin_callback_return(self):
         """Test that plugin callbacks that return a value exit the loop."""
@@ -573,7 +591,8 @@ class PromptChoicesTest(
         class DummyPlugin(plugins.BeetsPlugin):
             def __init__(self):
                 super(DummyPlugin, self).__init__()
-                self.register_listener("before_choose_candidate", self.return_choices)
+                self.register_listener("before_choose_candidate",
+                                       self.return_choices)
 
             def return_choices(self, session, task):
                 return [ui.commands.PromptChoice("f", u"Foo", self.foo)]
@@ -593,14 +612,16 @@ class PromptChoicesTest(
             u"Enter search",
             u"enter Id",
             u"aBort",
-        ) + (u"Foo",)
+        ) + (u"Foo", )
 
         # DummyPlugin.foo() should be called once
         with helper.control_stdin("f\n"):
             self.importer.run()
 
         # input_options should be called once, as foo() returns SKIP
-        self.mock_input_options.assert_called_once_with(opts, default="a", require=ANY)
+        self.mock_input_options.assert_called_once_with(opts,
+                                                        default="a",
+                                                        require=ANY)
 
 
 def suite():

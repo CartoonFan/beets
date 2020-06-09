@@ -36,21 +36,39 @@ class PlaylistTestHelper(helper.TestHelper):
         self.music_dir = os.path.expanduser(os.path.join("~", "Music"))
 
         i1 = _common.item()
-        i1.path = beets.util.normpath(os.path.join(self.music_dir, "a", "b", "c.mp3",))
+        i1.path = beets.util.normpath(
+            os.path.join(
+                self.music_dir,
+                "a",
+                "b",
+                "c.mp3",
+            ))
         i1.title = u"some item"
         i1.album = u"some album"
         self.lib.add(i1)
         self.lib.add_album([i1])
 
         i2 = _common.item()
-        i2.path = beets.util.normpath(os.path.join(self.music_dir, "d", "e", "f.mp3",))
+        i2.path = beets.util.normpath(
+            os.path.join(
+                self.music_dir,
+                "d",
+                "e",
+                "f.mp3",
+            ))
         i2.title = "another item"
         i2.album = "another album"
         self.lib.add(i2)
         self.lib.add_album([i2])
 
         i3 = _common.item()
-        i3.path = beets.util.normpath(os.path.join(self.music_dir, "x", "y", "z.mp3",))
+        i3.path = beets.util.normpath(
+            os.path.join(
+                self.music_dir,
+                "x",
+                "y",
+                "z.mp3",
+            ))
         i3.title = "yet another item"
         i3.album = "yet another album"
         self.lib.add(i3)
@@ -76,34 +94,50 @@ class PlaylistQueryTestHelper(PlaylistTestHelper):
     def test_name_query_with_absolute_paths_in_playlist(self):
         q = u"playlist:absolute"
         results = self.lib.items(q)
-        self.assertEqual(
-            {i.title for i in results}, set([u"some item", u"another item",])
-        )
+        self.assertEqual({i.title
+                          for i in results},
+                         set([
+                             u"some item",
+                             u"another item",
+                         ]))
 
     def test_path_query_with_absolute_paths_in_playlist(self):
         q = u"playlist:{0}".format(
-            shlex_quote(os.path.join(self.playlist_dir, "absolute.m3u",))
-        )
+            shlex_quote(os.path.join(
+                self.playlist_dir,
+                "absolute.m3u",
+            )))
         results = self.lib.items(q)
-        self.assertEqual(
-            {i.title for i in results}, set([u"some item", u"another item",])
-        )
+        self.assertEqual({i.title
+                          for i in results},
+                         set([
+                             u"some item",
+                             u"another item",
+                         ]))
 
     def test_name_query_with_relative_paths_in_playlist(self):
         q = u"playlist:relative"
         results = self.lib.items(q)
-        self.assertEqual(
-            {i.title for i in results}, set([u"some item", u"another item",])
-        )
+        self.assertEqual({i.title
+                          for i in results},
+                         set([
+                             u"some item",
+                             u"another item",
+                         ]))
 
     def test_path_query_with_relative_paths_in_playlist(self):
         q = u"playlist:{0}".format(
-            shlex_quote(os.path.join(self.playlist_dir, "relative.m3u",))
-        )
+            shlex_quote(os.path.join(
+                self.playlist_dir,
+                "relative.m3u",
+            )))
         results = self.lib.items(q)
-        self.assertEqual(
-            {i.title for i in results}, set([u"some item", u"another item",])
-        )
+        self.assertEqual({i.title
+                          for i in results},
+                         set([
+                             u"some item",
+                             u"another item",
+                         ]))
 
     def test_name_query_with_nonexisting_playlist(self):
         q = u"playlist:nonexisting"
@@ -113,9 +147,11 @@ class PlaylistQueryTestHelper(PlaylistTestHelper):
     def test_path_query_with_nonexisting_playlist(self):
         q = u"playlist:{0}".format(
             shlex_quote(
-                os.path.join(self.playlist_dir, self.playlist_dir, "nonexisting.m3u",)
-            )
-        )
+                os.path.join(
+                    self.playlist_dir,
+                    self.playlist_dir,
+                    "nonexisting.m3u",
+                )))
         results = self.lib.items(q)
         self.assertEqual(set(results), set())
 
@@ -123,9 +159,12 @@ class PlaylistQueryTestHelper(PlaylistTestHelper):
 class PlaylistTestRelativeToLib(PlaylistQueryTestHelper, unittest.TestCase):
     def setup_test(self):
         with open(os.path.join(self.playlist_dir, "absolute.m3u"), "w") as f:
-            f.write("{0}\n".format(os.path.join(self.music_dir, "a", "b", "c.mp3")))
-            f.write("{0}\n".format(os.path.join(self.music_dir, "d", "e", "f.mp3")))
-            f.write("{0}\n".format(os.path.join(self.music_dir, "nonexisting.mp3")))
+            f.write("{0}\n".format(
+                os.path.join(self.music_dir, "a", "b", "c.mp3")))
+            f.write("{0}\n".format(
+                os.path.join(self.music_dir, "d", "e", "f.mp3")))
+            f.write("{0}\n".format(
+                os.path.join(self.music_dir, "nonexisting.mp3")))
 
         with open(os.path.join(self.playlist_dir, "relative.m3u"), "w") as f:
             f.write("{0}\n".format(os.path.join("a", "b", "c.mp3")))
@@ -138,9 +177,12 @@ class PlaylistTestRelativeToLib(PlaylistQueryTestHelper, unittest.TestCase):
 class PlaylistTestRelativeToDir(PlaylistQueryTestHelper, unittest.TestCase):
     def setup_test(self):
         with open(os.path.join(self.playlist_dir, "absolute.m3u"), "w") as f:
-            f.write("{0}\n".format(os.path.join(self.music_dir, "a", "b", "c.mp3")))
-            f.write("{0}\n".format(os.path.join(self.music_dir, "d", "e", "f.mp3")))
-            f.write("{0}\n".format(os.path.join(self.music_dir, "nonexisting.mp3")))
+            f.write("{0}\n".format(
+                os.path.join(self.music_dir, "a", "b", "c.mp3")))
+            f.write("{0}\n".format(
+                os.path.join(self.music_dir, "d", "e", "f.mp3")))
+            f.write("{0}\n".format(
+                os.path.join(self.music_dir, "nonexisting.mp3")))
 
         with open(os.path.join(self.playlist_dir, "relative.m3u"), "w") as f:
             f.write("{0}\n".format(os.path.join("a", "b", "c.mp3")))
@@ -153,35 +195,29 @@ class PlaylistTestRelativeToDir(PlaylistQueryTestHelper, unittest.TestCase):
 class PlaylistTestRelativeToPls(PlaylistQueryTestHelper, unittest.TestCase):
     def setup_test(self):
         with open(os.path.join(self.playlist_dir, "absolute.m3u"), "w") as f:
-            f.write("{0}\n".format(os.path.join(self.music_dir, "a", "b", "c.mp3")))
-            f.write("{0}\n".format(os.path.join(self.music_dir, "d", "e", "f.mp3")))
-            f.write("{0}\n".format(os.path.join(self.music_dir, "nonexisting.mp3")))
+            f.write("{0}\n".format(
+                os.path.join(self.music_dir, "a", "b", "c.mp3")))
+            f.write("{0}\n".format(
+                os.path.join(self.music_dir, "d", "e", "f.mp3")))
+            f.write("{0}\n".format(
+                os.path.join(self.music_dir, "nonexisting.mp3")))
 
         with open(os.path.join(self.playlist_dir, "relative.m3u"), "w") as f:
-            f.write(
-                "{0}\n".format(
-                    os.path.relpath(
-                        os.path.join(self.music_dir, "a", "b", "c.mp3"),
-                        start=self.playlist_dir,
-                    )
-                )
-            )
-            f.write(
-                "{0}\n".format(
-                    os.path.relpath(
-                        os.path.join(self.music_dir, "d", "e", "f.mp3"),
-                        start=self.playlist_dir,
-                    )
-                )
-            )
-            f.write(
-                "{0}\n".format(
-                    os.path.relpath(
-                        os.path.join(self.music_dir, "nonexisting.mp3"),
-                        start=self.playlist_dir,
-                    )
-                )
-            )
+            f.write("{0}\n".format(
+                os.path.relpath(
+                    os.path.join(self.music_dir, "a", "b", "c.mp3"),
+                    start=self.playlist_dir,
+                )))
+            f.write("{0}\n".format(
+                os.path.relpath(
+                    os.path.join(self.music_dir, "d", "e", "f.mp3"),
+                    start=self.playlist_dir,
+                )))
+            f.write("{0}\n".format(
+                os.path.relpath(
+                    os.path.join(self.music_dir, "nonexisting.mp3"),
+                    start=self.playlist_dir,
+                )))
 
         self.config["playlist"]["relative_to"] = "playlist"
         self.config["playlist"]["playlist_dir"] = self.playlist_dir
@@ -190,9 +226,12 @@ class PlaylistTestRelativeToPls(PlaylistQueryTestHelper, unittest.TestCase):
 class PlaylistUpdateTestHelper(PlaylistTestHelper):
     def setup_test(self):
         with open(os.path.join(self.playlist_dir, "absolute.m3u"), "w") as f:
-            f.write("{0}\n".format(os.path.join(self.music_dir, "a", "b", "c.mp3")))
-            f.write("{0}\n".format(os.path.join(self.music_dir, "d", "e", "f.mp3")))
-            f.write("{0}\n".format(os.path.join(self.music_dir, "nonexisting.mp3")))
+            f.write("{0}\n".format(
+                os.path.join(self.music_dir, "a", "b", "c.mp3")))
+            f.write("{0}\n".format(
+                os.path.join(self.music_dir, "d", "e", "f.mp3")))
+            f.write("{0}\n".format(
+                os.path.join(self.music_dir, "nonexisting.mp3")))
 
         with open(os.path.join(self.playlist_dir, "relative.m3u"), "w") as f:
             f.write("{0}\n".format(os.path.join("a", "b", "c.mp3")))
@@ -206,35 +245,27 @@ class PlaylistUpdateTestHelper(PlaylistTestHelper):
 class PlaylistTestItemMoved(PlaylistUpdateTestHelper, unittest.TestCase):
     def test_item_moved(self):
         # Emit item_moved event for an item that is in a playlist
-        results = self.lib.items(
-            u"path:{0}".format(
-                shlex_quote(os.path.join(self.music_dir, "d", "e", "f.mp3"))
-            )
-        )
+        results = self.lib.items(u"path:{0}".format(
+            shlex_quote(os.path.join(self.music_dir, "d", "e", "f.mp3"))))
         item = results[0]
         beets.plugins.send(
             "item_moved",
             item=item,
             source=item.path,
             destination=beets.util.bytestring_path(
-                os.path.join(self.music_dir, "g", "h", "i.mp3")
-            ),
+                os.path.join(self.music_dir, "g", "h", "i.mp3")),
         )
 
         # Emit item_moved event for an item that is not in a playlist
-        results = self.lib.items(
-            u"path:{0}".format(
-                shlex_quote(os.path.join(self.music_dir, "x", "y", "z.mp3"))
-            )
-        )
+        results = self.lib.items(u"path:{0}".format(
+            shlex_quote(os.path.join(self.music_dir, "x", "y", "z.mp3"))))
         item = results[0]
         beets.plugins.send(
             "item_moved",
             item=item,
             source=item.path,
             destination=beets.util.bytestring_path(
-                os.path.join(self.music_dir, "u", "v", "w.mp3")
-            ),
+                os.path.join(self.music_dir, "u", "v", "w.mp3")),
         )
 
         # Emit cli_exit event
@@ -272,20 +303,14 @@ class PlaylistTestItemMoved(PlaylistUpdateTestHelper, unittest.TestCase):
 class PlaylistTestItemRemoved(PlaylistUpdateTestHelper, unittest.TestCase):
     def test_item_removed(self):
         # Emit item_removed event for an item that is in a playlist
-        results = self.lib.items(
-            u"path:{0}".format(
-                shlex_quote(os.path.join(self.music_dir, "d", "e", "f.mp3"))
-            )
-        )
+        results = self.lib.items(u"path:{0}".format(
+            shlex_quote(os.path.join(self.music_dir, "d", "e", "f.mp3"))))
         item = results[0]
         beets.plugins.send("item_removed", item=item)
 
         # Emit item_removed event for an item that is not in a playlist
-        results = self.lib.items(
-            u"path:{0}".format(
-                shlex_quote(os.path.join(self.music_dir, "x", "y", "z.mp3"))
-            )
-        )
+        results = self.lib.items(u"path:{0}".format(
+            shlex_quote(os.path.join(self.music_dir, "x", "y", "z.mp3"))))
         item = results[0]
         beets.plugins.send("item_removed", item=item)
 
@@ -310,7 +335,10 @@ class PlaylistTestItemRemoved(PlaylistUpdateTestHelper, unittest.TestCase):
         with open(playlist_path, "r") as f:
             lines = [line.strip() for line in f.readlines()]
 
-        self.assertEqual(lines, [os.path.join("a", "b", "c.mp3"), "nonexisting.mp3",])
+        self.assertEqual(lines, [
+            os.path.join("a", "b", "c.mp3"),
+            "nonexisting.mp3",
+        ])
 
 
 def suite():

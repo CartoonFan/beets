@@ -122,15 +122,13 @@ class BPDError(Exception):
         """Returns a string to be used as the response code for the
         erring command.
         """
-        return self.template.substitute(
-            {
-                "resp": RESP_ERR,
-                "code": self.code,
-                "index": self.index,
-                "cmd_name": self.cmd_name,
-                "message": self.message,
-            }
-        )
+        return self.template.substitute({
+            "resp": RESP_ERR,
+            "code": self.code,
+            "index": self.index,
+            "cmd_name": self.cmd_name,
+            "message": self.message,
+        })
 
 
 def make_bpd_error(s_code, s_message):
@@ -255,11 +253,10 @@ class BaseServer(object):
 
         def start():
             yield bluelet.spawn(
-                bluelet.server(
-                    self.ctrl_host, self.ctrl_port, ControlConnection.handler(self)
-                )
-            )
-            yield bluelet.server(self.host, self.port, MPDConnection.handler(self))
+                bluelet.server(self.ctrl_host, self.ctrl_port,
+                               ControlConnection.handler(self)))
+            yield bluelet.server(self.host, self.port,
+                                 MPDConnection.handler(self))
 
         bluelet.run(start())
 
@@ -350,7 +347,8 @@ class BaseServer(object):
         subsystems = subsystems or SUBSYSTEMS
         for system in subsystems:
             if system not in SUBSYSTEMS:
-                raise BPDError(ERROR_ARG, u"Unrecognised idle event: {}".format(system))
+                raise BPDError(ERROR_ARG,
+                               u"Unrecognised idle event: {}".format(system))
         raise BPDIdle(subsystems)  # put the connection into idle mode
 
     def cmd_kill(self, conn):
@@ -867,9 +865,8 @@ class MPDConnection(Connection):
                 if line == u"noidle":
                     yield bluelet.call(self.send_notifications(True))
                 else:
-                    err = BPDError(
-                        ERROR_UNKNOWN, u"Got command while idle: {}".format(line)
-                    )
+                    err = BPDError(ERROR_UNKNOWN,
+                                   u"Got command while idle: {}".format(line))
                     yield self.send(err.response())
                     break
                 continue
@@ -901,7 +898,8 @@ class MPDConnection(Connection):
                     return
                 except BPDIdle as e:
                     self.idle_subscriptions = e.subsystems
-                    self.debug("awaiting: {}".format(" ".join(e.subsystems)), kind="z")
+                    self.debug("awaiting: {}".format(" ".join(e.subsystems)),
+                               kind="z")
                 yield bluelet.call(self.server.dispatch_events())
 
 
@@ -939,8 +937,8 @@ class ControlConnection(Connection):
                 yield self.send("ERROR: {}".format(e.args[0]))
             except Exception:
                 yield self.send(
-                    ["ERROR: server error", traceback.format_exc().rstrip()]
-                )
+                    ["ERROR: server error",
+                     traceback.format_exc().rstrip()])
 
     def ctrl_play_finished(self):
         """Callback from the player signalling a song finished playing.
@@ -981,7 +979,7 @@ class Command(object):
         self.name = command_match.group(1)
 
         self.args = []
-        arg_matches = self.arg_re.findall(s[command_match.end() :])
+        arg_matches = self.arg_re.findall(s[command_match.end():])
         for match in arg_matches:
             if match[0]:
                 # Quoted argument.
@@ -1023,8 +1021,8 @@ class Command(object):
         # If the command accepts a variable number of arguments skip the check.
         if wrong_num and not argspec.varargs:
             raise TypeError(
-                u'wrong number of arguments for "{}"'.format(self.name), self.name
-            )
+                u'wrong number of arguments for "{}"'.format(self.name),
+                self.name)
 
         return func
 
@@ -1041,11 +1039,8 @@ class Command(object):
             raise BPDError(ERROR_ARG, e.args[0], self.name)
 
         # Ensure we have permission for this command.
-        if (
-            conn.server.password
-            and not conn.authenticated
-            and self.name not in SAFE_COMMANDS
-        ):
+        if (conn.server.password and not conn.authenticated
+                and self.name not in SAFE_COMMANDS):
             raise BPDError(ERROR_PERMISSION, u"insufficient privileges")
 
         try:
@@ -1131,7 +1126,8 @@ class Server(BaseServer):
         self.player = gstplayer.GstPlayer(self.play_finished)
         self.cmd_update(None)
         log.info(u"Server ready and listening on {}:{}".format(host, port))
-        log.debug(u"Listening for control signals on {}:{}".format(host, ctrl_port))
+        log.debug(u"Listening for control signals on {}:{}".format(
+            host, ctrl_port))
 
     def run(self):
         self.player.run()
@@ -1161,9 +1157,8 @@ class Server(BaseServer):
             pass
 
         for tagtype, field in self.tagtype_map.items():
-            info_lines.append(
-                u"{}: {}".format(tagtype, six.text_type(getattr(item, field)))
-            )
+            info_lines.append(u"{}: {}".format(
+                tagtype, six.text_type(getattr(item, field))))
 
         return info_lines
 
@@ -1334,7 +1329,8 @@ class Server(BaseServer):
             (pos, total) = self.player.time()
             yield (
                 u"time: {}:{}".format(
-                    six.text_type(int(pos)), six.text_type(int(total)),
+                    six.text_type(int(pos)),
+                    six.text_type(int(total)),
                 ),
                 u"elapsed: " + u"{:.3f}".format(pos),
                 u"duration: " + u"{:.3f}".format(total),
@@ -1345,13 +1341,11 @@ class Server(BaseServer):
     def cmd_stats(self, conn):
         """Sends some statistics about the library."""
         with self.lib.transaction() as tx:
-            statement = (
-                "SELECT COUNT(DISTINCT artist), "
-                "COUNT(DISTINCT album), "
-                "COUNT(id), "
-                "SUM(length) "
-                "FROM items"
-            )
+            statement = ("SELECT COUNT(DISTINCT artist), "
+                         "COUNT(DISTINCT album), "
+                         "COUNT(id), "
+                         "SUM(length) "
+                         "FROM items")
             artists, albums, songs, totaltime = tx.query(statement)[0]
 
         yield (
@@ -1431,8 +1425,8 @@ class Server(BaseServer):
                 if tag.lower() == u"any":
                     if any_query_type:
                         queries.append(
-                            any_query_type(value, ITEM_KEYS_WRITABLE, query_type)
-                        )
+                            any_query_type(value, ITEM_KEYS_WRITABLE,
+                                           query_type))
                     else:
                         raise BPDError(ERROR_UNKNOWN, u"no such tagtype")
                 else:
@@ -1444,9 +1438,8 @@ class Server(BaseServer):
 
     def cmd_search(self, conn, *kv):
         """Perform a substring match for items."""
-        query = self._metadata_query(
-            dbcore.query.SubstringQuery, dbcore.query.AnyFieldQuery, kv
-        )
+        query = self._metadata_query(dbcore.query.SubstringQuery,
+                                     dbcore.query.AnyFieldQuery, kv)
         for item in self.lib.items(query):
             yield self._item_info(item)
 
@@ -1475,14 +1468,8 @@ class Server(BaseServer):
         query = self._metadata_query(dbcore.query.MatchQuery, None, kv)
 
         clause, subvals = query.clause()
-        statement = (
-            "SELECT DISTINCT "
-            + show_key
-            + " FROM items WHERE "
-            + clause
-            + " ORDER BY "
-            + show_key
-        )
+        statement = ("SELECT DISTINCT " + show_key + " FROM items WHERE " +
+                     clause + " ORDER BY " + show_key)
         self._log.debug(statement)
         with self.lib.transaction() as tx:
             rows = tx.query(statement, subvals)
@@ -1617,15 +1604,13 @@ class BPDPlugin(BeetsPlugin):
 
     def __init__(self):
         super(BPDPlugin, self).__init__()
-        self.config.add(
-            {
-                "host": u"",
-                "port": 6600,
-                "control_port": 6601,
-                "password": u"",
-                "volume": VOLUME_MAX,
-            }
-        )
+        self.config.add({
+            "host": u"",
+            "port": 6600,
+            "control_port": 6601,
+            "password": u"",
+            "volume": VOLUME_MAX,
+        })
         self.config["password"].redact = True
 
     def start_bpd(self, lib, host, port, password, volume, ctrl_port):
@@ -1636,26 +1621,25 @@ class BPDPlugin(BeetsPlugin):
             server.run()
         except NoGstreamerError:
             self._log.error(u"Gstreamer Python bindings not found.")
-            self._log.error(
-                u'Install "gstreamer1.0" and "python-gi"'
-                u"or similar package to use BPD."
-            )
+            self._log.error(u'Install "gstreamer1.0" and "python-gi"'
+                            u"or similar package to use BPD.")
 
     def commands(self):
         cmd = beets.ui.Subcommand(
-            "bpd", help=u"run an MPD-compatible music player server"
-        )
+            "bpd", help=u"run an MPD-compatible music player server")
 
         def func(lib, opts, args):
             host = self.config["host"].as_str()
             host = args.pop(0) if args else host
             port = args.pop(0) if args else self.config["port"].get(int)
-            ctrl_port = args.pop(0) if args else self.config["control_port"].get(int)
+            ctrl_port = args.pop(
+                0) if args else self.config["control_port"].get(int)
             if args:
                 raise beets.ui.UserError(u"too many arguments")
             password = self.config["password"].as_str()
             volume = self.config["volume"].get(int)
-            self.start_bpd(lib, host, int(port), password, volume, int(ctrl_port))
+            self.start_bpd(lib, host, int(port), password, volume,
+                           int(ctrl_port))
 
         cmd.func = func
         return [cmd]

@@ -86,8 +86,7 @@ def _item(track_info, album_info, album_id):
             "track": t.index,
             "tracktotal": len(a.tracks),
             "year": a.year,
-        }
-    )
+        })
 
 
 class MissingPlugin(BeetsPlugin):
@@ -101,9 +100,11 @@ class MissingPlugin(BeetsPlugin):
     def __init__(self):
         super(MissingPlugin, self).__init__()
 
-        self.config.add(
-            {"count": False, "total": False, "album": False,}
-        )
+        self.config.add({
+            "count": False,
+            "total": False,
+            "album": False,
+        })
 
         self.album_template_fields["missing"] = _missing_count
 

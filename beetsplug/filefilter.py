@@ -29,22 +29,20 @@ from beets.util import bytestring_path
 class FileFilterPlugin(BeetsPlugin):
     def __init__(self):
         super(FileFilterPlugin, self).__init__()
-        self.register_listener("import_task_created", self.import_task_created_event)
+        self.register_listener("import_task_created",
+                               self.import_task_created_event)
         self.config.add({"path": ".*"})
 
         self.path_album_regex = self.path_singleton_regex = re.compile(
-            bytestring_path(self.config["path"].get())
-        )
+            bytestring_path(self.config["path"].get()))
 
         if "album_path" in self.config:
             self.path_album_regex = re.compile(
-                bytestring_path(self.config["album_path"].get())
-            )
+                bytestring_path(self.config["album_path"].get()))
 
         if "singleton_path" in self.config:
             self.path_singleton_regex = re.compile(
-                bytestring_path(self.config["singleton_path"].get())
-            )
+                bytestring_path(self.config["singleton_path"].get()))
 
     def import_task_created_event(self, session, task):
         if task.items and len(task.items) > 0:

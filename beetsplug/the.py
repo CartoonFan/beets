@@ -38,15 +38,13 @@ class ThePlugin(BeetsPlugin):
 
         self.template_funcs["the"] = self.the_template_func
 
-        self.config.add(
-            {
-                "the": True,
-                "a": True,
-                "format": u"{0}, {1}",
-                "strip": False,
-                "patterns": [],
-            }
-        )
+        self.config.add({
+            "the": True,
+            "a": True,
+            "format": u"{0}, {1}",
+            "strip": False,
+            "patterns": [],
+        })
 
         self.patterns = self.config["patterns"].as_str_seq()
         for p in self.patterns:
@@ -58,8 +56,8 @@ class ThePlugin(BeetsPlugin):
                 else:
                     if not (p.startswith("^") or p.endswith("$")):
                         self._log.warning(
-                            u'warning: "{0}" will not ' u"match string start/end", p
-                        )
+                            u'warning: "{0}" will not '
+                            u"match string start/end", p)
         if self.config["a"]:
             self.patterns = [PATTERN_A] + self.patterns
         if self.config["the"]:

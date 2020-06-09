@@ -48,7 +48,8 @@ def call(args):
     try:
         return util.command_output(args).stdout
     except subprocess.CalledProcessError as e:
-        raise ABSubmitError(u"{0} exited with status {1}".format(args[0], e.returncode))
+        raise ABSubmitError(u"{0} exited with status {1}".format(
+            args[0], e.returncode))
 
 
 class AcousticBrainzSubmitPlugin(plugins.BeetsPlugin):
@@ -63,8 +64,8 @@ class AcousticBrainzSubmitPlugin(plugins.BeetsPlugin):
             # Expicit path to extractor
             if not os.path.isfile(self.extractor):
                 raise ui.UserError(
-                    u"Extractor command does not exist: {0}.".format(self.extractor)
-                )
+                    u"Extractor command does not exist: {0}.".format(
+                        self.extractor))
         else:
             # Implicit path to extractor, search for it in path
             self.extractor = "streaming_extractor_music"
@@ -73,8 +74,7 @@ class AcousticBrainzSubmitPlugin(plugins.BeetsPlugin):
             except OSError:
                 raise ui.UserError(
                     u"No extractor command found: please install the extractor"
-                    u" binary from https://acousticbrainz.org/download"
-                )
+                    u" binary from https://acousticbrainz.org/download")
             except ABSubmitError:
                 # Extractor found, will exit with an error if not called with
                 # the correct amount of arguments.
@@ -94,8 +94,7 @@ class AcousticBrainzSubmitPlugin(plugins.BeetsPlugin):
 
     def commands(self):
         cmd = ui.Subcommand(
-            "absubmit", help=u"calculate and submit AcousticBrainz analysis"
-        )
+            "absubmit", help=u"calculate and submit AcousticBrainz analysis")
         cmd.parser.add_option(
             u"-f",
             u"--force",
@@ -131,16 +130,15 @@ only files which would be processed",
         mbid = item["mb_trackid"]
 
         # Avoid re-analyzing files that already have AB data.
-        if (
-            not self.opts.force_refetch
-            and not self.config["force"]
-            and item.get(PROBE_FIELD)
-        ):
+        if (not self.opts.force_refetch and not self.config["force"]
+                and item.get(PROBE_FIELD)):
             return None
 
         # If file has no MBID, skip it.
         if not mbid:
-            self._log.info(u"Not analysing {}, missing " u"musicbrainz track id.", item)
+            self._log.info(
+                u"Not analysing {}, missing "
+                u"musicbrainz track id.", item)
             return None
 
         if self.opts.pretend_fetch or self.config["pretend"]:
@@ -167,7 +165,8 @@ only files which would be processed",
             with open(filename, "r") as tmp_file:
                 analysis = json.load(tmp_file)
             # Add the hash to the output.
-            analysis["metadata"]["version"]["essentia_build_sha"] = self.extractor_sha
+            analysis["metadata"]["version"][
+                "essentia_build_sha"] = self.extractor_sha
             return analysis
         finally:
             try:
@@ -180,9 +179,9 @@ only files which would be processed",
     def _submit_data(self, item, data):
         mbid = item["mb_trackid"]
         headers = {"Content-Type": "application/json"}
-        response = requests.post(
-            self.base_url.format(mbid=mbid), json=data, headers=headers
-        )
+        response = requests.post(self.base_url.format(mbid=mbid),
+                                 json=data,
+                                 headers=headers)
         # Test that request was successful and raise an error on failure.
         if response.status_code != 200:
             try:
@@ -190,11 +189,12 @@ only files which would be processed",
             except (ValueError, KeyError) as e:
                 message = u"unable to get error message: {}".format(e)
             self._log.error(
-                u"Failed to submit AcousticBrainz analysis of {item}: " u"{message}).",
+                u"Failed to submit AcousticBrainz analysis of {item}: "
+                u"{message}).",
                 item=item,
                 message=message,
             )
         else:
             self._log.debug(
-                u"Successfully submitted AcousticBrainz analysis " u"for {}.", item
-            )
+                u"Successfully submitted AcousticBrainz analysis "
+                u"for {}.", item)

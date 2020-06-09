@@ -46,32 +46,30 @@ def get_art(log, item):
     try:
         mf = mediafile.MediaFile(syspath(item.path))
     except mediafile.UnreadableFileError as exc:
-        log.warning(
-            u"Could not extract art from {0}: {1}", displayable_path(item.path), exc
-        )
+        log.warning(u"Could not extract art from {0}: {1}",
+                    displayable_path(item.path), exc)
         return
 
     return mf.art
 
 
 def embed_item(
-    log,
-    item,
-    imagepath,
-    maxwidth=None,
-    itempath=None,
-    compare_threshold=0,
-    ifempty=False,
-    as_album=False,
-    id3v23=None,
-    quality=0,
+        log,
+        item,
+        imagepath,
+        maxwidth=None,
+        itempath=None,
+        compare_threshold=0,
+        ifempty=False,
+        as_album=False,
+        id3v23=None,
+        quality=0,
 ):
     """Embed an image into the item's media file.
     """
     # Conditions and filters.
-    if compare_threshold and not check_art_similarity(
-        log, item, imagepath, compare_threshold
-    ):
+    if compare_threshold and not check_art_similarity(log, item, imagepath,
+                                                      compare_threshold):
         log.info(u"Image not similar; skipping.")
         return
     if ifempty and get_art(log, item):
@@ -91,20 +89,21 @@ def embed_item(
     # Make sure the image kind is safe (some formats only support PNG
     # and JPEG).
     if image.mime_type not in ("image/jpeg", "image/png"):
-        log.info("not embedding image of unsupported type: {}", image.mime_type)
+        log.info("not embedding image of unsupported type: {}",
+                 image.mime_type)
         return
 
     item.try_write(path=itempath, tags={"images": [image]}, id3v23=id3v23)
 
 
 def embed_album(
-    log,
-    album,
-    maxwidth=None,
-    quiet=False,
-    compare_threshold=0,
-    ifempty=False,
-    quality=0,
+        log,
+        album,
+        maxwidth=None,
+        quiet=False,
+        compare_threshold=0,
+        ifempty=False,
+        quality=0,
 ):
     """Embed album art into all of the album's items.
     """
@@ -113,9 +112,8 @@ def embed_album(
         log.info(u"No album art present for {0}", album)
         return
     if not os.path.isfile(syspath(imagepath)):
-        log.info(
-            u"Album art not found at {0} for {1}", displayable_path(imagepath), album
-        )
+        log.info(u"Album art not found at {0} for {1}",
+                 displayable_path(imagepath), album)
         return
     if maxwidth:
         imagepath = resize_image(log, imagepath, maxwidth, quality)
@@ -146,7 +144,9 @@ def resize_image(log, imagepath, maxwidth, quality):
         maxwidth,
         quality,
     )
-    return ArtResizer.shared.resize(maxwidth, syspath(imagepath), quality=quality)
+    return ArtResizer.shared.resize(maxwidth,
+                                    syspath(imagepath),
+                                    quality=quality)
 
 
 def check_art_similarity(log, item, imagepath, compare_threshold):
@@ -172,9 +172,8 @@ def check_art_similarity(log, item, imagepath, compare_threshold):
                 "MIFF:-",
             ]
             compare_cmd = ["compare", "-metric", "PHASH", "-", "null:"]
-            log.debug(
-                u"comparing images with pipeline {} | {}", convert_cmd, compare_cmd
-            )
+            log.debug(u"comparing images with pipeline {} | {}", convert_cmd,
+                      compare_cmd)
             convert_proc = subprocess.Popen(
                 convert_cmd,
                 stdout=subprocess.PIPE,
@@ -243,7 +242,8 @@ def extract(log, outpath, item):
         return
     outpath += bytestring_path("." + ext)
 
-    log.info(u"Extracting album art from: {0} to: {1}", item, displayable_path(outpath))
+    log.info(u"Extracting album art from: {0} to: {1}", item,
+             displayable_path(outpath))
     with open(syspath(outpath), "wb") as f:
         f.write(art)
     return outpath

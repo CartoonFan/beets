@@ -62,9 +62,8 @@ def call(args, **kwargs):
     try:
         return command_output(args, **kwargs)
     except subprocess.CalledProcessError as e:
-        raise ReplayGainError(
-            u"{0} exited with status {1}".format(args[0], e.returncode)
-        )
+        raise ReplayGainError(u"{0} exited with status {1}".format(
+            args[0], e.returncode))
     except UnicodeEncodeError:
         # Due to a bug in Python 2's subprocess on Windows, Unicode
         # filenames can fail to encode on that platform. See:
@@ -74,8 +73,7 @@ def call(args, **kwargs):
 
 def after_version(version_a, version_b):
     return tuple(int(s) for s in version_a.split(".")) >= tuple(
-        int(s) for s in version_b.split(".")
-    )
+        int(s) for s in version_b.split("."))
 
 
 def db_to_lufs(db):
@@ -149,9 +147,10 @@ class Bs1770gainBackend(Backend):
 
     def __init__(self, config, log):
         super(Bs1770gainBackend, self).__init__(config, log)
-        config.add(
-            {"chunk_at": 5000, "method": "",}
-        )
+        config.add({
+            "chunk_at": 5000,
+            "method": "",
+        })
         self.chunk_at = config["chunk_at"].as_number()
         # backward compatibility to `method` config option
         self.__method = config["method"].as_str()
@@ -168,8 +167,7 @@ class Bs1770gainBackend(Backend):
             raise FatalReplayGainError(u"Is bs1770gain installed?")
         if not self.command:
             raise FatalReplayGainError(
-                u"no replaygain command found: install bs1770gain"
-            )
+                u"no replaygain command found: install bs1770gain")
 
     def compute_track_gain(self, items, target_level, peak):
         """Computes the track gain of the given tracks, returns a list
@@ -231,7 +229,8 @@ class Bs1770gainBackend(Backend):
 
             for chunk in self.isplitter(items, self.chunk_at):
                 i += 1
-                returnchunk = self.compute_chunk_gain(chunk, is_album, target_level)
+                returnchunk = self.compute_chunk_gain(chunk, is_album,
+                                                      target_level)
                 albumgaintot += returnchunk[-1].gain
                 albumpeaktot = max(albumpeaktot, returnchunk[-1].peak)
                 returnchunks += returnchunk[0:-1]
@@ -250,8 +249,8 @@ class Bs1770gainBackend(Backend):
             # backward compatibility to `method` option
             method = self.__method
             gain_adjustment = (
-                target_level - [k for k, v in self.methods.items() if v == method][0]
-            )
+                target_level -
+                [k for k, v in self.methods.items() if v == method][0])
         elif target_level in self.methods:
             method = self.methods[target_level]
             gain_adjustment = 0
@@ -275,14 +274,17 @@ class Bs1770gainBackend(Backend):
         path_list = [i.path for i in items]
 
         # Invoke the command.
-        self._log.debug(u"executing {0}", u" ".join(map(displayable_path, args)))
+        self._log.debug(u"executing {0}",
+                        u" ".join(map(displayable_path, args)))
         output = call(args).stdout
 
         self._log.debug(u"analysis finished: {0}", output)
         results = self.parse_tool_output(output, path_list, is_album)
 
         if gain_adjustment:
-            results = [Gain(res.gain + gain_adjustment, res.peak) for res in results]
+            results = [
+                Gain(res.gain + gain_adjustment, res.peak) for res in results
+            ]
 
         self._log.debug(u"{0} items, {1} results", len(items), len(results))
         return results
@@ -311,21 +313,21 @@ class Bs1770gainBackend(Backend):
             elif name == u"track":
                 state["file"] = bytestring_path(attrs[u"file"])
                 if state["file"] in per_file_gain:
-                    raise ReplayGainError(u"duplicate filename in bs1770gain output")
+                    raise ReplayGainError(
+                        u"duplicate filename in bs1770gain output")
 
         def end_element_handler(name):
             if name == u"track":
                 if state["gain"] is None or state["peak"] is None:
-                    raise ReplayGainError(
-                        u"could not parse gain or peak from " "the output of bs1770gain"
-                    )
-                per_file_gain[state["file"]] = Gain(state["gain"], state["peak"])
+                    raise ReplayGainError(u"could not parse gain or peak from "
+                                          "the output of bs1770gain")
+                per_file_gain[state["file"]] = Gain(state["gain"],
+                                                    state["peak"])
                 state["gain"] = state["peak"] = None
             elif name == u"summary":
                 if state["gain"] is None or state["peak"] is None:
-                    raise ReplayGainError(
-                        u"could not parse gain or peak from " "the output of bs1770gain"
-                    )
+                    raise ReplayGainError(u"could not parse gain or peak from "
+                                          "the output of bs1770gain")
                 album_gain["album"] = Gain(state["gain"], state["peak"])
                 state["gain"] = state["peak"] = None
             elif len(per_file_gain) == len(path_list):
@@ -333,8 +335,10 @@ class Bs1770gainBackend(Backend):
                     album_state["gain"] = state["gain"]
                 if state["peak"] is not None:
                     album_state["peak"] = state["peak"]
-                if album_state["gain"] is not None and album_state["peak"] is not None:
-                    album_gain["album"] = Gain(album_state["gain"], album_state["peak"])
+                if album_state["gain"] is not None and album_state[
+                        "peak"] is not None:
+                    album_gain["album"] = Gain(album_state["gain"],
+                                               album_state["peak"])
                 state["gain"] = state["peak"] = None
 
         parser.StartElementHandler = start_element_handler
@@ -345,14 +349,12 @@ class Bs1770gainBackend(Backend):
         except xml.parsers.expat.ExpatError:
             raise ReplayGainError(
                 u"The bs1770gain tool produced malformed XML. "
-                "Using version >=0.4.10 may solve this problem."
-            )
+                "Using version >=0.4.10 may solve this problem.")
 
         if len(per_file_gain) != len(path_list):
             raise ReplayGainError(
                 u"the number of results returned by bs1770gain does not match "
-                "the number of files passed to it"
-            )
+                "the number of files passed to it")
 
         # bs1770gain does not return the analysis results in the order that
         # files are passed on the command line, because it is sorting the files
@@ -362,8 +364,7 @@ class Bs1770gainBackend(Backend):
         except KeyError:
             raise ReplayGainError(
                 u"unrecognized filename in bs1770gain output "
-                "(bs1770gain can only deal with utf-8 file names)"
-            )
+                "(bs1770gain can only deal with utf-8 file names)")
         if is_album:
             out.append(album_gain["album"])
         return out
@@ -382,12 +383,12 @@ class FfmpegBackend(Backend):
         try:
             ffmpeg_version_out = call([self._ffmpeg_path, "-version"])
         except OSError:
-            raise FatalReplayGainError(
-                u"could not find ffmpeg at {0}".format(self._ffmpeg_path)
-            )
+            raise FatalReplayGainError(u"could not find ffmpeg at {0}".format(
+                self._ffmpeg_path))
         incompatible_ffmpeg = True
         for line in ffmpeg_version_out.stdout.splitlines():
-            if line.startswith(b"configuration:") and b"--enable-libebur128" in line:
+            if line.startswith(
+                    b"configuration:") and b"--enable-libebur128" in line:
                 incompatible_ffmpeg = False
             if line.startswith(b"libavfilter"):
                 version = line.split(b" ", 1)[1].split(b"/", 1)[0].split(b".")
@@ -398,8 +399,7 @@ class FfmpegBackend(Backend):
             raise FatalReplayGainError(
                 u"Installed FFmpeg version does not support ReplayGain."
                 u"calculation. Either libavfilter version 6.67.100 or above or"
-                u"the --enable-libebur128 configuration option is required."
-            )
+                u"the --enable-libebur128 configuration option is required.")
 
     def compute_track_gain(self, items, target_level, peak):
         """Computes the track gain of the given tracks, returns a list
@@ -408,9 +408,12 @@ class FfmpegBackend(Backend):
         gains = []
         for item in items:
             gains.append(
-                self._analyse_item(item, target_level, peak, count_blocks=False,)[
-                    0
-                ]  # take only the gain, discarding number of gating blocks
+                self._analyse_item(
+                    item,
+                    target_level,
+                    peak,
+                    count_blocks=False,
+                )[0]  # take only the gain, discarding number of gating blocks
             )
         return gains
 
@@ -431,7 +434,8 @@ class FfmpegBackend(Backend):
         n_blocks = 0
 
         for item in items:
-            track_gain, track_n_blocks = self._analyse_item(item, target_level, peak)
+            track_gain, track_n_blocks = self._analyse_item(
+                item, target_level, peak)
             track_gains.append(track_gain)
 
             # album peak is maximum track peak
@@ -446,7 +450,7 @@ class FfmpegBackend(Backend):
             # This reverses ITU-R BS.1770-4 p. 6 equation (5) to convert
             # from loudness to power. The result is the average gating
             # block power.
-            track_power = 10 ** ((track_loudness + 0.691) / 10)
+            track_power = 10**((track_loudness + 0.691) / 10)
 
             # Weight that average power by the number of gating blocks to
             # get the sum of all their powers. Add that to the sum of all
@@ -463,9 +467,8 @@ class FfmpegBackend(Backend):
         # convert LUFS -> `LU to target_level`
         album_gain = target_level_lufs - album_gain
 
-        self._log.debug(
-            u"{0}: gain {1} LU, peak {2}".format(items, album_gain, album_peak)
-        )
+        self._log.debug(u"{0}: gain {1} LU, peak {2}".format(
+            items, album_gain, album_peak))
 
         return AlbumGain(Gain(album_gain, album_peak), track_gains)
 
@@ -499,7 +502,8 @@ class FfmpegBackend(Backend):
         # call ffmpeg
         self._log.debug(u"analyzing {0}".format(item))
         cmd = self._construct_cmd(item, peak_method)
-        self._log.debug(u"executing {0}", u" ".join(map(displayable_path, cmd)))
+        self._log.debug(u"executing {0}", u" ".join(map(displayable_path,
+                                                        cmd)))
         output = call(cmd).stderr.splitlines()
 
         # parse output
@@ -513,31 +517,36 @@ class FfmpegBackend(Backend):
                 start_line=len(output) - 1,
                 step_size=-1,
             )
-            peak = self._parse_float(
-                output[self._find_line(output, b"    Peak:", line_peak,)]
-            )
+            peak = self._parse_float(output[self._find_line(
+                output,
+                b"    Peak:",
+                line_peak,
+            )])
             # convert TPFS -> part of FS
-            peak = 10 ** (peak / 20)
+            peak = 10**(peak / 20)
 
         line_integrated_loudness = self._find_line(
-            output, b"  Integrated loudness:", start_line=len(output) - 1, step_size=-1,
+            output,
+            b"  Integrated loudness:",
+            start_line=len(output) - 1,
+            step_size=-1,
         )
-        gain = self._parse_float(
-            output[self._find_line(output, b"    I:", line_integrated_loudness,)]
-        )
+        gain = self._parse_float(output[self._find_line(
+            output,
+            b"    I:",
+            line_integrated_loudness,
+        )])
         # convert LUFS -> LU from target level
         gain = target_level_lufs - gain
 
         # count BS.1770 gating blocks
         n_blocks = 0
         if count_blocks:
-            gating_threshold = self._parse_float(
-                output[
-                    self._find_line(
-                        output, b"    Threshold:", start_line=line_integrated_loudness,
-                    )
-                ]
-            )
+            gating_threshold = self._parse_float(output[self._find_line(
+                output,
+                b"    Threshold:",
+                start_line=line_integrated_loudness,
+            )])
             for line in output:
                 if not line.startswith(b"[Parsed_ebur128"):
                     continue
@@ -548,11 +557,8 @@ class FfmpegBackend(Backend):
                     continue
                 if self._parse_float(b"M: " + line[1]) >= gating_threshold:
                     n_blocks += 1
-            self._log.debug(
-                u"{0}: {1} blocks over {2} LUFS".format(
-                    item, n_blocks, gating_threshold
-                )
-            )
+            self._log.debug(u"{0}: {1} blocks over {2} LUFS".format(
+                item, n_blocks, gating_threshold))
 
         self._log.debug(u"{0}: gain {1} LU, peak {2}".format(item, gain, peak))
 
@@ -569,9 +575,7 @@ class FfmpegBackend(Backend):
                 return i
         raise ReplayGainError(
             u"ffmpeg output: missing {0} after line {1}".format(
-                repr(search), start_line
-            )
-        )
+                repr(search), start_line))
 
     def _parse_float(self, line):
         """Extract a float from a key value pair in `line`.
@@ -583,8 +587,8 @@ class FfmpegBackend(Backend):
         value = line.split(b":", 1)
         if len(value) < 2:
             raise ReplayGainError(
-                u"ffmpeg output: expected key value pair, found {0}".format(line)
-            )
+                u"ffmpeg output: expected key value pair, found {0}".format(
+                    line))
         value = value[1].lstrip()
         # strip unit
         value = value.split(b" ", 1)[0]
@@ -593,17 +597,18 @@ class FfmpegBackend(Backend):
             return float(value)
         except ValueError:
             raise ReplayGainError(
-                u"ffmpeg output: expected float value, found {0}".format(value)
-            )
+                u"ffmpeg output: expected float value, found {0}".format(
+                    value))
 
 
 # mpgain/aacgain CLI tool backend.
 class CommandBackend(Backend):
     def __init__(self, config, log):
         super(CommandBackend, self).__init__(config, log)
-        config.add(
-            {"command": u"", "noclip": True,}
-        )
+        config.add({
+            "command": u"",
+            "noclip": True,
+        })
 
         self.command = config["command"].as_str()
 
@@ -611,8 +616,8 @@ class CommandBackend(Backend):
             # Explicit executable path.
             if not os.path.isfile(self.command):
                 raise FatalReplayGainError(
-                    u"replaygain command does not exist: {0}".format(self.command)
-                )
+                    u"replaygain command does not exist: {0}".format(
+                        self.command))
         else:
             # Check whether the program is in $PATH.
             for cmd in ("mp3gain", "aacgain"):
@@ -623,8 +628,7 @@ class CommandBackend(Backend):
                     pass
         if not self.command:
             raise FatalReplayGainError(
-                u"no replaygain command found: install mp3gain or aacgain"
-            )
+                u"no replaygain command found: install mp3gain or aacgain")
 
         self.noclip = config["noclip"].get(bool)
 
@@ -669,7 +673,6 @@ class CommandBackend(Backend):
         if len(items) == 0:
             self._log.debug(u"no supported tracks to analyze")
             return []
-
         """Compute ReplayGain values and return a list of results
         dictionaries as given by `parse_tool_output`.
         """
@@ -693,7 +696,8 @@ class CommandBackend(Backend):
         self._log.debug(u"executing {0}", " ".join(map(displayable_path, cmd)))
         output = call(cmd).stdout
         self._log.debug(u"analysis finished")
-        return self.parse_tool_output(output, len(items) + (1 if is_album else 0))
+        return self.parse_tool_output(output,
+                                      len(items) + (1 if is_album else 0))
 
     def parse_tool_output(self, text, num_lines):
         """Given the tab-delimited output from an invocation of mp3gain
@@ -701,7 +705,7 @@ class CommandBackend(Backend):
         containing information about each analyzed file.
         """
         out = []
-        for line in text.split(b"\n")[1 : num_lines + 1]:
+        for line in text.split(b"\n")[1:num_lines + 1]:
             parts = line.split(b"\t")
             if len(parts) != 6 or parts[0] == b"File":
                 self._log.debug(u"bad tool output: {0}", text)
@@ -737,16 +741,10 @@ class GStreamerBackend(Backend):
         self._res = self.Gst.ElementFactory.make("audioresample", "res")
         self._rg = self.Gst.ElementFactory.make("rganalysis", "rg")
 
-        if (
-            self._src is None
-            or self._decbin is None
-            or self._conv is None
-            or self._res is None
-            or self._rg is None
-        ):
+        if (self._src is None or self._decbin is None or self._conv is None
+                or self._res is None or self._rg is None):
             raise FatalGstreamerPluginReplayGainError(
-                u"Failed to load required GStreamer plugins"
-            )
+                u"Failed to load required GStreamer plugins")
 
         # We check which files need gain ourselves, so all files given
         # to rganalsys should have their gain computed, even if it
@@ -789,12 +787,14 @@ class GStreamerBackend(Backend):
         try:
             import gi
         except ImportError:
-            raise FatalReplayGainError(u"Failed to load GStreamer: python-gi not found")
+            raise FatalReplayGainError(
+                u"Failed to load GStreamer: python-gi not found")
 
         try:
             gi.require_version("Gst", "1.0")
         except ValueError as e:
-            raise FatalReplayGainError(u"Failed to load GStreamer 1.0: {0}".format(e))
+            raise FatalReplayGainError(
+                u"Failed to load GStreamer 1.0: {0}".format(e))
 
         from gi.repository import GObject, Gst, GLib
 
@@ -834,10 +834,8 @@ class GStreamerBackend(Backend):
             raise ReplayGainError(u"Some tracks did not receive tags")
 
         return [
-            Gain(
-                self._file_tags[item]["TRACK_GAIN"], self._file_tags[item]["TRACK_PEAK"]
-            )
-            for item in items
+            Gain(self._file_tags[item]["TRACK_GAIN"],
+                 self._file_tags[item]["TRACK_PEAK"]) for item in items
         ]
 
     def compute_album_gain(self, items, target_level, peak):
@@ -884,8 +882,7 @@ class GStreamerBackend(Backend):
         f = self._src.get_property("location")
         # A GStreamer error, either an unsupported format or a bug.
         self._error = ReplayGainError(
-            u"Error {0!r} - {1!r} on file {2!r}".format(err, debug, f)
-        )
+            u"Error {0!r} - {1!r} on file {2!r}".format(err, debug, f))
 
     def _on_tag(self, bus, message):
         tags = message.parse_tag()
@@ -896,17 +893,20 @@ class GStreamerBackend(Backend):
             # store the computed tags, we overwrite the RG values of
             # received a second time.
             if tag == self.Gst.TAG_TRACK_GAIN:
-                self._file_tags[self._file]["TRACK_GAIN"] = taglist.get_double(tag)[1]
+                self._file_tags[self._file]["TRACK_GAIN"] = taglist.get_double(
+                    tag)[1]
             elif tag == self.Gst.TAG_TRACK_PEAK:
-                self._file_tags[self._file]["TRACK_PEAK"] = taglist.get_double(tag)[1]
+                self._file_tags[self._file]["TRACK_PEAK"] = taglist.get_double(
+                    tag)[1]
             elif tag == self.Gst.TAG_ALBUM_GAIN:
-                self._file_tags[self._file]["ALBUM_GAIN"] = taglist.get_double(tag)[1]
+                self._file_tags[self._file]["ALBUM_GAIN"] = taglist.get_double(
+                    tag)[1]
             elif tag == self.Gst.TAG_ALBUM_PEAK:
-                self._file_tags[self._file]["ALBUM_PEAK"] = taglist.get_double(tag)[1]
+                self._file_tags[self._file]["ALBUM_PEAK"] = taglist.get_double(
+                    tag)[1]
             elif tag == self.Gst.TAG_REFERENCE_LEVEL:
-                self._file_tags[self._file]["REFERENCE_LEVEL"] = taglist.get_double(
-                    tag
-                )[1]
+                self._file_tags[
+                    self._file]["REFERENCE_LEVEL"] = taglist.get_double(tag)[1]
 
         tags.foreach(handle_tag, None)
 
@@ -968,7 +968,8 @@ class GStreamerBackend(Backend):
         if ret:
             # Seek to the beginning in order to clear the EOS state of the
             # various elements of the pipeline
-            self._pipe.seek_simple(self.Gst.Format.TIME, self.Gst.SeekFlags.FLUSH, 0)
+            self._pipe.seek_simple(self.Gst.Format.TIME,
+                                   self.Gst.SeekFlags.FLUSH, 0)
             self._pipe.set_state(self.Gst.State.PLAYING)
 
         return ret
@@ -1006,8 +1007,7 @@ class AudioToolsBackend(Backend):
             import audiotools.replaygain
         except ImportError:
             raise FatalReplayGainError(
-                u"Failed to load audiotools: audiotools not found"
-            )
+                u"Failed to load audiotools: audiotools not found")
         self._mod_audiotools = audiotools
         self._mod_replaygain = audiotools.replaygain
 
@@ -1025,7 +1025,8 @@ class AudioToolsBackend(Backend):
         except IOError:
             raise ReplayGainError(u"File {} was not found".format(item.path))
         except self._mod_audiotools.UnsupportedFile:
-            raise ReplayGainError(u"Unsupported file type {}".format(item.format))
+            raise ReplayGainError(u"Unsupported file type {}".format(
+                item.format))
 
         return audiofile
 
@@ -1042,7 +1043,8 @@ class AudioToolsBackend(Backend):
         try:
             rg = self._mod_replaygain.ReplayGain(audiofile.sample_rate())
         except ValueError:
-            raise ReplayGainError(u"Unsupported sample rate {}".format(item.samplerate))
+            raise ReplayGainError(u"Unsupported sample rate {}".format(
+                item.samplerate))
         return rg
 
     def compute_track_gain(self, items, target_level, peak):
@@ -1087,7 +1089,8 @@ class AudioToolsBackend(Backend):
 
         # Each call to title_gain on a ReplayGain object returns peak and gain
         # of the track.
-        rg_track_gain, rg_track_peak = self._title_gain(rg, audiofile, target_level)
+        rg_track_gain, rg_track_peak = self._title_gain(
+            rg, audiofile, target_level)
 
         self._log.debug(
             u"ReplayGain for track {0} - {1}: {2:.2f}, {3:.2f}",
@@ -1113,7 +1116,8 @@ class AudioToolsBackend(Backend):
         track_gains = []
         for item in items:
             audiofile = self.open_audio_file(item)
-            rg_track_gain, rg_track_peak = self._title_gain(rg, audiofile, target_level)
+            rg_track_gain, rg_track_peak = self._title_gain(
+                rg, audiofile, target_level)
             track_gains.append(Gain(gain=rg_track_gain, peak=rg_track_peak))
             self._log.debug(
                 u"ReplayGain for track {0}: {1:.2f}, {2:.2f}",
@@ -1133,9 +1137,8 @@ class AudioToolsBackend(Backend):
             rg_album_peak,
         )
 
-        return AlbumGain(
-            Gain(gain=rg_album_gain, peak=rg_album_peak), track_gains=track_gains
-        )
+        return AlbumGain(Gain(gain=rg_album_gain, peak=rg_album_peak),
+                         track_gains=track_gains)
 
 
 # Main plugin logic.
@@ -1162,18 +1165,16 @@ class ReplayGainPlugin(BeetsPlugin):
         super(ReplayGainPlugin, self).__init__()
 
         # default backend is 'command' for backward-compatibility.
-        self.config.add(
-            {
-                "overwrite": False,
-                "auto": True,
-                "backend": u"command",
-                "per_disc": False,
-                "peak": "true",
-                "targetlevel": 89,
-                "r128": ["Opus"],
-                "r128_targetlevel": lufs_to_db(-23),
-            }
-        )
+        self.config.add({
+            "overwrite": False,
+            "auto": True,
+            "backend": u"command",
+            "per_disc": False,
+            "peak": "true",
+            "targetlevel": 89,
+            "r128": ["Opus"],
+            "r128_targetlevel": lufs_to_db(-23),
+        })
 
         self.overwrite = self.config["overwrite"].get(bool)
         self.per_disc = self.config["per_disc"].get(bool)
@@ -1182,17 +1183,13 @@ class ReplayGainPlugin(BeetsPlugin):
             raise ui.UserError(
                 u"Selected ReplayGain backend {0} is not supported. "
                 u"Please select one of: {1}".format(
-                    backend_name, u", ".join(self.backends.keys())
-                )
-            )
+                    backend_name, u", ".join(self.backends.keys())))
         peak_method = self.config["peak"].as_str()
         if peak_method not in self.peak_methods:
             raise ui.UserError(
                 u"Selected ReplayGain peak method {0} is not supported. "
                 u"Please select one of: {1}".format(
-                    peak_method, u", ".join(self.peak_methods.keys())
-                )
-            )
+                    peak_method, u", ".join(self.peak_methods.keys())))
         self._peak_method = self.peak_methods[peak_method]
 
         # On-import analysis.
@@ -1203,9 +1200,11 @@ class ReplayGainPlugin(BeetsPlugin):
         self.r128_whitelist = self.config["r128"].as_str_seq()
 
         try:
-            self.backend_instance = self.backends[backend_name](self.config, self._log)
+            self.backend_instance = self.backends[backend_name](self.config,
+                                                                self._log)
         except (ReplayGainError, FatalReplayGainError) as e:
-            raise ui.UserError(u"replaygain initialization failed: {0}".format(e))
+            raise ui.UserError(
+                u"replaygain initialization failed: {0}".format(e))
 
     def should_use_r128(self, item):
         """Checks the plugin setting to decide whether the calculation
@@ -1214,33 +1213,23 @@ class ReplayGainPlugin(BeetsPlugin):
         return item.format in self.r128_whitelist
 
     def track_requires_gain(self, item):
-        return (
-            self.overwrite
-            or (self.should_use_r128(item) and not item.r128_track_gain)
-            or (
-                not self.should_use_r128(item)
-                and (not item.rg_track_gain or not item.rg_track_peak)
-            )
-        )
+        return (self.overwrite
+                or (self.should_use_r128(item) and not item.r128_track_gain)
+                or (not self.should_use_r128(item) and
+                    (not item.rg_track_gain or not item.rg_track_peak)))
 
     def album_requires_gain(self, album):
         # Skip calculating gain only when *all* files don't need
         # recalculation. This way, if any file among an album's tracks
         # needs recalculation, we still get an accurate album gain
         # value.
-        return (
-            self.overwrite
-            or any(
-                self.should_use_r128(item)
-                and (not item.r128_track_gain or not item.r128_album_gain)
-                for item in album.items()
-            )
-            or any(
-                not self.should_use_r128(item)
-                and (not item.rg_album_gain or not item.rg_album_peak)
-                for item in album.items()
-            )
-        )
+        return (self.overwrite or any(
+            self.should_use_r128(item) and
+            (not item.r128_track_gain or not item.r128_album_gain)
+            for item in album.items())
+                or any(not self.should_use_r128(item) and
+                       (not item.rg_album_gain or not item.rg_album_peak)
+                       for item in album.items()))
 
     def store_track_gain(self, item, track_gain):
         item.rg_track_gain = track_gain.gain
@@ -1266,12 +1255,14 @@ class ReplayGainPlugin(BeetsPlugin):
         item.r128_track_gain = track_gain.gain
         item.store()
 
-        self._log.debug(u"applied r128 track gain {0} LU", item.r128_track_gain)
+        self._log.debug(u"applied r128 track gain {0} LU",
+                        item.r128_track_gain)
 
     def store_album_r128_gain(self, item, album_gain):
         item.r128_album_gain = album_gain.gain
         item.store()
-        self._log.debug(u"applied r128 album gain {0} LU", item.r128_album_gain)
+        self._log.debug(u"applied r128 album gain {0} LU",
+                        item.r128_album_gain)
 
     def tag_specific_values(self, items):
         """Return some tag specific values.
@@ -1306,12 +1297,12 @@ class ReplayGainPlugin(BeetsPlugin):
 
         self._log.info(u"analyzing {0}", album)
 
-        if any(self.should_use_r128(item) for item in album.items()) and not all(
-            self.should_use_r128(item) for item in album.items()
-        ):
+        if any(self.should_use_r128(item)
+               for item in album.items()) and not all(
+                   self.should_use_r128(item) for item in album.items()):
             self._log.error(
-                u"Cannot calculate gain for album {0} (incompatible formats)", album
-            )
+                u"Cannot calculate gain for album {0} (incompatible formats)",
+                album)
             return
 
         tag_vals = self.tag_specific_values(album.items())
@@ -1329,13 +1320,11 @@ class ReplayGainPlugin(BeetsPlugin):
         for discnumber, items in discs.items():
             try:
                 album_gain = self.backend_instance.compute_album_gain(
-                    items, target_level, peak
-                )
+                    items, target_level, peak)
                 if len(album_gain.track_gains) != len(items):
                     raise ReplayGainError(
                         u"ReplayGain backend failed "
-                        u"for some tracks in album {0}".format(album)
-                    )
+                        u"for some tracks in album {0}".format(album))
 
                 for item, track_gain in zip(items, album_gain.track_gains):
                     store_track_gain(item, track_gain)
@@ -1365,12 +1354,10 @@ class ReplayGainPlugin(BeetsPlugin):
 
         try:
             track_gains = self.backend_instance.compute_track_gain(
-                [item], target_level, peak
-            )
+                [item], target_level, peak)
             if len(track_gains) != 1:
                 raise ReplayGainError(
-                    u"ReplayGain backend failed for track {0}".format(item)
-                )
+                    u"ReplayGain backend failed for track {0}".format(item))
 
             store_track_gain(item, track_gains[0])
             if write:

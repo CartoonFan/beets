@@ -63,15 +63,13 @@ def span_from_str(span_str):
 
     years = [int(x) for x in re.findall(r"\d+", span_str)]
     if not years:
-        raise ui.UserError(
-            u"invalid range defined for year bucket '%s': no " u"year found" % span_str
-        )
+        raise ui.UserError(u"invalid range defined for year bucket '%s': no "
+                           u"year found" % span_str)
     try:
         years = [normalize_year(x, years[0]) for x in years]
     except BucketError as exc:
-        raise ui.UserError(
-            u"invalid range defined for year bucket '%s': %s" % (span_str, exc)
-        )
+        raise ui.UserError(u"invalid range defined for year bucket '%s': %s" %
+                           (span_str, exc))
 
     res = {"from": years[0], "str": span_str}
     if len(years) > 1:
@@ -123,12 +121,14 @@ def build_year_spans(year_spans_str):
 def str2fmt(s):
     """Deduces formatting syntax from a span string.
     """
-    regex = re.compile(
-        r"(?P<bef>\D*)(?P<fromyear>\d+)(?P<sep>\D*)" r"(?P<toyear>\d*)(?P<after>\D*)"
-    )
+    regex = re.compile(r"(?P<bef>\D*)(?P<fromyear>\d+)(?P<sep>\D*)"
+                       r"(?P<toyear>\d*)(?P<after>\D*)")
     m = re.match(regex, s)
 
-    res = {"fromnchars": len(m.group("fromyear")), "tonchars": len(m.group("toyear"))}
+    res = {
+        "fromnchars": len(m.group("fromyear")),
+        "tonchars": len(m.group("toyear"))
+    }
     res["fmt"] = "%s%%s%s%s%s" % (
         m.group("bef"),
         m.group("sep"),
@@ -173,18 +173,13 @@ def build_alpha_spans(alpha_spans_str, alpha_regexs):
                 begin_index = ASCII_DIGITS.index(bucket[0])
                 end_index = ASCII_DIGITS.index(bucket[-1])
             else:
-                raise ui.UserError(
-                    u"invalid range defined for alpha bucket "
-                    u"'%s': no alphanumeric character found" % elem
-                )
+                raise ui.UserError(u"invalid range defined for alpha bucket "
+                                   u"'%s': no alphanumeric character found" %
+                                   elem)
             spans.append(
-                re.compile(
-                    "^["
-                    + ASCII_DIGITS[begin_index : end_index + 1]
-                    + ASCII_DIGITS[begin_index : end_index + 1].upper()
-                    + "]"
-                )
-            )
+                re.compile("^[" + ASCII_DIGITS[begin_index:end_index + 1] +
+                           ASCII_DIGITS[begin_index:end_index + 1].upper() +
+                           "]"))
     return spans
 
 
@@ -193,14 +188,12 @@ class BucketPlugin(plugins.BeetsPlugin):
         super(BucketPlugin, self).__init__()
         self.template_funcs["bucket"] = self._tmpl_bucket
 
-        self.config.add(
-            {
-                "bucket_year": [],
-                "bucket_alpha": [],
-                "bucket_alpha_regex": {},
-                "extrapolate": False,
-            }
-        )
+        self.config.add({
+            "bucket_year": [],
+            "bucket_alpha": [],
+            "bucket_alpha_regex": {},
+            "extrapolate": False,
+        })
         self.setup()
 
     def setup(self):
@@ -208,12 +201,14 @@ class BucketPlugin(plugins.BeetsPlugin):
         """
         self.year_spans = build_year_spans(self.config["bucket_year"].get())
         if self.year_spans and self.config["extrapolate"]:
-            [self.ys_len_mode, self.ys_repr_mode] = extract_modes(self.year_spans)
-            self.year_spans = extend_year_spans(self.year_spans, self.ys_len_mode)
+            [self.ys_len_mode,
+             self.ys_repr_mode] = extract_modes(self.year_spans)
+            self.year_spans = extend_year_spans(self.year_spans,
+                                                self.ys_len_mode)
 
         self.alpha_spans = build_alpha_spans(
-            self.config["bucket_alpha"].get(), self.config["bucket_alpha_regex"].get()
-        )
+            self.config["bucket_alpha"].get(),
+            self.config["bucket_alpha_regex"].get())
 
     def find_bucket_year(self, year):
         """Return  bucket that matches given year or return the year

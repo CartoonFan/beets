@@ -87,30 +87,34 @@ class UtilTest(unittest.TestCase):
 
     def test_sanitize_with_custom_replace_overrides_built_in_sub(self):
         with _common.platform_posix():
-            p = util.sanitize_path(u"a/.?/b", [(re.compile(r"foo"), u"bar"),])
+            p = util.sanitize_path(u"a/.?/b", [
+                (re.compile(r"foo"), u"bar"),
+            ])
         self.assertEqual(p, u"a/.?/b")
 
     def test_sanitize_with_custom_replace_adds_replacements(self):
         with _common.platform_posix():
-            p = util.sanitize_path(u"foo/bar", [(re.compile(r"foo"), u"bar"),])
+            p = util.sanitize_path(u"foo/bar", [
+                (re.compile(r"foo"), u"bar"),
+            ])
         self.assertEqual(p, u"bar/bar")
 
     @unittest.skip(u"unimplemented: #359")
     def test_sanitize_empty_component(self):
         with _common.platform_posix():
-            p = util.sanitize_path(u"foo//bar", [(re.compile(r"^$"), u"_"),])
+            p = util.sanitize_path(u"foo//bar", [
+                (re.compile(r"^$"), u"_"),
+            ])
         self.assertEqual(p, u"foo/_/bar")
 
-    @unittest.skipIf(
-        six.PY2, "surrogateescape error handler not available" "on Python 2"
-    )
+    @unittest.skipIf(six.PY2, "surrogateescape error handler not available"
+                     "on Python 2")
     def test_convert_command_args_keeps_undecodeable_bytes(self):
         arg = b"\x82"  # non-ascii bytes
         cmd_args = util.convert_command_args([arg])
 
-        self.assertEqual(
-            cmd_args[0], arg.decode(util.arg_encoding(), "surrogateescape")
-        )
+        self.assertEqual(cmd_args[0],
+                         arg.decode(util.arg_encoding(), "surrogateescape"))
 
     @patch("beets.util.subprocess.Popen")
     def test_command_output(self, mock_popen):

@@ -120,13 +120,11 @@ class FilesystemError(HumanReadableException):
                 displayable_path(self.paths[1]),
             )
         elif self.verb in ("delete", "write", "create", "read"):
-            clause = u"while {0} {1}".format(
-                self._gerund(), displayable_path(self.paths[0])
-            )
+            clause = u"while {0} {1}".format(self._gerund(),
+                                             displayable_path(self.paths[0]))
         else:
             clause = u"during {0} of paths {1}".format(
-                self.verb, u", ".join(displayable_path(p) for p in self.paths)
-            )
+                self.verb, u", ".join(displayable_path(p) for p in self.paths))
 
         return u"{0} {1}".format(self._reasonstr(), clause)
 
@@ -189,11 +187,8 @@ def sorted_walk(path, ignore=(), ignore_hidden=False, logger=None):
         contents = os.listdir(syspath(path))
     except OSError as exc:
         if logger:
-            logger.warning(
-                u"could not list directory {0}: {1}".format(
-                    displayable_path(path), exc.strerror
-                )
-            )
+            logger.warning(u"could not list directory {0}: {1}".format(
+                displayable_path(path), exc.strerror))
         return
     dirs = []
     files = []
@@ -246,9 +241,8 @@ def mkdirall(path):
             try:
                 os.mkdir(syspath(ancestor))
             except (OSError, IOError) as exc:
-                raise FilesystemError(
-                    exc, "create", (ancestor,), traceback.format_exc()
-                )
+                raise FilesystemError(exc, "create", (ancestor, ),
+                                      traceback.format_exc())
 
 
 def fnmatch_all(names, patterns):
@@ -284,7 +278,7 @@ def prune_dirs(path, root=None, clutter=(".DS_Store", "Thumbs.db")):
         ancestors = []
     elif root in ancestors:
         # Only remove directories below the root.
-        ancestors = ancestors[ancestors.index(root) + 1 :]
+        ancestors = ancestors[ancestors.index(root) + 1:]
     else:
         # Remove nothing.
         return
@@ -372,7 +366,7 @@ def bytestring_path(path):
     # ``bytestring_path(syspath(X)) == X``, i.e., we can safely
     # round-trip through `syspath`.
     if os.path.__name__ == "ntpath" and path.startswith(WINDOWS_MAGIC_PREFIX):
-        path = path[len(WINDOWS_MAGIC_PREFIX) :]
+        path = path[len(WINDOWS_MAGIC_PREFIX):]
 
     # Try to encode with default encodings, but fall back to utf-8.
     try:
@@ -454,7 +448,7 @@ def remove(path, soft=True):
     try:
         os.remove(path)
     except (OSError, IOError) as exc:
-        raise FilesystemError(exc, "delete", (path,), traceback.format_exc())
+        raise FilesystemError(exc, "delete", (path, ), traceback.format_exc())
 
 
 def copy(path, dest, replace=False):
@@ -472,7 +466,8 @@ def copy(path, dest, replace=False):
     try:
         shutil.copyfile(path, dest)
     except (OSError, IOError) as exc:
-        raise FilesystemError(exc, "copy", (path, dest), traceback.format_exc())
+        raise FilesystemError(exc, "copy", (path, dest),
+                              traceback.format_exc())
 
 
 def move(path, dest, replace=False):
@@ -499,7 +494,8 @@ def move(path, dest, replace=False):
             shutil.copyfile(path, dest)
             os.remove(path)
         except (OSError, IOError) as exc:
-            raise FilesystemError(exc, "move", (path, dest), traceback.format_exc())
+            raise FilesystemError(exc, "move", (path, dest),
+                                  traceback.format_exc())
 
 
 def link(path, dest, replace=False):
@@ -517,17 +513,18 @@ def link(path, dest, replace=False):
     except NotImplementedError:
         # raised on python >= 3.2 and Windows versions before Vista
         raise FilesystemError(
-            u"OS does not support symbolic links." "link",
+            u"OS does not support symbolic links."
+            "link",
             (path, dest),
             traceback.format_exc(),
         )
     except OSError as exc:
         # TODO: Windows version checks can be removed for python 3
-        if (
-            hasattr("sys", "getwindowsversion") and sys.getwindowsversion()[0] < 6
-        ):  # is before Vista
+        if (hasattr("sys", "getwindowsversion")
+                and sys.getwindowsversion()[0] < 6):  # is before Vista
             exc = u"OS does not support symbolic links."
-        raise FilesystemError(exc, "link", (path, dest), traceback.format_exc())
+        raise FilesystemError(exc, "link", (path, dest),
+                              traceback.format_exc())
 
 
 def hardlink(path, dest, replace=False):
@@ -544,19 +541,22 @@ def hardlink(path, dest, replace=False):
         os.link(syspath(path), syspath(dest))
     except NotImplementedError:
         raise FilesystemError(
-            u"OS does not support hard links." "link",
+            u"OS does not support hard links."
+            "link",
             (path, dest),
             traceback.format_exc(),
         )
     except OSError as exc:
         if exc.errno == errno.EXDEV:
             raise FilesystemError(
-                u"Cannot hard link across devices." "link",
+                u"Cannot hard link across devices."
+                "link",
                 (path, dest),
                 traceback.format_exc(),
             )
         else:
-            raise FilesystemError(exc, "link", (path, dest), traceback.format_exc())
+            raise FilesystemError(exc, "link", (path, dest),
+                                  traceback.format_exc())
 
 
 def unique_path(path):
@@ -571,7 +571,7 @@ def unique_path(path):
     match = re.search(br"\.(\d)+$", base)
     if match:
         num = int(match.group(1))
-        base = base[: match.start()]
+        base = base[:match.start()]
     else:
         num = 0
     while True:
@@ -628,7 +628,7 @@ def truncate_path(path, length=MAX_FILENAME_LENGTH):
     base, ext = os.path.splitext(comps[-1])
     if ext:
         # Last component has an extension.
-        base = base[: length - len(ext)]
+        base = base[:length - len(ext)]
         out[-1] = base + ext
 
     return os.path.join(*out)
@@ -684,24 +684,22 @@ def legalize_path(path, replacements, length, extension, fragment):
         # Outputting Unicode.
         extension = extension.decode("utf-8", "ignore")
 
-    first_stage_path, _ = _legalize_stage(
-        path, replacements, length, extension, fragment
-    )
+    first_stage_path, _ = _legalize_stage(path, replacements, length,
+                                          extension, fragment)
 
     # Convert back to Unicode with extension removed.
     first_stage_path, _ = os.path.splitext(displayable_path(first_stage_path))
 
     # Re-sanitize following truncation (including user replacements).
-    second_stage_path, retruncated = _legalize_stage(
-        first_stage_path, replacements, length, extension, fragment
-    )
+    second_stage_path, retruncated = _legalize_stage(first_stage_path,
+                                                     replacements, length,
+                                                     extension, fragment)
 
     # If the path was once again truncated, discard user replacements
     # and run through one last legalization stage.
     if retruncated:
-        second_stage_path, _ = _legalize_stage(
-            first_stage_path, None, length, extension, fragment
-        )
+        second_stage_path, _ = _legalize_stage(first_stage_path, None, length,
+                                               extension, fragment)
 
     return second_stage_path, retruncated
 
@@ -785,7 +783,12 @@ def cpu_count():
             num = 0
     elif sys.platform == "darwin":
         try:
-            num = int(command_output(["/usr/sbin/sysctl", "-n", "hw.ncpu",]).stdout)
+            num = int(
+                command_output([
+                    "/usr/sbin/sysctl",
+                    "-n",
+                    "hw.ncpu",
+                ]).stdout)
         except (ValueError, OSError, subprocess.CalledProcessError):
             num = 0
     else:
@@ -856,7 +859,9 @@ def command_output(cmd, shell=False):
     stdout, stderr = proc.communicate()
     if proc.returncode:
         raise subprocess.CalledProcessError(
-            returncode=proc.returncode, cmd=" ".join(cmd), output=stdout + stderr,
+            returncode=proc.returncode,
+            cmd=" ".join(cmd),
+            output=stdout + stderr,
         )
     return CommandOutput(stdout, stderr)
 
@@ -986,16 +991,16 @@ def case_sensitive(path):
     # If an upper-case version of the path exists but a lower-case
     # version does not, then the filesystem must be case-sensitive.
     # (Otherwise, we have more work to do.)
-    if not (
-        os.path.exists(syspath(path.lower())) and os.path.exists(syspath(path.upper()))
-    ):
+    if not (os.path.exists(syspath(path.lower()))
+            and os.path.exists(syspath(path.upper()))):
         return True
 
     # Both versions of the path exist on the file system. Check whether
     # they refer to different files by their inodes. Alas,
     # `os.path.samefile` is only available on Unix systems on Python 2.
     if platform.system() != "Windows":
-        return not os.path.samefile(syspath(path.lower()), syspath(path.upper()))
+        return not os.path.samefile(syspath(path.lower()), syspath(
+            path.upper()))
 
     # On Windows, we check whether the canonical, long filenames for the
     # files are the same.
@@ -1034,7 +1039,8 @@ def asciify_path(path, sep_replace):
     for index, item in enumerate(path_components):
         path_components[index] = unidecode(item).replace(os.sep, sep_replace)
         if os.altsep:
-            path_components[index] = unidecode(item).replace(os.altsep, sep_replace)
+            path_components[index] = unidecode(item).replace(
+                os.altsep, sep_replace)
     return os.sep.join(path_components)
 
 

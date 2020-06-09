@@ -62,7 +62,8 @@ class LyricsPluginTest(unittest.TestCase):
         self.assertNotIn(("Alice", ["song"]), lyrics.search_pairs(item))
 
         item = Item(artist="Alice featuring Bob", title="song")
-        self.assertIn(("Alice featuring Bob", ["song"]), lyrics.search_pairs(item))
+        self.assertIn(("Alice featuring Bob", ["song"]),
+                      lyrics.search_pairs(item))
         self.assertIn(("Alice", ["song"]), lyrics.search_pairs(item))
 
         item = Item(artist="Alice & Bob", title="song")
@@ -74,9 +75,8 @@ class LyricsPluginTest(unittest.TestCase):
         self.assertIn(("Alice", ["song"]), lyrics.search_pairs(item))
 
         item = Item(artist="Alice and Bob", title="song")
-        self.assertEqual(
-            ("Alice and Bob", ["song"]), list(lyrics.search_pairs(item))[0]
-        )
+        self.assertEqual(("Alice and Bob", ["song"]),
+                         list(lyrics.search_pairs(item))[0])
 
     def test_search_artist_sort(self):
         item = Item(artist="CHVRCHΞS", title="song", artist_sort="CHVRCHES")
@@ -84,7 +84,8 @@ class LyricsPluginTest(unittest.TestCase):
         self.assertIn(("CHVRCHES", ["song"]), lyrics.search_pairs(item))
 
         # Make sure that the original artist name is still the first entry
-        self.assertEqual(("CHVRCHΞS", ["song"]), list(lyrics.search_pairs(item))[0])
+        self.assertEqual(("CHVRCHΞS", ["song"]),
+                         list(lyrics.search_pairs(item))[0])
 
         item = Item(artist="横山克", title="song", artist_sort="Masaru Yokoyama")
         self.assertIn(("横山克", ["song"]), lyrics.search_pairs(item))
@@ -133,13 +134,12 @@ class LyricsPluginTest(unittest.TestCase):
 
     def test_remove_credits(self):
         self.assertEqual(
-            lyrics.remove_credits(
-                """It's close to midnight
-                                     Lyrics brought by example.com"""
-            ),
+            lyrics.remove_credits("""It's close to midnight
+                                     Lyrics brought by example.com"""),
             "It's close to midnight",
         )
-        self.assertEqual(lyrics.remove_credits("""Lyrics brought by example.com"""), "")
+        self.assertEqual(
+            lyrics.remove_credits("""Lyrics brought by example.com"""), "")
 
         # don't remove 2nd verse for the only reason it contains 'lyrics' word
         text = """Look at all the shit that i done bought her
@@ -167,7 +167,8 @@ class LyricsPluginTest(unittest.TestCase):
                   two  !
                   <br><br \\>
                   <blink>four</blink>"""
-        self.assertEqual(lyrics._scrape_strip_cruft(text, True), "one\ntwo !\n\nfour")
+        self.assertEqual(lyrics._scrape_strip_cruft(text, True),
+                         "one\ntwo !\n\nfour")
 
     def test_scrape_strip_scripts(self):
         text = u"""foo<script>bar</script>baz"""
@@ -179,7 +180,8 @@ class LyricsPluginTest(unittest.TestCase):
 
     def test_scrape_merge_paragraphs(self):
         text = u"one</p>   <p class='myclass'>two</p><p>three"
-        self.assertEqual(lyrics._scrape_merge_paragraphs(text), "one\ntwo\nthree")
+        self.assertEqual(lyrics._scrape_merge_paragraphs(text),
+                         "one\ntwo\nthree")
 
     def test_missing_lyrics(self):
         self.assertFalse(google.is_lyrics(LYRICS_TEXTS["missing_texts"]))
@@ -189,9 +191,8 @@ def url_to_filename(url):
     url = re.sub(r"https?://|www.", "", url)
     fn = "".join(x for x in url if (x.isalnum() or x == "/"))
     fn = fn.split("/")
-    fn = os.path.join(
-        LYRICS_ROOT_DIR, bytestring_path(fn[0]), bytestring_path(fn[-1] + ".txt")
-    )
+    fn = os.path.join(LYRICS_ROOT_DIR, bytestring_path(fn[0]),
+                      bytestring_path(fn[-1] + ".txt"))
     return fn
 
 
@@ -222,6 +223,7 @@ class GeniusMockGet(object):
             response.status_code = 200
             response._content = b'{"meta":{"status":200},\
                                 "response":{"song":{"path":"/lyrics/sample"}}}'
+
             return response
         # for the second requests.get() return the genius page
         else:
@@ -270,7 +272,9 @@ class LyricsPluginSourcesTest(LyricsGoogleBaseTest):
 
     DEFAULT_SOURCES = [
         dict(DEFAULT_SONG, backend=lyrics.LyricsWiki),
-        dict(artist=u"Santana", title=u"Black magic woman", backend=lyrics.MusiXmatch),
+        dict(artist=u"Santana",
+             title=u"Black magic woman",
+             backend=lyrics.MusiXmatch),
         dict(DEFAULT_SONG, backend=lyrics.Genius),
     ]
 
@@ -301,7 +305,9 @@ class LyricsPluginSourcesTest(LyricsGoogleBaseTest):
             title=u"Amsterdam",
             path=u"/paroles-officielles/275679.html",
         ),
-        dict(DEFAULT_SONG, url=u"http://letras.mus.br/", path=u"the-beatles/275/"),
+        dict(DEFAULT_SONG,
+             url=u"http://letras.mus.br/",
+             path=u"the-beatles/275/"),
         dict(
             DEFAULT_SONG,
             url="http://www.lyricsmania.com/",
@@ -365,9 +371,8 @@ class LyricsPluginSourcesTest(LyricsGoogleBaseTest):
         """
         errors = []
         for s in self.DEFAULT_SOURCES:
-            res = s["backend"](self.plugin.config, self.plugin._log).fetch(
-                s["artist"], s["title"]
-            )
+            res = s["backend"](self.plugin.config,
+                               self.plugin._log).fetch(s["artist"], s["title"])
             if not is_lyrics_content_ok(s["title"], res):
                 errors.append(s["backend"].__name__)
         self.assertFalse(errors)
@@ -421,9 +426,12 @@ class LyricsGooglePluginMachineryTest(LyricsGoogleBaseTest):
         s = self.source
         url = six.text_type(s["url"] + s["path"])
         html = raw_backend.fetch_url(url)
-        soup = BeautifulSoup(html, "html.parser", parse_only=SoupStrainer("title"))
+        soup = BeautifulSoup(html,
+                             "html.parser",
+                             parse_only=SoupStrainer("title"))
         self.assertEqual(
-            google.is_page_candidate(url, soup.title.string, s["title"], s["artist"]),
+            google.is_page_candidate(url, soup.title.string, s["title"],
+                                     s["artist"]),
             True,
             url,
         )
@@ -438,8 +446,8 @@ class LyricsGooglePluginMachineryTest(LyricsGoogleBaseTest):
 
         # very small diffs (typo) are ok eg 'beats' vs 'beets' with same artist
         self.assertEqual(
-            google.is_page_candidate(url, url_title, s["title"], s["artist"]), True, url
-        )
+            google.is_page_candidate(url, url_title, s["title"], s["artist"]),
+            True, url)
         # reject different title
         url_title = u"example.com | seets bong lyrics by John doe"
         self.assertEqual(
@@ -472,7 +480,6 @@ class LyricsGeniusBaseTest(unittest.TestCase):
 
 
 class LyricsGeniusScrapeTest(LyricsGeniusBaseTest):
-
     """Checks that Genius backend works as intended.
     """
 
@@ -509,7 +516,8 @@ class SlugTests(unittest.TestCase):
         text = u"\xe7afe au lait (boisson)"
         self.assertEqual(lyrics.slug(text), "cafe-au-lait-boisson")
         text = u"Multiple  spaces -- and symbols! -- merged"
-        self.assertEqual(lyrics.slug(text), "multiple-spaces-and-symbols-merged")
+        self.assertEqual(lyrics.slug(text),
+                         "multiple-spaces-and-symbols-merged")
 
 
 def suite():

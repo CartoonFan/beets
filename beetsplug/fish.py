@@ -111,7 +111,8 @@ class FishPlugin(BeetsPlugin):
             (commands.default_commands + commands.plugins.commands()),
             key=attrgetter("name"),
         )
-        fields = sorted(set(library.Album.all_keys() + library.Item.all_keys()))
+        fields = sorted(set(library.Album.all_keys() +
+                            library.Item.all_keys()))
         # Collect commands, their aliases, and their help text
         cmd_names_help = []
         for cmd in beetcmds:
@@ -125,15 +126,13 @@ class FishPlugin(BeetsPlugin):
         totstring += "" if nobasicfields else get_standard_fields(fields)
         totstring += get_extravalues(lib, extravalues) if extravalues else ""
         totstring += (
-            "\n" + "# ====== {} =====".format("setup basic beet completion") + "\n" * 2
-        )
+            "\n" + "# ====== {} =====".format("setup basic beet completion") +
+            "\n" * 2)
         totstring += get_basic_beet_options()
-        totstring += (
-            "\n"
-            + "# ====== {} =====".format("setup field completion for subcommands")
-            + "\n"
-        )
-        totstring += get_subcommands(cmd_names_help, nobasicfields, extravalues)
+        totstring += ("\n" + "# ====== {} =====".format(
+            "setup field completion for subcommands") + "\n")
+        totstring += get_subcommands(cmd_names_help, nobasicfields,
+                                     extravalues)
         # Set up completion for all the command options
         totstring += get_all_commands(beetcmds)
 
@@ -163,9 +162,8 @@ def get_extravalues(lib, extravalues):
     values_set = get_set_of_values_for_field(lib, extravalues)
     for fld in extravalues:
         extraname = fld.upper() + "S"
-        word += (
-            "set  " + extraname + " " + " ".join(sorted(values_set[fld])) + ("\n" * 2)
-        )
+        word += ("set  " + extraname + " " +
+                 " ".join(sorted(values_set[fld])) + ("\n" * 2))
     return word
 
 
@@ -182,49 +180,44 @@ def get_set_of_values_for_field(lib, fields):
 
 def get_basic_beet_options():
     return (
-        BL_NEED2.format("-l format-item", "-f -d 'print with custom format'")
-        + BL_NEED2.format("-l format-album", "-f -d 'print with custom format'")
-        + BL_NEED2.format(
-            "-s  l  -l library", "-f -r -d 'library database file to use'"
-        )
-        + BL_NEED2.format(
-            "-s  d  -l directory", "-f -r -d 'destination music directory'"
-        )
-        + BL_NEED2.format("-s  v  -l verbose", "-f -d 'print debugging information'")
-        + BL_NEED2.format("-s  c  -l config", "-f -r -d 'path to configuration file'")
-        + BL_NEED2.format("-s  h  -l help", "-f -d 'print this help message and exit'")
-    )
+        BL_NEED2.format("-l format-item", "-f -d 'print with custom format'") +
+        BL_NEED2.format("-l format-album", "-f -d 'print with custom format'")
+        + BL_NEED2.format("-s  l  -l library",
+                          "-f -r -d 'library database file to use'") +
+        BL_NEED2.format("-s  d  -l directory",
+                        "-f -r -d 'destination music directory'") +
+        BL_NEED2.format("-s  v  -l verbose",
+                        "-f -d 'print debugging information'") +
+        BL_NEED2.format("-s  c  -l config",
+                        "-f -r -d 'path to configuration file'") +
+        BL_NEED2.format("-s  h  -l help",
+                        "-f -d 'print this help message and exit'"))
 
 
 def get_subcommands(cmd_name_and_help, nobasicfields, extravalues):
     # Formatting for Fish to complete our fields/values
     word = ""
     for cmdname, cmdhelp in cmd_name_and_help:
-        word += (
-            "\n" + "# ------ {} -------".format("fieldsetups for  " + cmdname) + "\n"
-        )
+        word += ("\n" +
+                 "# ------ {} -------".format("fieldsetups for  " + cmdname) +
+                 "\n")
         word += BL_NEED2.format(
-            ("-a " + cmdname), ("-f " + "-d " + wrap(clean_whitespace(cmdhelp)))
-        )
+            ("-a " + cmdname),
+            ("-f " + "-d " + wrap(clean_whitespace(cmdhelp))))
 
         if nobasicfields is False:
-            word += BL_USE3.format(
-                cmdname, ("-a " + wrap("$FIELDS")), ("-f " + "-d " + wrap("fieldname"))
-            )
+            word += BL_USE3.format(cmdname, ("-a " + wrap("$FIELDS")),
+                                   ("-f " + "-d " + wrap("fieldname")))
 
         if extravalues:
             for f in extravalues:
                 setvar = wrap("$" + f.upper() + "S")
-                word += (
-                    " ".join(
-                        BL_EXTRA3.format(
-                            (cmdname + " " + f + ":"),
-                            ("-f " + "-A " + "-a " + setvar),
-                            ("-d " + wrap(f)),
-                        ).split()
-                    )
-                    + "\n"
-                )
+                word += (" ".join(
+                    BL_EXTRA3.format(
+                        (cmdname + " " + f + ":"),
+                        ("-f " + "-A " + "-a " + setvar),
+                        ("-d " + wrap(f)),
+                    ).split()) + "\n")
     return word
 
 
@@ -236,51 +229,34 @@ def get_all_commands(beetcmds):
         names.append(cmd.name)
         for name in names:
             word += "\n"
-            word += (
-                ("\n" * 2)
-                + "# ====== {} =====".format("completions for  " + name)
-                + "\n"
-            )
+            word += (("\n" * 2) +
+                     "# ====== {} =====".format("completions for  " + name) +
+                     "\n")
 
             for option in cmd.parser._get_all_options()[1:]:
-                cmd_l = (
-                    (" -l " + option._long_opts[0].replace("--", ""))
-                    if option._long_opts
-                    else ""
-                )
-                cmd_s = (
-                    (" -s " + option._short_opts[0].replace("-", ""))
-                    if option._short_opts
-                    else ""
-                )
+                cmd_l = ((" -l " + option._long_opts[0].replace("--", ""))
+                         if option._long_opts else "")
+                cmd_s = ((" -s " + option._short_opts[0].replace("-", ""))
+                         if option._short_opts else "")
                 cmd_need_arg = " -r " if option.nargs in [1] else ""
-                cmd_helpstr = (
-                    (" -d " + wrap(" ".join(option.help.split())))
-                    if option.help
-                    else ""
-                )
-                cmd_arglist = (
-                    (" -a " + wrap(" ".join(option.choices))) if option.choices else ""
-                )
+                cmd_helpstr = ((" -d " + wrap(" ".join(option.help.split())))
+                               if option.help else "")
+                cmd_arglist = ((" -a " + wrap(" ".join(option.choices)))
+                               if option.choices else "")
 
-                word += (
-                    " ".join(
-                        BL_USE3.format(
-                            name,
-                            (cmd_need_arg + cmd_s + cmd_l + " -f " + cmd_arglist),
-                            cmd_helpstr,
-                        ).split()
-                    )
-                    + "\n"
-                )
+                word += (" ".join(
+                    BL_USE3.format(
+                        name,
+                        (cmd_need_arg + cmd_s + cmd_l + " -f " + cmd_arglist),
+                        cmd_helpstr,
+                    ).split()) + "\n")
 
             word += " ".join(
                 BL_USE3.format(
                     name,
                     ("-s " + "h " + "-l " + "help" + " -f "),
                     ("-d " + wrap("print help") + "\n"),
-                ).split()
-            )
+                ).split())
     return word
 
 
