@@ -29,7 +29,7 @@ from jellyfish import levenshtein_distance
 from unidecode import unidecode
 import six
 
-log = logging.getLogger('beets')
+log = logging.getLogger("beets")
 
 # The name of the type for patterns in re changed in Python 3.7.
 try:
@@ -71,17 +71,44 @@ class AlbumInfo(AttrDict):
     The others are optional and may be None.
     """
 
-    def __init__(self, tracks, album=None, album_id=None, artist=None,
-                 artist_id=None, asin=None, albumtype=None, va=False,
-                 year=None, month=None, day=None, label=None, mediums=None,
-                 artist_sort=None, releasegroup_id=None, catalognum=None,
-                 script=None, language=None, country=None, style=None,
-                 genre=None, albumstatus=None, media=None, albumdisambig=None,
-                 releasegroupdisambig=None, artist_credit=None,
-                 original_year=None, original_month=None,
-                 original_day=None, data_source=None, data_url=None,
-                 discogs_albumid=None, discogs_labelid=None,
-                 discogs_artistid=None, **kwargs):
+    def __init__(
+        self,
+        tracks,
+        album=None,
+        album_id=None,
+        artist=None,
+        artist_id=None,
+        asin=None,
+        albumtype=None,
+        va=False,
+        year=None,
+        month=None,
+        day=None,
+        label=None,
+        mediums=None,
+        artist_sort=None,
+        releasegroup_id=None,
+        catalognum=None,
+        script=None,
+        language=None,
+        country=None,
+        style=None,
+        genre=None,
+        albumstatus=None,
+        media=None,
+        albumdisambig=None,
+        releasegroupdisambig=None,
+        artist_credit=None,
+        original_year=None,
+        original_month=None,
+        original_day=None,
+        data_source=None,
+        data_url=None,
+        discogs_albumid=None,
+        discogs_labelid=None,
+        discogs_artistid=None,
+        **kwargs
+    ):
         self.album = album
         self.album_id = album_id
         self.artist = artist
@@ -121,19 +148,34 @@ class AlbumInfo(AttrDict):
     # Work around a bug in python-musicbrainz-ngs that causes some
     # strings to be bytes rather than Unicode.
     # https://github.com/alastair/python-musicbrainz-ngs/issues/85
-    def decode(self, codec='utf-8'):
+    def decode(self, codec="utf-8"):
         """Ensure that all string attributes on this object, and the
         constituent `TrackInfo` objects, are decoded to Unicode.
         """
-        for fld in ['album', 'artist', 'albumtype', 'label', 'artist_sort',
-                    'catalognum', 'script', 'language', 'country', 'style',
-                    'genre', 'albumstatus', 'albumdisambig',
-                    'releasegroupdisambig', 'artist_credit',
-                    'media', 'discogs_albumid', 'discogs_labelid',
-                    'discogs_artistid']:
+        for fld in [
+            "album",
+            "artist",
+            "albumtype",
+            "label",
+            "artist_sort",
+            "catalognum",
+            "script",
+            "language",
+            "country",
+            "style",
+            "genre",
+            "albumstatus",
+            "albumdisambig",
+            "releasegroupdisambig",
+            "artist_credit",
+            "media",
+            "discogs_albumid",
+            "discogs_labelid",
+            "discogs_artistid",
+        ]:
             value = getattr(self, fld)
             if isinstance(value, bytes):
-                setattr(self, fld, value.decode(codec, 'ignore'))
+                setattr(self, fld, value.decode(codec, "ignore"))
 
         for track in self.tracks:
             track.decode(codec)
@@ -157,15 +199,37 @@ class TrackInfo(AttrDict):
     are all 1-based.
     """
 
-    def __init__(self, title=None, track_id=None, release_track_id=None,
-                 artist=None, artist_id=None, length=None, index=None,
-                 medium=None, medium_index=None, medium_total=None,
-                 artist_sort=None, disctitle=None, artist_credit=None,
-                 data_source=None, data_url=None, media=None, lyricist=None,
-                 composer=None, composer_sort=None, arranger=None,
-                 track_alt=None, work=None, mb_workid=None,
-                 work_disambig=None, bpm=None, initial_key=None, genre=None,
-                 **kwargs):
+    def __init__(
+        self,
+        title=None,
+        track_id=None,
+        release_track_id=None,
+        artist=None,
+        artist_id=None,
+        length=None,
+        index=None,
+        medium=None,
+        medium_index=None,
+        medium_total=None,
+        artist_sort=None,
+        disctitle=None,
+        artist_credit=None,
+        data_source=None,
+        data_url=None,
+        media=None,
+        lyricist=None,
+        composer=None,
+        composer_sort=None,
+        arranger=None,
+        track_alt=None,
+        work=None,
+        mb_workid=None,
+        work_disambig=None,
+        bpm=None,
+        initial_key=None,
+        genre=None,
+        **kwargs
+    ):
         self.title = title
         self.track_id = track_id
         self.release_track_id = release_track_id
@@ -196,15 +260,22 @@ class TrackInfo(AttrDict):
         self.update(kwargs)
 
     # As above, work around a bug in python-musicbrainz-ngs.
-    def decode(self, codec='utf-8'):
+    def decode(self, codec="utf-8"):
         """Ensure that all string attributes on this object are decoded
         to Unicode.
         """
-        for fld in ['title', 'artist', 'medium', 'artist_sort', 'disctitle',
-                    'artist_credit', 'media']:
+        for fld in [
+            "title",
+            "artist",
+            "medium",
+            "artist_sort",
+            "disctitle",
+            "artist_credit",
+            "media",
+        ]:
             value = getattr(self, fld)
             if isinstance(value, bytes):
-                setattr(self, fld, value.decode(codec, 'ignore'))
+                setattr(self, fld, value.decode(codec, "ignore"))
 
     def copy(self):
         dupe = TrackInfo()
@@ -216,19 +287,19 @@ class TrackInfo(AttrDict):
 
 # Parameters for string distance function.
 # Words that can be moved to the end of a string using a comma.
-SD_END_WORDS = ['the', 'a', 'an']
+SD_END_WORDS = ["the", "a", "an"]
 # Reduced weights for certain portions of the string.
 SD_PATTERNS = [
-    (r'^the ', 0.1),
-    (r'[\[\(]?(ep|single)[\]\)]?', 0.0),
-    (r'[\[\(]?(featuring|feat|ft)[\. :].+', 0.1),
-    (r'\(.*?\)', 0.3),
-    (r'\[.*?\]', 0.3),
-    (r'(, )?(pt\.|part) .+', 0.2),
+    (r"^the ", 0.1),
+    (r"[\[\(]?(ep|single)[\]\)]?", 0.0),
+    (r"[\[\(]?(featuring|feat|ft)[\. :].+", 0.1),
+    (r"\(.*?\)", 0.3),
+    (r"\[.*?\]", 0.3),
+    (r"(, )?(pt\.|part) .+", 0.2),
 ]
 # Replacements to use before testing distance.
 SD_REPLACE = [
-    (r'&', 'and'),
+    (r"&", "and"),
 ]
 
 
@@ -242,8 +313,8 @@ def _string_dist_basic(str1, str2):
     assert isinstance(str2, six.text_type)
     str1 = as_string(unidecode(str1))
     str2 = as_string(unidecode(str2))
-    str1 = re.sub(r'[^a-z0-9]', '', str1.lower())
-    str2 = re.sub(r'[^a-z0-9]', '', str2.lower())
+    str1 = re.sub(r"[^a-z0-9]", "", str1.lower())
+    str2 = re.sub(r"[^a-z0-9]", "", str2.lower())
     if not (str1 or str2):
         return 0.0
     return levenshtein_distance(str1, str2) / float(max(len(str1), len(str2)))
@@ -266,10 +337,10 @@ def string_dist(str1, str2):
     # example, "the something" should be considered equal to
     # "something, the".
     for word in SD_END_WORDS:
-        if str1.endswith(', %s' % word):
-            str1 = '%s %s' % (word, str1[:-len(word) - 2])
-        if str2.endswith(', %s' % word):
-            str2 = '%s %s' % (word, str2[:-len(word) - 2])
+        if str1.endswith(", %s" % word):
+            str1 = "%s %s" % (word, str1[: -len(word) - 2])
+        if str2.endswith(", %s" % word):
+            str2 = "%s %s" % (word, str2[: -len(word) - 2])
 
     # Perform a couple of basic normalizing substitutions.
     for pat, repl in SD_REPLACE:
@@ -284,8 +355,8 @@ def string_dist(str1, str2):
     penalty = 0.0
     for pat, weight in SD_PATTERNS:
         # Get strings that drop the pattern.
-        case_str1 = re.sub(pat, '', str1)
-        case_str2 = re.sub(pat, '', str2)
+        case_str1 = re.sub(pat, "", str1)
+        case_str2 = re.sub(pat, "", str2)
 
         if case_str1 != str1 or case_str2 != str2:
             # If the pattern was present (i.e., it is deleted in the
@@ -339,7 +410,7 @@ class Distance(object):
     def _weights(cls):  # noqa: N805
         """A dictionary from keys to floating-point weights.
         """
-        weights_view = config['match']['distance_weights']
+        weights_view = config["match"]["distance_weights"]
         weights = {}
         for key in weights_view.keys():
             weights[key] = weights_view[key].as_number()
@@ -389,8 +460,7 @@ class Distance(object):
         # ascending order (for keys, when the penalty is equal) and
         # still get the items with the biggest distance first.
         return sorted(
-            list_,
-            key=lambda key_and_dist: (-key_and_dist[1], key_and_dist[0])
+            list_, key=lambda key_and_dist: (-key_and_dist[1], key_and_dist[0])
         )
 
     def __hash__(self):
@@ -441,7 +511,7 @@ class Distance(object):
         """
         if not isinstance(dist, Distance):
             raise ValueError(
-                u'`dist` must be a Distance object, not {0}'.format(type(dist))
+                u"`dist` must be a Distance object, not {0}".format(type(dist))
             )
         for key, penalties in dist._penalties.items():
             self._penalties.setdefault(key, []).extend(penalties)
@@ -465,7 +535,7 @@ class Distance(object):
         """
         if not 0.0 <= dist <= 1.0:
             raise ValueError(
-                u'`dist` must be between 0.0 and 1.0, not {0}'.format(dist)
+                u"`dist` must be between 0.0 and 1.0, not {0}".format(dist)
             )
         self._penalties.setdefault(key, []).append(dist)
 
@@ -543,13 +613,15 @@ class Distance(object):
 
 # Structures that compose all the information for a candidate match.
 
-AlbumMatch = namedtuple('AlbumMatch', ['distance', 'info', 'mapping',
-                                       'extra_items', 'extra_tracks'])
+AlbumMatch = namedtuple(
+    "AlbumMatch", ["distance", "info", "mapping", "extra_items", "extra_tracks"]
+)
 
-TrackMatch = namedtuple('TrackMatch', ['distance', 'info'])
+TrackMatch = namedtuple("TrackMatch", ["distance", "info"])
 
 
 # Aggregation of sources.
+
 
 def album_for_mbid(release_id):
     """Get an AlbumInfo object for a MusicBrainz release ID. Return None
@@ -558,7 +630,7 @@ def album_for_mbid(release_id):
     try:
         album = mb.album_for_id(release_id)
         if album:
-            plugins.send(u'albuminfo_received', info=album)
+            plugins.send(u"albuminfo_received", info=album)
         return album
     except mb.MusicBrainzAPIError as exc:
         exc.log(log)
@@ -571,7 +643,7 @@ def track_for_mbid(recording_id):
     try:
         track = mb.track_for_id(recording_id)
         if track:
-            plugins.send(u'trackinfo_received', info=track)
+            plugins.send(u"trackinfo_received", info=track)
         return track
     except mb.MusicBrainzAPIError as exc:
         exc.log(log)
@@ -584,7 +656,7 @@ def albums_for_id(album_id):
         yield a
     for a in plugins.album_for_id(album_id):
         if a:
-            plugins.send(u'albuminfo_received', info=a)
+            plugins.send(u"albuminfo_received", info=a)
             yield a
 
 
@@ -595,11 +667,11 @@ def tracks_for_id(track_id):
         yield t
     for t in plugins.track_for_id(track_id):
         if t:
-            plugins.send(u'trackinfo_received', info=t)
+            plugins.send(u"trackinfo_received", info=t)
             yield t
 
 
-@plugins.notify_info_yielded(u'albuminfo_received')
+@plugins.notify_info_yielded(u"albuminfo_received")
 def album_candidates(items, artist, album, va_likely, extra_tags):
     """Search for album matches. ``items`` is a list of Item objects
     that make up the album. ``artist`` and ``album`` are the respective
@@ -613,25 +685,22 @@ def album_candidates(items, artist, album, va_likely, extra_tags):
     # Base candidates if we have album and artist to match.
     if artist and album:
         try:
-            yield from mb.match_album(artist, album, len(items),
-                                      extra_tags)
+            yield from mb.match_album(artist, album, len(items), extra_tags)
         except mb.MusicBrainzAPIError as exc:
             exc.log(log)
 
     # Also add VA matches from MusicBrainz where appropriate.
     if va_likely and album:
         try:
-            yield from mb.match_album(None, album, len(items),
-                                      extra_tags)
+            yield from mb.match_album(None, album, len(items), extra_tags)
         except mb.MusicBrainzAPIError as exc:
             exc.log(log)
 
     # Candidates from plugins.
-    yield from plugins.candidates(items, artist, album, va_likely,
-                                  extra_tags)
+    yield from plugins.candidates(items, artist, album, va_likely, extra_tags)
 
 
-@plugins.notify_info_yielded(u'trackinfo_received')
+@plugins.notify_info_yielded(u"trackinfo_received")
 def item_candidates(item, artist, title):
     """Search for item matches. ``item`` is the Item to be matched.
     ``artist`` and ``title`` are strings and either reflect the item or

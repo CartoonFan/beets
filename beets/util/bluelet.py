@@ -22,11 +22,13 @@ import collections
 
 # Basic events used for thread scheduling.
 
+
 class Event(object):
     """Just a base class identifying Bluelet events. An event is an
     object yielded from a Bluelet thread coroutine to suspend operation
     and communicate with the scheduler.
     """
+
     pass
 
 
@@ -148,6 +150,7 @@ class WriteEvent(WaitableEvent):
 
 # Core logic for executing and scheduling threads.
 
+
 def _event_select(events):
     """Perform a select() over all the Events provided, returning the
     ones ready to be fired. Only WaitableEvents (including SleepEvents)
@@ -169,15 +172,14 @@ def _event_select(events):
             wlist += w
             xlist += x
             for waitable in r:
-                waitable_to_event[('r', waitable)] = event
+                waitable_to_event[("r", waitable)] = event
             for waitable in w:
-                waitable_to_event[('w', waitable)] = event
+                waitable_to_event[("w", waitable)] = event
             for waitable in x:
-                waitable_to_event[('x', waitable)] = event
+                waitable_to_event[("x", waitable)] = event
 
     # If we have a any sleeping threads, determine how long to sleep.
-    timeout = max(earliest_wakeup - time.time(),
-                  0.0) if earliest_wakeup else None
+    timeout = max(earliest_wakeup - time.time(), 0.0) if earliest_wakeup else None
     # Perform select() if we have any waitables.
     if rlist or wlist or xlist:
         rready, wready, xready = select.select(rlist, wlist, xlist, timeout)
@@ -189,11 +191,11 @@ def _event_select(events):
     # Gather ready events corresponding to the ready waitables.
     ready_events = set()
     for ready in rready:
-        ready_events.add(waitable_to_event[('r', ready)])
+        ready_events.add(waitable_to_event[("r", ready)])
     for ready in wready:
-        ready_events.add(waitable_to_event[('w', ready)])
+        ready_events.add(waitable_to_event[("w", ready)])
     for ready in xready:
-        ready_events.add(waitable_to_event[('x', ready)])
+        ready_events.add(waitable_to_event[("x", ready)])
 
     # Gather any finished sleeps.
     for event in events:
@@ -348,12 +350,12 @@ def run(root_coro):
                 try:
                     value = event.fire()
                 except socket.error as exc:
-                    if isinstance(exc.args, tuple) and \
-                            exc.args[0] == errno.EPIPE:
+                    if isinstance(exc.args, tuple) and exc.args[0] == errno.EPIPE:
                         # Broken pipe. Remote host disconnected.
                         pass
-                    elif isinstance(exc.args, tuple) and \
-                            exc.args[0] == errno.ECONNRESET:
+                    elif (
+                        isinstance(exc.args, tuple) and exc.args[0] == errno.ECONNRESET
+                    ):
                         # Connection was reset by peer.
                         pass
                     else:
@@ -391,6 +393,7 @@ def run(root_coro):
 
 
 # Sockets and their associated events.
+
 
 class SocketClosedError(Exception):
     pass
@@ -434,7 +437,7 @@ class Connection(object):
     def __init__(self, sock, addr):
         self.sock = sock
         self.addr = addr
-        self._buf = b''
+        self._buf = b""
         self._closed = False
 
     def close(self):
@@ -485,7 +488,7 @@ class Connection(object):
                 self._buf += data
             else:
                 line = self._buf
-                self._buf = b''
+                self._buf = b""
                 yield ReturnEvent(line)
                 break
 
@@ -545,6 +548,7 @@ class SendEvent(WaitableEvent):
 # Public interface for threads; each returns an event object that
 # can immediately be "yield"ed.
 
+
 def null():
     """Event: yield to the scheduler without doing anything special.
     """
@@ -556,7 +560,7 @@ def spawn(coro):
     and child coroutines run concurrently.
     """
     if not isinstance(coro, types.GeneratorType):
-        raise ValueError(u'%s is not a coroutine' % coro)
+        raise ValueError(u"%s is not a coroutine" % coro)
     return SpawnEvent(coro)
 
 
@@ -566,7 +570,7 @@ def call(coro):
     returns a value using end(), then this event returns that value.
     """
     if not isinstance(coro, types.GeneratorType):
-        raise ValueError(u'%s is not a coroutine' % coro)
+        raise ValueError(u"%s is not a coroutine" % coro)
     return DelegationEvent(coro)
 
 
@@ -588,7 +592,8 @@ def read(fd, bufsize=None):
                 if not data:
                     break
                 buf.append(data)
-            yield ReturnEvent(''.join(buf))
+            yield ReturnEvent("".join(buf))
+
         return DelegationEvent(reader())
 
     else:
@@ -630,12 +635,14 @@ def kill(coro):
 
 # Convenience function for running socket servers.
 
+
 def server(host, port, func):
     """A coroutine that runs a network server. Host and port specify the
     listening address. func should be a coroutine that takes a single
     parameter, a Connection object. The coroutine is invoked for every
     incoming connection on the listening socket.
     """
+
     def handler(conn):
         try:
             yield func(conn)

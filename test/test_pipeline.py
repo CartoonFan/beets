@@ -100,9 +100,7 @@ class SimplePipelineTest(unittest.TestCase):
 class ParallelStageTest(unittest.TestCase):
     def setUp(self):
         self.l = []
-        self.pl = pipeline.Pipeline((
-            _produce(), (_work(), _work()), _consume(self.l)
-        ))
+        self.pl = pipeline.Pipeline((_produce(), (_work(), _work()), _consume(self.l)))
 
     def test_run_sequential(self):
         self.pl.run_sequential()
@@ -121,8 +119,7 @@ class ParallelStageTest(unittest.TestCase):
 class ExceptionTest(unittest.TestCase):
     def setUp(self):
         self.l = []
-        self.pl = pipeline.Pipeline((_produce(), _exc_work(),
-                                     _consume(self.l)))
+        self.pl = pipeline.Pipeline((_produce(), _exc_work(), _consume(self.l)))
 
     def test_run_sequential(self):
         self.assertRaises(ExceptionFixture, self.pl.run_sequential)
@@ -144,9 +141,9 @@ class ExceptionTest(unittest.TestCase):
 class ParallelExceptionTest(unittest.TestCase):
     def setUp(self):
         self.l = []
-        self.pl = pipeline.Pipeline((
-            _produce(), (_exc_work(), _exc_work()), _consume(self.l)
-        ))
+        self.pl = pipeline.Pipeline(
+            (_produce(), (_exc_work(), _exc_work()), _consume(self.l))
+        )
 
     def test_run_parallel(self):
         self.assertRaises(ExceptionFixture, self.pl.run_parallel)
@@ -169,9 +166,7 @@ class ConstrainedThreadedPipelineTest(unittest.TestCase):
 
     def test_constrained_parallel(self):
         l = []
-        pl = pipeline.Pipeline((
-            _produce(1000), (_work(), _work()), _consume(l)
-        ))
+        pl = pipeline.Pipeline((_produce(1000), (_work(), _work()), _consume(l)))
         pl.run_parallel(1)
         self.assertEqual(set(l), {i * 2 for i in range(1000)})
 
@@ -179,8 +174,7 @@ class ConstrainedThreadedPipelineTest(unittest.TestCase):
 class BubbleTest(unittest.TestCase):
     def setUp(self):
         self.l = []
-        self.pl = pipeline.Pipeline((_produce(), _bub_work(),
-                                     _consume(self.l)))
+        self.pl = pipeline.Pipeline((_produce(), _bub_work(), _consume(self.l)))
 
     def test_run_sequential(self):
         self.pl.run_sequential()
@@ -198,9 +192,7 @@ class BubbleTest(unittest.TestCase):
 class MultiMessageTest(unittest.TestCase):
     def setUp(self):
         self.l = []
-        self.pl = pipeline.Pipeline((
-            _produce(), _multi_work(), _consume(self.l)
-        ))
+        self.pl = pipeline.Pipeline((_produce(), _multi_work(), _consume(self.l)))
 
     def test_run_sequential(self):
         self.pl.run_sequential()
@@ -216,16 +208,12 @@ class MultiMessageTest(unittest.TestCase):
 
 
 class StageDecoratorTest(unittest.TestCase):
-
     def test_stage_decorator(self):
         @pipeline.stage
         def add(n, i):
             return i + n
 
-        pl = pipeline.Pipeline([
-            iter([1, 2, 3]),
-            add(2)
-        ])
+        pl = pipeline.Pipeline([iter([1, 2, 3]), add(2)])
         self.assertEqual(list(pl.pull()), [3, 4, 5])
 
     def test_mutator_stage_decorator(self):
@@ -233,16 +221,13 @@ class StageDecoratorTest(unittest.TestCase):
         def setkey(key, item):
             item[key] = True
 
-        pl = pipeline.Pipeline([
-            iter([{'x': False}, {'a': False}]),
-            setkey('x'),
-        ])
-        self.assertEqual(list(pl.pull()),
-                         [{'x': True}, {'a': False, 'x': True}])
+        pl = pipeline.Pipeline([iter([{"x": False}, {"a": False}]), setkey("x"),])
+        self.assertEqual(list(pl.pull()), [{"x": True}, {"a": False, "x": True}])
 
 
 def suite():
     return unittest.TestLoader().loadTestsFromName(__name__)
 
-if __name__ == '__main__':
-    unittest.main(defaultTest='suite')
+
+if __name__ == "__main__":
+    unittest.main(defaultTest="suite")
