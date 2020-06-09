@@ -82,7 +82,7 @@ class StrFormatLogger(Logger):
 
         def __str__(self):
             args = [logsafe(a) for a in self.args]
-            kwargs = dict((k, logsafe(v)) for (k, v) in self.kwargs.items())
+            kwargs = {k: logsafe(v) for (k, v) in self.kwargs.items()}
             return self.msg.format(*args, **kwargs)
 
     def _log(self, level, msg, args, exc_info=None, extra=None, **kwargs):

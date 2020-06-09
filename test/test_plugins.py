@@ -247,11 +247,7 @@ class EventsTest(unittest.TestCase, ImportHelper, TestHelper):
                         or isinstance(task, ArchiveImportTask):
                     return task
 
-                new_tasks = []
-                for item in task.items:
-                    new_tasks.append(SingletonImportTask(task.toppath, item))
-
-                return new_tasks
+                return [SingletonImportTask(task.toppath, item) for item in task.items]
 
         to_singleton_plugin = ToSingletonPlugin
         self.register_plugin(to_singleton_plugin)

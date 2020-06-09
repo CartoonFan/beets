@@ -43,12 +43,9 @@ def filter_to_be_removed(items, keys):
         return [item for item in items if item not in dont_remove]
     else:
         def to_be_removed(item):
-            for artist, album, title in keys:
-                if artist == item['artist'] and\
+            return not any(artist == item['artist'] and\
                            album == item['album'] and\
-                           title == item['title']:
-                    return False
-            return True
+                           title == item['title'] for artist, album, title in keys)
 
         return [item for item in items if to_be_removed(item)]
 
@@ -148,22 +145,21 @@ class SubsonicPlaylistPlugin(BeetsPlugin):
 
     def send(self, endpoint, params=None):
         if params is None:
-            params = dict()
+            params = {}
         a, b = self.generate_token()
         params['u'] = self.config['username']
         params['t'] = a
         params['s'] = b
         params['v'] = '1.12.0'
         params['c'] = 'beets'
-        resp = requests.get('{}/rest/{}?{}'.format(
+        return requests.get('{}/rest/{}?{}'.format(
             self.config['base_url'].get(),
             endpoint,
             urlencode(params))
         )
-        return resp
 
     def get_playlists(self, ids):
-        output = dict()
+        output = {}
         for playlist_id in ids:
             name, tracks = self.get_playlist(playlist_id)
             for track in tracks:

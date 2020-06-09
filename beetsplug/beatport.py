@@ -134,10 +134,7 @@ class BeatportClient(object):
                              facets=['fieldType:{0}'.format(release_type)])
         for item in response:
             if release_type == 'release':
-                if details:
-                    release = self.get_release(item['id'])
-                else:
-                    release = BeatportRelease(item)
+                release = self.get_release(item['id']) if details else BeatportRelease(item)
                 yield release
             elif release_type == 'track':
                 yield BeatportTrack(item)
@@ -359,10 +356,7 @@ class BeatportPlugin(BeetsPlugin):
         """Returns a list of AlbumInfo objects for beatport search results
         matching release and artist (if not various).
         """
-        if va_likely:
-            query = release
-        else:
-            query = '%s %s' % (artist, release)
+        query = release if va_likely else '%s %s' % (artist, release)
         try:
             return self._get_releases(query)
         except BeatportAPIError as e:
@@ -419,9 +413,8 @@ class BeatportPlugin(BeetsPlugin):
         # Strip medium information from query, Things like "CD1" and "disk 1"
         # can also negate an otherwise positive result.
         query = re.sub(r'\b(CD|disc)\s*\d+', '', query, flags=re.I)
-        albums = [self._get_album_info(x)
+        return [self._get_album_info(x)
                   for x in self.client.search(query)]
-        return albums
 
     def _get_album_info(self, release):
         """Returns an AlbumInfo object for a Beatport Release object.
@@ -471,5 +464,4 @@ class BeatportPlugin(BeetsPlugin):
         """Returns a list of TrackInfo objects for a Beatport query.
         """
         bp_tracks = self.client.search(query, release_type='track')
-        tracks = [self._get_track_info(x) for x in bp_tracks]
-        return tracks
+        return [self._get_track_info(x) for x in bp_tracks]

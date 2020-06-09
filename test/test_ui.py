@@ -242,7 +242,7 @@ class ModifyTest(unittest.TestCase, TestHelper):
         album = u"album"
         original_artist = u"composer"
         new_artist = u"coverArtist"
-        for i in range(0, 10):
+        for i in range(10):
             self.add_item_fixture(title=u"{0}{1}".format(title, i),
                                   artist=original_artist,
                                   album=album)

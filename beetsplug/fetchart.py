@@ -160,11 +160,7 @@ def _logged_get(log, *args, **kwargs):
             send_kwargs[arg] = req_kwargs.pop(arg)
 
     # Our special logging message parameter.
-    if 'message' in kwargs:
-        message = kwargs.pop('message')
-    else:
-        message = 'getting URL'
-
+    message = kwargs.pop('message') if 'message' in kwargs else 'getting URL'
     req = requests.Request('GET', *args, **req_kwargs)
 
     with requests.Session() as s:

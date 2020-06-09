@@ -34,9 +34,8 @@ def direct_parent_id(mb_workid, work_date=None):
                                                         "artist-rels"])
     if 'artist-relation-list' in work_info['work'] and work_date is None:
         for artist in work_info['work']['artist-relation-list']:
-            if artist['type'] == 'composer':
-                if 'end' in artist.keys():
-                    work_date = artist['end']
+            if artist['type'] == 'composer' and 'end' in artist.keys():
+                work_date = artist['end']
 
     if 'work-relation-list' in work_info['work']:
         for direct_parent in work_info['work']['work-relation-list']:
@@ -192,7 +191,7 @@ add one at https://musicbrainz.org/recording/{}', item, item.mb_trackid)
                 self._log.debug("Work fetched: {} - no parent composer",
                                 parent_info['parentwork'])
 
-        elif hasparent:
+        else:
             self._log.debug("{}: Work present, skipping", item)
             return
 

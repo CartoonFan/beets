@@ -135,7 +135,7 @@ class FtInTitlePlugin(plugins.BeetsPlugin):
 
         # Only update the title if it does not already contain a featured
         # artist and if we do not drop featuring information.
-        if not drop_feat and not contains_feat(item.title):
+        if not (drop_feat or contains_feat(item.title)):
             feat_format = self.config['format'].as_str()
             new_format = feat_format.format(feat_part)
             new_title = u"{0} {1}".format(item.title, new_format)

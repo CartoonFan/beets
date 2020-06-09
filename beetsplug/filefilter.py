@@ -52,7 +52,7 @@ class FileFilterPlugin(BeetsPlugin):
             for item in task.items:
                 if self.file_filter(item['path']):
                     items_to_import.append(item)
-            if len(items_to_import) > 0:
+            if items_to_import:
                 task.items = items_to_import
             else:
                 # Returning an empty list of tasks from the handler

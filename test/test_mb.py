@@ -557,8 +557,8 @@ class MBLibraryTest(unittest.TestCase):
             self.assertEqual(ti.track_id, 'bar')
 
     def test_match_album(self):
-        mbid = 'd2a6f856-b553-40a0-ac54-a321e8e2da99'
         with mock.patch('musicbrainzngs.search_releases') as sp:
+            mbid = 'd2a6f856-b553-40a0-ac54-a321e8e2da99'
             sp.return_value = {
                 'release-list': [{
                     'id': mbid,

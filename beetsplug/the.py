@@ -70,21 +70,20 @@ class ThePlugin(BeetsPlugin):
         pattern -- regexp pattern (case ignore is already on)
         strip -- if True, pattern will be removed
         """
-        if text:
-            r = re.compile(pattern, flags=re.IGNORECASE)
-            try:
-                t = r.findall(text)[0]
-            except IndexError:
-                return text
-            else:
-                r = re.sub(r, '', text).strip()
-                if self.config['strip']:
-                    return r
-                else:
-                    fmt = self.config['format'].as_str()
-                    return fmt.format(r, t.strip()).strip()
-        else:
+        if not text:
             return u''
+        r = re.compile(pattern, flags=re.IGNORECASE)
+        try:
+            t = r.findall(text)[0]
+        except IndexError:
+            return text
+        else:
+            r = re.sub(r, '', text).strip()
+            if self.config['strip']:
+                return r
+            else:
+                fmt = self.config['format'].as_str()
+                return fmt.format(r, t.strip()).strip()
 
     def the_template_func(self, text):
         if not self.patterns:

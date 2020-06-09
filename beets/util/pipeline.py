@@ -466,8 +466,7 @@ class Pipeline(object):
                     out = coro.send(msg)
                     next_msgs.extend(_allmsgs(out))
                 msgs = next_msgs
-            for msg in msgs:
-                yield msg
+            yield from msgs
 
 # Smoke test.
 if __name__ == '__main__':

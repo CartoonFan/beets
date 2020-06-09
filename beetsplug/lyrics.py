@@ -772,7 +772,7 @@ class LyricsPlugin(plugins.BeetsPlugin):
                 self.writerest_indexes(opts.writerest)
             items = lib.items(ui.decargs(args))
             for item in items:
-                if not opts.local_only and not self.config['local']:
+                if not (opts.local_only or self.config['local']):
                     self.fetch_item_lyrics(
                         lib, item, write,
                         opts.force_refetch or self.config['force'],
@@ -840,9 +840,7 @@ class LyricsPlugin(plugins.BeetsPlugin):
         try:
             os.makedirs(os.path.join(directory, 'artists'))
         except OSError as e:
-            if e.errno == errno.EEXIST:
-                pass
-            else:
+            if e.errno != errno.EEXIST:
                 raise
         indexfile = os.path.join(directory, 'index.rst')
         if not os.path.exists(indexfile):

@@ -750,15 +750,13 @@ class EnforceRatioConfigTest(_common.TestCase):
     """Throw some data at the regexes."""
 
     def _load_with_config(self, values, should_raise):
-        if should_raise:
-            for v in values:
-                config['fetchart']['enforce_ratio'] = v
+        for v in values:
+            if should_raise:
                 with self.assertRaises(confuse.ConfigValueError):
                     fetchart.FetchArtPlugin()
-        else:
-            for v in values:
-                config['fetchart']['enforce_ratio'] = v
+            else:
                 fetchart.FetchArtPlugin()
+            config['fetchart']['enforce_ratio'] = v
 
     def test_px(self):
         self._load_with_config(u'0px 4px 12px 123px'.split(), False)

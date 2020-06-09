@@ -64,9 +64,8 @@ class SmartPlaylistPlugin(BeetsPlugin):
                 if not a.endswith(".m3u"):
                     args.add("{0}.m3u".format(a))
 
-            playlists = set((name, q, a_q)
-                            for name, q, a_q in self._unmatched_playlists
-                            if name in args)
+            playlists = {(name, q, a_q) for name, q, a_q in self._unmatched_playlists
+                                    if name in args}
             if not playlists:
                 raise ui.UserError(
                     u'No playlist matching any of {0} found'.format(
@@ -202,12 +201,12 @@ class SmartPlaylistPlugin(BeetsPlugin):
                     m3us[m3u_name].append(item_path)
 
         # Write all of the accumulated track lists to files.
-        for m3u in m3us:
+        for m3u, value in m3us.items():
             m3u_path = normpath(os.path.join(playlist_dir,
                                 bytestring_path(m3u)))
             mkdirall(m3u_path)
             with open(syspath(m3u_path), 'wb') as f:
-                for path in m3us[m3u]:
+                for path in value:
                     if self.config['forward_slash'].get():
                         path = path_as_posix(path)
                     f.write(path + b'\n')

@@ -178,7 +178,7 @@ def get_set_of_values_for_field(lib, fields):
 
 
 def get_basic_beet_options():
-    word = (
+    return (
         BL_NEED2.format("-l format-item",
                         "-f -d 'print with custom format'") +
         BL_NEED2.format("-l format-album",
@@ -194,7 +194,6 @@ def get_basic_beet_options():
                         "-f -r -d 'path to configuration file'") +
         BL_NEED2.format("-s  h  -l help",
                         "-f -d 'print this help message and exit'"))
-    return word
 
 
 def get_subcommands(cmd_name_and_help, nobasicfields, extravalues):
@@ -252,11 +251,11 @@ def get_all_commands(beetcmds):
                     (cmd_need_arg + cmd_s + cmd_l + " -f " + cmd_arglist),
                     cmd_helpstr).split()) + "\n"
 
-            word = (word + " ".join(BL_USE3.format(
+            word += " ".join(BL_USE3.format(
                 name,
                 ("-s " + "h " + "-l " + "help" + " -f "),
                 ('-d ' + wrap("print help") + "\n")
-            ).split()))
+            ).split())
     return word
 
 
@@ -266,9 +265,9 @@ def clean_whitespace(word):
 
 
 def wrap(word):
-    # Need " or ' around strings but watch out if they're in the string
-    sptoken = '\"'
     if ('"') in word and ("'") in word:
+        # Need " or ' around strings but watch out if they're in the string
+        sptoken = '\"'
         word.replace('"', sptoken)
         return '"' + word + '"'
 

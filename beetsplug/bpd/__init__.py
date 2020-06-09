@@ -659,10 +659,7 @@ class BaseServer(object):
         if self.consume:
             self.playlist.pop(old_index)
         if self.current_index < 0:
-            if self.repeat:
-                self.current_index = len(self.playlist) - 1
-            else:
-                self.current_index = 0
+            self.current_index = len(self.playlist) - 1 if self.repeat else 0
         return self.cmd_play(conn)
 
     def cmd_pause(self, conn, state=None):
@@ -695,10 +692,7 @@ class BaseServer(object):
 
     def cmd_playid(self, conn, track_id=0):
         track_id = cast_arg(int, track_id)
-        if track_id == -1:
-            index = -1
-        else:
-            index = self._id_to_index(track_id)
+        index = -1 if track_id == -1 else self._id_to_index(track_id)
         return self.cmd_play(conn, index)
 
     def cmd_stop(self, conn):
@@ -867,7 +861,7 @@ class MPDConnection(Connection):
                 else:
                     clist.append(Command(line))
 
-            elif line == CLIST_BEGIN or line == CLIST_VERBOSE_BEGIN:
+            elif line in [CLIST_BEGIN, CLIST_VERBOSE_BEGIN]:
                 # Begin a command list.
                 clist = CommandList([], line == CLIST_VERBOSE_BEGIN)
 
@@ -1239,13 +1233,11 @@ class Server(BaseServer):
             for name, itemid in sorted(node.files.items()):
                 newpath = self._path_join(basepath, name)
                 # "yield from"
-                for v in self._listall(newpath, itemid, info):
-                    yield v
+                yield from self._listall(newpath, itemid, info)
             for name, subdir in sorted(node.dirs.items()):
                 newpath = self._path_join(basepath, name)
                 yield u'directory: ' + newpath
-                for v in self._listall(newpath, subdir, info):
-                    yield v
+                yield from self._listall(newpath, subdir, info)
 
     def cmd_listall(self, conn, path=u"/"):
         """Send the paths all items in the directory, recursively."""
@@ -1268,11 +1260,9 @@ class Server(BaseServer):
             # Recurse into a directory.
             for name, itemid in sorted(node.files.items()):
                 # "yield from"
-                for v in self._all_items(itemid):
-                    yield v
+                yield from self._all_items(itemid)
             for name, subdir in sorted(node.dirs.items()):
-                for v in self._all_items(subdir):
-                    yield v
+                yield from self._all_items(subdir)
 
     def _add(self, path, send_id=False):
         """Adds a track or directory to the playlist, specified by the
@@ -1298,8 +1288,7 @@ class Server(BaseServer):
     # Server info.
 
     def cmd_status(self, conn):
-        for line in super(Server, self).cmd_status(conn):
-            yield line
+        yield from super(Server, self).cmd_status(conn)
         if self.current_index > -1:
             item = self.playlist[self.current_index]
 
@@ -1621,10 +1610,7 @@ class BPDPlugin(BeetsPlugin):
             host = self.config['host'].as_str()
             host = args.pop(0) if args else host
             port = args.pop(0) if args else self.config['port'].get(int)
-            if args:
-                ctrl_port = args.pop(0)
-            else:
-                ctrl_port = self.config['control_port'].get(int)
+            ctrl_port = args.pop(0) if args else self.config['control_port'].get(int)
             if args:
                 raise beets.ui.UserError(u'too many arguments')
             password = self.config['password'].as_str()

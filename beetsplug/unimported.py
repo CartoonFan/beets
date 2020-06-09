@@ -42,13 +42,15 @@ class Unimported(BeetsPlugin):
         def print_unimported(lib, opts, args):
             ignore_exts = [('.' + x).encode() for x
                            in self.config['ignore_extensions'].as_str_seq()]
-            in_folder = set(
-                (os.path.join(r, file) for r, d, f in os.walk(lib.directory)
-                 for file in f if not any(
-                    [file.endswith(extension) for extension in
-                     ignore_exts])))
-            in_library = set(x.path for x in lib.items())
-            art_files = set(x.artpath for x in lib.albums())
+            in_folder = {
+                os.path.join(r, file)
+                for r, d, f in os.walk(lib.directory)
+                for file in f
+                if not any(file.endswith(extension) for extension in ignore_exts)
+            }
+
+            in_library = {x.path for x in lib.items()}
+            art_files = {x.artpath for x in lib.albums()}
             for f in in_folder - in_library - art_files:
                 print_(util.displayable_path(f))
 

@@ -165,9 +165,10 @@ def query_from_strings(query_cls, model_cls, prefixes, query_parts):
     strings in the format used by parse_query_part. `model_cls`
     determines how queries are constructed from strings.
     """
-    subqueries = []
-    for part in query_parts:
-        subqueries.append(construct_query_part(model_cls, prefixes, part))
+    subqueries = [
+        construct_query_part(model_cls, prefixes, part) for part in query_parts
+    ]
+
     if not subqueries:  # No terms in query.
         subqueries = [query.TrueQuery()]
     return query_cls(subqueries)

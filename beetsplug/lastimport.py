@@ -119,17 +119,16 @@ def import_lastfm(lib, log):
     log.info(u'Fetching last.fm library for @{0}', user)
 
     page_total = 1
-    page_current = 0
     found_total = 0
     unknown_total = 0
     retry_limit = config['lastimport']['retry_limit'].get(int)
     # Iterate through a yet to be known page total count
-    while page_current < page_total:
+    for page_current in range(page_total):
         log.info(u'Querying page #{0}{1}...',
                  page_current + 1,
                  '/{}'.format(page_total) if page_total > 1 else '')
 
-        for retry in range(0, retry_limit):
+        for retry in range(retry_limit):
             tracks, page_total = fetch_tracks(user, page_current + 1, per_page)
             if page_total < 1:
                 # It means nothing to us!
@@ -151,8 +150,6 @@ def import_lastfm(lib, log):
                 else:
                     log.error(u'FAIL: unable to fetch page #{0}, ',
                               u'tried {1} times', page_current, retry + 1)
-        page_current += 1
-
     log.info(u'... done!')
     log.info(u'finished processing {0} song pages', page_total)
     log.info(u'{0} unknown play-counts', unknown_total)
@@ -192,7 +189,7 @@ def process_tracks(lib, tracks, log):
     total_fails = 0
     log.info(u'Received {0} tracks in this page, processing...', total)
 
-    for num in range(0, total):
+    for num in range(total):
         song = None
         trackid = tracks[num]['mbid'].strip()
         artist = tracks[num]['artist'].get('name', '').strip()

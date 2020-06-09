@@ -173,8 +173,7 @@ class Bs1770gainBackend(Backend):
         of TrackGain objects.
         """
 
-        output = self.compute_gain(items, target_level, False)
-        return output
+        return self.compute_gain(items, target_level, False)
 
     def compute_album_gain(self, items, target_level, peak):
         """Computes the album gain of the given album, returns an
@@ -196,7 +195,7 @@ class Bs1770gainBackend(Backend):
         iterable = iter(items)
         while True:
             result = []
-            for i in range(chunk_at):
+            for _ in range(chunk_at):
                 try:
                     a = next(iterable)
                 except StopIteration:
@@ -218,15 +217,15 @@ class Bs1770gainBackend(Backend):
         if len(items) == 0:
             return []
 
-        albumgaintot = 0.0
         albumpeaktot = 0.0
-        returnchunks = []
-
         # In the case of very large sets of music, we break the tracks
         # into smaller chunks and process them one at a time. This
         # avoids running out of memory.
         if len(items) > self.chunk_at:
             i = 0
+            albumgaintot = 0.0
+            returnchunks = []
+
             for chunk in self.isplitter(items, self.chunk_at):
                 i += 1
                 returnchunk = self.compute_chunk_gain(
@@ -236,7 +235,7 @@ class Bs1770gainBackend(Backend):
                 )
                 albumgaintot += returnchunk[-1].gain
                 albumpeaktot = max(albumpeaktot, returnchunk[-1].peak)
-                returnchunks = returnchunks + returnchunk[0:-1]
+                returnchunks += returnchunk[0:-1]
             returnchunks.append(Gain(albumgaintot / i, albumpeaktot))
             return returnchunks
         else:
@@ -305,12 +304,7 @@ class Bs1770gainBackend(Backend):
         album_state = {'gain': None, 'peak': None}
 
         def start_element_handler(name, attrs):
-            if name == u'track':
-                state['file'] = bytestring_path(attrs[u'file'])
-                if state['file'] in per_file_gain:
-                    raise ReplayGainError(
-                        u'duplicate filename in bs1770gain output')
-            elif name == u'integrated':
+            if name == u'integrated':
                 if 'lu' in attrs:
                     state['gain'] = float(attrs[u'lu'])
             elif name == u'sample-peak':
@@ -318,6 +312,12 @@ class Bs1770gainBackend(Backend):
                     state['peak'] = float(attrs[u'factor'])
                 elif 'amplitude' in attrs:
                     state['peak'] = float(attrs[u'amplitude'])
+
+            elif name == u'track':
+                state['file'] = bytestring_path(attrs[u'file'])
+                if state['file'] in per_file_gain:
+                    raise ReplayGainError(
+                        u'duplicate filename in bs1770gain output')
 
         def end_element_handler(name):
             if name == u'track':
@@ -391,9 +391,11 @@ class FfmpegBackend(Backend):
             )
         incompatible_ffmpeg = True
         for line in ffmpeg_version_out.stdout.splitlines():
-            if line.startswith(b"configuration:"):
-                if b"--enable-libebur128" in line:
-                    incompatible_ffmpeg = False
+            if (
+                line.startswith(b"configuration:")
+                and b"--enable-libebur128" in line
+            ):
+                incompatible_ffmpeg = False
             if line.startswith(b"libavfilter"):
                 version = line.split(b" ", 1)[1].split(b"/", 1)[0].split(b".")
                 version = tuple(map(int, version))
@@ -657,8 +659,7 @@ class CommandBackend(Backend):
         of TrackGain objects.
         """
         supported_items = list(filter(self.format_supported, items))
-        output = self.compute_gain(supported_items, target_level, False)
-        return output
+        return self.compute_gain(supported_items, target_level, False)
 
     def compute_album_gain(self, items, target_level, peak):
         """Computes the album gain of the given album, returns an
@@ -838,7 +839,7 @@ class GStreamerBackend(Backend):
         self._error = None
         self._files = list(files)
 
-        if len(self._files) == 0:
+        if not self._files:
             return
 
         self._file_tags = collections.defaultdict(dict)
@@ -858,12 +859,8 @@ class GStreamerBackend(Backend):
         if len(self._file_tags) != len(items):
             raise ReplayGainError(u"Some tracks did not receive tags")
 
-        ret = []
-        for item in items:
-            ret.append(Gain(self._file_tags[item]["TRACK_GAIN"],
-                            self._file_tags[item]["TRACK_PEAK"]))
-
-        return ret
+        return [Gain(self._file_tags[item]["TRACK_GAIN"],
+                            self._file_tags[item]["TRACK_PEAK"]) for item in items]
 
     def compute_album_gain(self, items, target_level, peak):
         items = list(items)
@@ -1078,7 +1075,6 @@ class AudioToolsBackend(Backend):
         except ValueError:
             raise ReplayGainError(
                 u"Unsupported sample rate {}".format(item.samplerate))
-            return
         return rg
 
     def compute_track_gain(self, items, target_level, peak):
@@ -1256,13 +1252,19 @@ class ReplayGainPlugin(BeetsPlugin):
         # recalculation. This way, if any file among an album's tracks
         # needs recalculation, we still get an accurate album gain
         # value.
-        return self.overwrite or \
-            any([self.should_use_r128(item) and
-                (not item.r128_track_gain or not item.r128_album_gain)
-                for item in album.items()]) or \
-            any([not self.should_use_r128(item) and
-                (not item.rg_album_gain or not item.rg_album_peak)
-                for item in album.items()])
+        return (
+            self.overwrite
+            or any(
+                self.should_use_r128(item)
+                and (not item.r128_track_gain or not item.r128_album_gain)
+                for item in album.items()
+            )
+            or any(
+                not self.should_use_r128(item)
+                and (not item.rg_album_gain or not item.rg_album_peak)
+                for item in album.items()
+            )
+        )
 
     def store_track_gain(self, item, track_gain):
         item.rg_track_gain = track_gain.gain
@@ -1297,7 +1299,7 @@ class ReplayGainPlugin(BeetsPlugin):
         Returns a tuple (store_track_gain, store_album_gain, target_level,
         peak_method).
         """
-        if any([self.should_use_r128(item) for item in items]):
+        if any(self.should_use_r128(item) for item in items):
             store_track_gain = self.store_track_r128_gain
             store_album_gain = self.store_album_r128_gain
             target_level = self.config['r128_targetlevel'].as_number()
@@ -1318,14 +1320,15 @@ class ReplayGainPlugin(BeetsPlugin):
         item. If replay gain information is already present in all
         items, nothing is done.
         """
-        if not force and not self.album_requires_gain(album):
+        if not (force or self.album_requires_gain(album)):
             self._log.info(u'Skipping album {0}', album)
             return
 
         self._log.info(u'analyzing {0}', album)
 
-        if (any([self.should_use_r128(item) for item in album.items()]) and not
-                all(([self.should_use_r128(item) for item in album.items()]))):
+        if any(self.should_use_r128(item) for item in album.items()) and not all(
+            self.should_use_r128(item) for item in album.items()
+        ):
             self._log.error(
                 u"Cannot calculate gain for album {0} (incompatible formats)",
                 album)
@@ -1334,7 +1337,7 @@ class ReplayGainPlugin(BeetsPlugin):
         tag_vals = self.tag_specific_values(album.items())
         store_track_gain, store_album_gain, target_level, peak = tag_vals
 
-        discs = dict()
+        discs = {}
         if self.per_disc:
             for item in album.items():
                 if discs.get(item.disc) is None:
@@ -1372,7 +1375,7 @@ class ReplayGainPlugin(BeetsPlugin):
         the data to disk.  If replay gain information is already present
         in the item, nothing is done.
         """
-        if not force and not self.track_requires_gain(item):
+        if not (force or self.track_requires_gain(item)):
             self._log.info(u'Skipping track {0}', item)
             return
 

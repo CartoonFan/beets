@@ -75,7 +75,7 @@ def _do_query(lib, query, album, also_items=True):
 
     if album and not albums:
         raise ui.UserError(u'No matching albums found.')
-    elif not album and not items:
+    elif not (album or items):
         raise ui.UserError(u'No matching items found.')
 
     return items, albums
@@ -464,9 +464,9 @@ def summarize_items(items, singleton):
             summary_parts.append('{0} {1}'.format(fmt, count))
 
     if items:
-        average_bitrate = sum([item.bitrate for item in items]) / len(items)
-        total_duration = sum([item.length for item in items])
-        total_filesize = sum([item.filesize for item in items])
+        average_bitrate = sum(item.bitrate for item in items) / len(items)
+        total_duration = sum(item.length for item in items)
+        total_filesize = sum(item.filesize for item in items)
         summary_parts.append(u'{0}kbps'.format(int(average_bitrate / 1000)))
         summary_parts.append(ui.human_seconds_short(total_duration))
         summary_parts.append(ui.human_bytes(total_filesize))
@@ -1452,7 +1452,7 @@ def modify_parse_args(args):
 
 def modify_func(lib, opts, args):
     query, mods, dels = modify_parse_args(decargs(args))
-    if not mods and not dels:
+    if not (mods or dels):
         raise ui.UserError(u'no modifications specified')
     modify_items(lib, mods, dels, query, ui.should_write(opts.write),
                  ui.should_move(opts.move), opts.album, not opts.yes)

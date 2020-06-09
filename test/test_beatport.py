@@ -36,7 +36,7 @@ class BeatportTest(_common.TestCase, TestHelper):
         The list of elements on the returned dict is incomplete, including just
         those required for the tests on this class.
         """
-        results = {
+        return {
           "id": 1742984,
           "type": "release",
           "name": "Charade",
@@ -67,7 +67,6 @@ class BeatportTest(_common.TestCase, TestHelper):
             "type": "genre"
           }],
         }
-        return results
 
     def _make_tracks_response(self):
         """Return a list that mimics a response from the beatport API.
@@ -77,7 +76,7 @@ class BeatportTest(_common.TestCase, TestHelper):
         The list of elements on the returned list is incomplete, including just
         those required for the tests on this class.
         """
-        results = [{
+        return [{
           "id": 7817567,
           "type": "track",
           "sku": "track-7817567",
@@ -408,7 +407,6 @@ class BeatportTest(_common.TestCase, TestHelper):
             "status": True
           }
         }]
-        return results
 
     def setUp(self):
         self.setup_beets()
@@ -560,7 +558,7 @@ class BeatportTest(_common.TestCase, TestHelper):
 
 class BeatportResponseEmptyTest(_common.TestCase, TestHelper):
     def _make_tracks_response(self):
-        results = [{
+        return [{
             "id": 7817567,
             "name": "Mirage a Trois",
             "genres": [{
@@ -576,7 +574,6 @@ class BeatportResponseEmptyTest(_common.TestCase, TestHelper):
               "type": "subgenre"
             }],
         }]
-        return results
 
     def setUp(self):
         self.setup_beets()

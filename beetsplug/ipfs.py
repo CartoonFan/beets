@@ -89,9 +89,8 @@ class IPFSPlugin(BeetsPlugin):
         return [cmd]
 
     def auto_add(self, session, task):
-        if task.is_album:
-            if self.ipfs_add(task.album):
-                task.album.store()
+        if task.is_album and self.ipfs_add(task.album):
+            task.album.store()
 
     def ipfs_play(self, lib, opts, args):
         from beetsplug.play import PlayPlugin
@@ -192,10 +191,7 @@ class IPFSPlugin(BeetsPlugin):
 
     def ipfs_import(self, lib, args):
         _hash = args[0]
-        if len(args) > 1:
-            lib_name = args[1]
-        else:
-            lib_name = _hash
+        lib_name = args[1] if len(args) > 1 else _hash
         lib_root = os.path.dirname(lib.path)
         remote_libs = lib_root + "/remotes"
         if not os.path.exists(remote_libs):
@@ -230,10 +226,7 @@ class IPFSPlugin(BeetsPlugin):
                 added_album.store()
 
     def already_added(self, check, jlib):
-        for jalbum in jlib.albums():
-            if jalbum.mb_albumid == check.mb_albumid:
-                return True
-        return False
+        return any(jalbum.mb_albumid == check.mb_albumid for jalbum in jlib.albums())
 
     def ipfs_list(self, lib, args):
         fmt = config['format_album'].get()
@@ -248,8 +241,7 @@ class IPFSPlugin(BeetsPlugin):
 
     def query(self, lib, args):
         rlib = self.get_remote_lib(lib)
-        albums = rlib.albums(args)
-        return albums
+        return rlib.albums(args)
 
     def get_remote_lib(self, lib):
         lib_root = os.path.dirname(lib.path)

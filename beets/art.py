@@ -56,10 +56,11 @@ def embed_item(log, item, imagepath, maxwidth=None, itempath=None,
     """Embed an image into the item's media file.
     """
     # Conditions and filters.
-    if compare_threshold:
-        if not check_art_similarity(log, item, imagepath, compare_threshold):
-            log.info(u'Image not similar; skipping.')
-            return
+    if compare_threshold and not check_art_similarity(
+        log, item, imagepath, compare_threshold
+    ):
+        log.info(u'Image not similar; skipping.')
+        return
     if ifempty and get_art(log, item):
         log.info(u'media file already contained art')
         return
@@ -112,9 +113,8 @@ def resize_image(log, imagepath, maxwidth, quality):
     """
     log.debug(u'Resizing album art to {0} pixels wide and encoding at quality \
               level {1}', maxwidth, quality)
-    imagepath = ArtResizer.shared.resize(maxwidth, syspath(imagepath),
+    return ArtResizer.shared.resize(maxwidth, syspath(imagepath),
                                          quality=quality)
-    return imagepath
 
 
 def check_art_similarity(log, item, imagepath, compare_threshold):

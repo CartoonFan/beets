@@ -293,11 +293,7 @@ def input_options(options, require=False, prompt=None, fallback_prompt=None,
     if require:
         default = None
     elif default is None:
-        if numrange:
-            default = numrange[0]
-        else:
-            default = display_letters[0].lower()
-
+        default = numrange[0] if numrange else display_letters[0].lower()
     # Make a prompt if one is not provided.
     if not prompt:
         prompt_parts = []
@@ -321,10 +317,7 @@ def input_options(options, require=False, prompt=None, fallback_prompt=None,
         for i, (part, length) in enumerate(zip(prompt_parts,
                                                prompt_part_lengths)):
             # Add punctuation.
-            if i == len(prompt_parts) - 1:
-                part += '?'
-            else:
-                part += ','
+            part += '?' if i == len(prompt_parts) - 1 else ','
             length += 1
 
             # Choose either the current line or the beginning of the next.
@@ -429,11 +422,11 @@ def human_bytes(size):
     """Formats size, a number of bytes, in a human-readable way."""
     powers = [u'', u'K', u'M', u'G', u'T', u'P', u'E', u'Z', u'Y', u'H']
     unit = 'B'
+    unit = u'iB'
     for power in powers:
         if size < 1024:
             return u"%3.1f %s%s" % (size, power, unit)
         size /= 1024.0
-        unit = u'iB'
     return u"big"
 
 
@@ -535,9 +528,7 @@ def colorize(color_name, text):
 
     global COLORS
     if not COLORS:
-        COLORS = dict((name,
-                       config['ui']['colors'][name].as_str())
-                      for name in COLOR_NAMES)
+        COLORS = {name: config['ui']['colors'][name].as_str() for name in COLOR_NAMES}
     # In case a 3rd party plugin is still passing the actual color ('red')
     # instead of the abstract color name ('text_error')
     color = COLORS.get(color_name)
@@ -554,8 +545,9 @@ def _colordiff(a, b, highlight='text_highlight',
     highlighted intelligently to show differences; other values are
     stringified and highlighted in their entirety.
     """
-    if not isinstance(a, six.string_types) \
-       or not isinstance(b, six.string_types):
+    if not (
+        isinstance(a, six.string_types) and isinstance(b, six.string_types)
+    ):
         # Non-strings: use ordinary equality.
         a = six.text_type(a)
         b = six.text_type(b)
@@ -1008,8 +1000,7 @@ class SubcommandsOptionParser(CommonOptionsParser):
             formatter = self.formatter
 
         # Subcommands header.
-        result = ["\n"]
-        result.append(formatter.format_heading('Commands'))
+        result = ["\n", formatter.format_heading('Commands')]
         formatter.indent()
 
         # Generate the display names (including aliases).

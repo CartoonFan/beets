@@ -165,11 +165,7 @@ def _event_select(events):
                 waitable_to_event[('x', waitable)] = event
 
     # If we have a any sleeping threads, determine how long to sleep.
-    if earliest_wakeup:
-        timeout = max(earliest_wakeup - time.time(), 0.0)
-    else:
-        timeout = None
-
+    timeout = max(earliest_wakeup - time.time(), 0.0) if earliest_wakeup else None
     # Perform select() if we have any waitables.
     if rlist or wlist or xlist:
         rready, wready, xready = select.select(rlist, wlist, xlist, timeout)
@@ -262,10 +258,7 @@ def run(root_coro):
         exception is thrown into the coroutine.
         """
         try:
-            if is_exc:
-                next_event = coro.throw(*value)
-            else:
-                next_event = coro.send(value)
+            next_event = coro.throw(*value) if is_exc else coro.send(value)
         except StopIteration:
             # Thread is done.
             complete_thread(coro, None)

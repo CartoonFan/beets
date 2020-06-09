@@ -146,8 +146,8 @@ class BeetsPlugin(object):
                 except TypeError as exc:
                     if exc.args[0].startswith(func.__name__):
                         # caused by 'func' and not stuff internal to 'func'
-                        kwargs = dict((arg, val) for arg, val in kwargs.items()
-                                      if arg in func_args)
+                        kwargs = {arg: val for arg, val in kwargs.items()
+                                                      if arg in func_args}
                         return func(*args, **kwargs)
                     else:
                         raise
@@ -383,17 +383,15 @@ def candidates(items, artist, album, va_likely, extra_tags=None):
     """Gets MusicBrainz candidates for an album from each plugin.
     """
     for plugin in find_plugins():
-        for candidate in plugin.candidates(items, artist, album, va_likely,
-                                           extra_tags):
-            yield candidate
+        yield from plugin.candidates(items, artist, album, va_likely,
+                                           extra_tags)
 
 
 def item_candidates(item, artist, title):
     """Gets MusicBrainz candidates for an item from the plugins.
     """
     for plugin in find_plugins():
-        for item_candidate in plugin.item_candidates(item, artist, title):
-            yield item_candidate
+        yield from plugin.item_candidates(item, artist, title)
 
 
 def album_for_id(album_id):

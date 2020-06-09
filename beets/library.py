@@ -271,10 +271,7 @@ class SmartArtistSort(dbcore.query.Sort):
         else:
             field = lambda i: i.artist_sort or i.artist
 
-        if self.case_insensitive:
-            key = lambda x: field(x).lower()
-        else:
-            key = field
+        key = (lambda x: field(x).lower()) if self.case_insensitive else field
         return sorted(objs, key=key, reverse=not self.ascending)
 
 
@@ -400,12 +397,15 @@ class FormattedItemMapping(dbcore.db.FormattedMapping):
         """Get the value for a key, either from the album or the item.
         Raise a KeyError for invalid keys.
         """
-        if self.for_path and key in self.album_keys:
+        if (
+            self.for_path
+            and key in self.album_keys
+            or key not in self.model_keys
+            and key in self.album_keys
+        ):
             return self._get_formatted(self.album, key)
         elif key in self.model_keys:
             return self._get_formatted(self.model, key)
-        elif key in self.album_keys:
-            return self._get_formatted(self.album, key)
         else:
             raise KeyError(key)
 
@@ -608,10 +608,7 @@ class Item(LibModel):
 
         Raises a `ReadError` if the file could not be read.
         """
-        if read_path is None:
-            read_path = self.path
-        else:
-            read_path = normpath(read_path)
+        read_path = self.path if read_path is None else normpath(read_path)
         try:
             mediafile = MediaFile(syspath(read_path))
         except UnreadableFileError as exc:
@@ -619,9 +616,8 @@ class Item(LibModel):
 
         for key in self._media_fields:
             value = getattr(mediafile, key)
-            if isinstance(value, six.integer_types):
-                if value.bit_length() > 63:
-                    value = 0
+            if isinstance(value, six.integer_types) and value.bit_length() > 63:
+                value = 0
             self[key] = value
 
         # Database's mtime should now reflect the on-disk value.
@@ -647,11 +643,7 @@ class Item(LibModel):
 
         Can raise either a `ReadError` or a `WriteError`.
         """
-        if path is None:
-            path = self.path
-        else:
-            path = normpath(path)
-
+        path = self.path if path is None else normpath(path)
         if id3v23 is None:
             id3v23 = beets.config['id3v23'].get(bool)
 
@@ -1356,7 +1348,7 @@ class Library(dbcore.Database):
             raise ValueError(u'need at least one item')
 
         # Create the album structure using metadata from the first item.
-        values = dict((key, items[0][key]) for key in Album.item_keys)
+        values = {key: items[0][key] for key in Album.item_keys}
         album = Album(self, **values)
 
         # Add the album structure and set the items' album_id fields.
@@ -1434,10 +1426,7 @@ class Library(dbcore.Database):
         an :class:`Album` object for the album. If no such album exists,
         returns `None`.
         """
-        if isinstance(item_or_id, int):
-            album_id = item_or_id
-        else:
-            album_id = item_or_id.album_id
+        album_id = item_or_id if isinstance(item_or_id, int) else item_or_id.album_id
         if album_id is None:
             return None
         return self._get(Album, album_id)
@@ -1545,7 +1534,7 @@ class DefaultTemplateFunctions(object):
         disambiguator or empty to have no brackets.
         """
         # Fast paths: no album, no item or library, or memoized value.
-        if not self.item or not self.lib:
+        if not (self.item and self.lib):
             return u''
 
         if isinstance(self.item, Item):
@@ -1598,7 +1587,7 @@ class DefaultTemplateFunctions(object):
         # Find the first disambiguator that distinguishes the albums.
         for disambiguator in disam:
             # Get the value for each album for the current field.
-            disam_values = set([a.get(disambiguator, '') for a in albums])
+            disam_values = {a.get(disambiguator, '') for a in albums}
 
             # If the set of unique values is equal to the number of
             # albums in the disambiguation set, we're done -- this is

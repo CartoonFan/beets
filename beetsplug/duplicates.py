@@ -140,10 +140,7 @@ class DuplicatesPlugin(BeetsPlugin):
 
             # Default format string for count mode.
             if count and not fmt:
-                if album:
-                    fmt = u'$albumartist - $album'
-                else:
-                    fmt = u'$albumartist - $album - $title'
+                fmt = u'$albumartist - $album' if album else u'$albumartist - $album - $title'
                 fmt += u': {0}'
 
             if checksum:
@@ -234,7 +231,7 @@ class DuplicatesPlugin(BeetsPlugin):
                 self._log.debug(u'some keys {0} on item {1} are null or empty:'
                                 u' skipping',
                                 keys, displayable_path(obj.path))
-            elif (not strict and not len(values)):
+            elif not (strict or len(values)):
                 self._log.debug(u'all keys {0} on item {1} are null or empty:'
                                 u' skipping',
                                 keys, displayable_path(obj.path))
@@ -319,11 +316,7 @@ class DuplicatesPlugin(BeetsPlugin):
         for the relevant strategies.
         """
         kind = Item if all(isinstance(o, Item) for o in objs) else Album
-        if kind is Item:
-            objs = self._merge_items(objs)
-        else:
-            objs = self._merge_albums(objs)
-        return objs
+        return self._merge_items(objs) if kind is Item else self._merge_albums(objs)
 
     def _duplicates(self, objs, keys, full, strict, tiebreak, merge):
         """Generate triples of keys, duplicate counts, and constituent objects.

@@ -25,8 +25,7 @@ from beets.util import pipeline
 
 # Some simple pipeline stages for testing.
 def _produce(num=5):
-    for i in range(num):
-        yield i
+    yield from range(num)
 
 
 def _work():
@@ -134,7 +133,7 @@ class ExceptionTest(unittest.TestCase):
     def test_pull(self):
         pl = pipeline.Pipeline((_produce(), _exc_work()))
         pull = pl.pull()
-        for i in range(3):
+        for _ in range(3):
             next(pull)
         if six.PY2:
             self.assertRaises(ExceptionFixture, pull.next)
@@ -174,7 +173,7 @@ class ConstrainedThreadedPipelineTest(unittest.TestCase):
             _produce(1000), (_work(), _work()), _consume(l)
         ))
         pl.run_parallel(1)
-        self.assertEqual(set(l), set(i * 2 for i in range(1000)))
+        self.assertEqual(set(l), {i * 2 for i in range(1000)})
 
 
 class BubbleTest(unittest.TestCase):

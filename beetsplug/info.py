@@ -101,7 +101,7 @@ def print_data(data, item=None, fmt=None):
         if value is not None:
             formatted[key] = value
 
-    if len(formatted) == 0:
+    if not formatted:
         return
 
     maxwidth = max(len(key) for key in formatted)
@@ -121,11 +121,8 @@ def print_data_keys(data, item=None):
     """Print only the keys (field names) for an item.
     """
     path = displayable_path(item.path) if item else None
-    formatted = []
-    for key, value in data.items():
-        formatted.append(key)
-
-    if len(formatted) == 0:
+    formatted = [key for key, value in data.items()]
+    if not formatted:
         return
 
     line_format = u'{0}{{0}}'.format(u' ' * 4)
@@ -175,11 +172,7 @@ class InfoPlugin(BeetsPlugin):
         dictionary and only prints that. If two files have different values
         for the same tag, the value is set to '[various]'
         """
-        if opts.library:
-            data_collector = library_data
-        else:
-            data_collector = tag_data
-
+        data_collector = library_data if opts.library else tag_data
         included_keys = []
         for keys in opts.included_keys:
             included_keys.extend(keys.split(','))
@@ -235,9 +228,9 @@ def make_key_filter(include):
         matchers.append(re.compile(key + '$'))
 
     def filter_(data):
-        filtered = dict()
+        filtered = {}
         for key, value in data.items():
-            if any([m.match(key) for m in matchers]):
+            if any(m.match(key) for m in matchers):
                 filtered[key] = value
         return filtered
 

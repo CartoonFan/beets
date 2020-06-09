@@ -195,10 +195,7 @@ class EditPlugin(plugins.BeetsPlugin):
             return
 
         # Get the fields to edit.
-        if opts.all:
-            fields = None
-        else:
-            fields = self._get_fields(opts.album, opts.field)
+        fields = None if opts.all else self._get_fields(opts.album, opts.field)
         self.edit(opts.album, objs, fields)
 
     def _get_fields(self, album, extra):

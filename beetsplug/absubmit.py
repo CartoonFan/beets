@@ -134,9 +134,12 @@ only files which would be processed'
         mbid = item['mb_trackid']
 
         # Avoid re-analyzing files that already have AB data.
-        if not self.opts.force_refetch and not self.config['force']:
-            if item.get(PROBE_FIELD):
-                return None
+        if (
+            not self.opts.force_refetch
+            and not self.config['force']
+            and item.get(PROBE_FIELD)
+        ):
+            return None
 
         # If file has no MBID, skip it.
         if not mbid:

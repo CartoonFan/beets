@@ -148,10 +148,10 @@ class MPDStats(object):
         """Calculate a new rating for a song based on play count, skip count,
         old rating and the fact if it was skipped or not.
         """
-        if skipped:
-            rolling = (rating - rating / 2.0)
-        else:
-            rolling = (rating + (1.0 - rating) / 2.0)
+        rolling = (
+            (rating - rating / 2.0) if skipped else (rating + (1.0 - rating) / 2.0)
+        )
+
         stable = (play_count + 1.0) / (play_count + skip_count + 2.0)
         return (self.rating_mix * stable +
                 (1.0 - self.rating_mix) * rolling)
@@ -272,8 +272,8 @@ class MPDStats(object):
                 if diff <= self.time_threshold:
                     return
 
-                if self.now_playing['path'] == path and played == 0:
-                    self.handle_song_change(self.now_playing)
+            if self.now_playing['path'] == path and played == 0:
+                self.handle_song_change(self.now_playing)
 
         if is_url(path):
             self._log.info(u'playing stream {0}', displayable_path(path))

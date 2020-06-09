@@ -108,7 +108,7 @@ def assign_items(items, tracks):
     log.debug('...done.')
 
     # Produce the output matching.
-    mapping = dict((items[i], tracks[j]) for (i, j) in matching)
+    mapping = {items[i]: tracks[j] for (i, j) in matching}
     extra_items = list(set(items) - set(mapping.keys()))
     extra_items.sort(key=lambda i: (i.disc, i.track, i.title))
     extra_tracks = list(set(tracks) - set(mapping.values()))
@@ -252,11 +252,11 @@ def distance(items, album_info, mapping):
         dist.add('tracks', dist.tracks[track].distance)
 
     # Missing tracks.
-    for i in range(len(album_info.tracks) - len(mapping)):
+    for _ in range(len(album_info.tracks) - len(mapping)):
         dist.add('missing_tracks', 1.0)
 
     # Unmatched tracks.
-    for i in range(len(items) - len(mapping)):
+    for _ in range(len(items) - len(mapping)):
         dist.add('unmatched_tracks', 1.0)
 
     # Plugins.

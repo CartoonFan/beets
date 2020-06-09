@@ -40,11 +40,7 @@ if any(has_program(cmd, ['-v']) for cmd in ['mp3gain', 'aacgain']):
 else:
     GAIN_PROG_AVAILABLE = False
 
-if has_program('bs1770gain'):
-    LOUDNESS_PROG_AVAILABLE = True
-else:
-    LOUDNESS_PROG_AVAILABLE = False
-
+LOUDNESS_PROG_AVAILABLE = True if has_program('bs1770gain') else False
 FFMPEG_AVAILABLE = has_program('ffmpeg', ['-version'])
 
 
@@ -151,7 +147,7 @@ class ReplayGainCliTestBase(TestHelper):
         self.assertEqual(max(gains), min(gains))
 
         self.assertNotEqual(max(gains), 0.0)
-        if not self.backend == "bs1770gain":
+        if self.backend != "bs1770gain":
             # Actually produces peaks == 0.0 ~ self.add_album_fixture
             self.assertNotEqual(max(peaks), 0.0)
 

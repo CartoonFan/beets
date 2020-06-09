@@ -102,7 +102,7 @@ class EmbedCoverArtPlugin(BeetsPlugin):
                 items = lib.items(decargs(args))
 
                 # Confirm with user.
-                if not opts.yes and not _confirm(items, not opts.file):
+                if not (opts.yes or _confirm(items, not opts.file)):
                     return
 
                 for item in items:
@@ -113,7 +113,7 @@ class EmbedCoverArtPlugin(BeetsPlugin):
                 albums = lib.albums(decargs(args))
 
                 # Confirm with user.
-                if not opts.yes and not _confirm(albums, not opts.file):
+                if not (opts.yes or _confirm(albums, not opts.file)):
                     return
 
                 for album in albums:
@@ -174,7 +174,7 @@ class EmbedCoverArtPlugin(BeetsPlugin):
         def clear_func(lib, opts, args):
             items = lib.items(decargs(args))
             # Confirm with user.
-            if not opts.yes and not _confirm(items, False):
+            if not (opts.yes or _confirm(items, False)):
                 return
             art.clear(self._log, lib, decargs(args))
         clear_cmd.func = clear_func
@@ -195,9 +195,12 @@ class EmbedCoverArtPlugin(BeetsPlugin):
         """Possibly delete the album art file for an album (if the
         appropriate configuration option is enabled).
         """
-        if self.config['remove_art_file'] and album.artpath:
-            if os.path.isfile(album.artpath):
-                self._log.debug(u'Removing album art file for {0}', album)
-                os.remove(album.artpath)
-                album.artpath = None
-                album.store()
+        if (
+            self.config['remove_art_file']
+            and album.artpath
+            and os.path.isfile(album.artpath)
+        ):
+            self._log.debug(u'Removing album art file for {0}', album)
+            os.remove(album.artpath)
+            album.artpath = None
+            album.store()

@@ -190,10 +190,7 @@ class Symbol(object):
 
     def translate(self):
         """Compile the variable lookup."""
-        if six.PY2:
-            ident = self.ident.encode('utf-8')
-        else:
-            ident = self.ident
+        ident = self.ident.encode('utf-8') if six.PY2 else self.ident
         expr = ex_rvalue(VARIABLE_PREFIX + ident)
         return [expr], set([ident]), set()
 
@@ -228,10 +225,7 @@ class Call(object):
     def translate(self):
         """Compile the function call."""
         varnames = set()
-        if six.PY2:
-            ident = self.ident.encode('utf-8')
-        else:
-            ident = self.ident
+        ident = self.ident.encode('utf-8') if six.PY2 else self.ident
         funcnames = set([ident])
 
         arg_exprs = []
@@ -442,7 +436,7 @@ class Parser(object):
             # A symbol like ${this}.
             self.pos += 1  # Skip opening.
             closer = self.string.find(GROUP_CLOSE, self.pos)
-            if closer == -1 or closer == self.pos:
+            if closer in [-1, self.pos]:
                 # No closing brace found or identifier is empty.
                 self.parts.append(self.string[start_pos:self.pos])
             else:

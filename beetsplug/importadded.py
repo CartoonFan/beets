@@ -27,7 +27,7 @@ class ImportAddedPlugin(BeetsPlugin):
         # album.path for old albums that were replaced by a reimported album
         self.replaced_album_paths = None
         # item path in the library to the mtime of the source file
-        self.item_mtime = dict()
+        self.item_mtime = {}
 
         register = self.register_listener
         register('import_task_created', self.check_config)
@@ -62,9 +62,9 @@ class ImportAddedPlugin(BeetsPlugin):
                 self.record_import_mtime(item, item.path, item.path)
 
     def record_reimported(self, task, session):
-        self.reimported_item_ids = set(item.id for item, replaced_items
-                                       in task.replaced_items.items()
-                                       if replaced_items)
+        self.reimported_item_ids = {item.id for item, replaced_items
+                                           in task.replaced_items.items()
+                                           if replaced_items}
         self.replaced_album_paths = set(task.replaced_albums.keys())
 
     def write_file_mtime(self, path, mtime):

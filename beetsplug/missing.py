@@ -139,7 +139,7 @@ class MissingPlugin(BeetsPlugin):
         fmt = config['format_album' if count else 'format_item'].get()
 
         if total:
-            print(sum([_missing_count(a) for a in albums]))
+            print(sum(_missing_count(a) for a in albums))
             return
 
         # Default format string for count mode.

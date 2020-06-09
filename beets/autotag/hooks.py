@@ -242,7 +242,7 @@ def _string_dist_basic(str1, str2):
     str2 = as_string(unidecode(str2))
     str1 = re.sub(r'[^a-z0-9]', '', str1.lower())
     str2 = re.sub(r'[^a-z0-9]', '', str2.lower())
-    if not str1 and not str2:
+    if not (str1 or str2):
         return 0.0
     return levenshtein_distance(str1, str2) / float(max(len(str1), len(str2)))
 
@@ -350,7 +350,7 @@ class Distance(object):
         """
         dist_max = self.max_distance
         if dist_max:
-            return self.raw_distance / self.max_distance
+            return self.raw_distance / dist_max
         return 0.0
 
     @property
@@ -498,7 +498,7 @@ class Distance(object):
         """
         diff = abs(number1 - number2)
         if diff:
-            for i in range(diff):
+            for _ in range(diff):
                 self.add(key, 1.0)
         else:
             self.add(key, 0.0)
@@ -526,10 +526,7 @@ class Distance(object):
         `number1` is bound at 0 and `number2`.
         """
         number = float(max(min(number1, number2), 0))
-        if number2:
-            dist = number / number2
-        else:
-            dist = 0.0
+        dist = number / number2 if number2 else 0.0
         self.add(key, dist)
 
     def add_string(self, key, str1, str2):
@@ -612,25 +609,22 @@ def album_candidates(items, artist, album, va_likely, extra_tags):
     # Base candidates if we have album and artist to match.
     if artist and album:
         try:
-            for candidate in mb.match_album(artist, album, len(items),
-                                            extra_tags):
-                yield candidate
+            yield from mb.match_album(artist, album, len(items),
+                                            extra_tags)
         except mb.MusicBrainzAPIError as exc:
             exc.log(log)
 
     # Also add VA matches from MusicBrainz where appropriate.
     if va_likely and album:
         try:
-            for candidate in mb.match_album(None, album, len(items),
-                                            extra_tags):
-                yield candidate
+            yield from mb.match_album(None, album, len(items),
+                                            extra_tags)
         except mb.MusicBrainzAPIError as exc:
             exc.log(log)
 
     # Candidates from plugins.
-    for candidate in plugins.candidates(items, artist, album, va_likely,
-                                        extra_tags):
-        yield candidate
+    yield from plugins.candidates(items, artist, album, va_likely,
+                                        extra_tags)
 
 
 @plugins.notify_info_yielded(u'trackinfo_received')
@@ -643,11 +637,9 @@ def item_candidates(item, artist, title):
     # MusicBrainz candidates.
     if artist and title:
         try:
-            for candidate in mb.match_track(artist, title):
-                yield candidate
+            yield from mb.match_track(artist, title)
         except mb.MusicBrainzAPIError as exc:
             exc.log(log)
 
     # Plugin candidates.
-    for candidate in plugins.item_candidates(item, artist, title):
-        yield candidate
+    yield from plugins.item_candidates(item, artist, title)

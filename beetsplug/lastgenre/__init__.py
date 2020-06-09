@@ -243,9 +243,7 @@ class LastGenrePlugin(plugins.BeetsPlugin):
         """
         if genre is None:
             return False
-        if not self.whitelist or genre in self.whitelist:
-            return True
-        return False
+        return not self.whitelist or genre in self.whitelist
 
     # Cached entity lookups.
 
@@ -258,7 +256,7 @@ class LastGenrePlugin(plugins.BeetsPlugin):
         Last.fm database.
         """
         # Shortcut if we're missing metadata.
-        if any(not s for s in args):
+        if not all(args):
             return None
 
         key = u'{0}.{1}'.format(entity,
@@ -321,11 +319,10 @@ class LastGenrePlugin(plugins.BeetsPlugin):
             return obj.genre, 'keep'
 
         # Track genre (for Items only).
-        if isinstance(obj, library.Item):
-            if 'track' in self.sources:
-                result = self.fetch_track_genre(obj)
-                if result:
-                    return result, 'track'
+        if isinstance(obj, library.Item) and 'track' in self.sources:
+            result = self.fetch_track_genre(obj)
+            if result:
+                return result, 'track'
 
         # Album genre.
         if 'album' in self.sources:

@@ -36,11 +36,10 @@ def _build_m3u_filename(basename):
 
     basename = re.sub(r"[\s,/\\'\"]", '_', basename)
     date = datetime.datetime.now().strftime("%Y%m%d_%Hh%M")
-    path = normpath(os.path.join(
+    return normpath(os.path.join(
         config['importfeeds']['dir'].as_filename(),
         date + '_' + basename + '.m3u'
     ))
-    return path
 
 
 def _write_m3u(m3u_path, items_paths):

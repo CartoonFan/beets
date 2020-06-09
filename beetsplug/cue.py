@@ -49,9 +49,9 @@ class CuePlugin(BeetsPlugin):
 
         tracks = glob(path.join(dir, "*.wav"))
         self._log.info("Generated {0} tracks", len(tracks))
+        title = "dunno lol"
+        track_id = "wtf"
         for t in tracks:
-            title = "dunno lol"
-            track_id = "wtf"
             index = int(path.basename(t)[len("split-track"):-len(".wav")])
             yield TrackInfo(title=title, track_id=track_id, index=index,
                             artist=artist)

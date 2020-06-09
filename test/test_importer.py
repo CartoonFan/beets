@@ -120,19 +120,17 @@ class AutotagStub(object):
         )
 
     def _make_album_match(self, artist, album, tracks, distance=0, missing=0):
-        if distance:
-            id = ' ' + 'M' * distance
-        else:
-            id = ''
+        id = ' ' + 'M' * distance if distance else ''
         if artist is None:
             artist = u"Various Artists"
         else:
             artist = artist.replace('Tag', 'Applied') + id
         album = album.replace('Tag', 'Applied') + id
 
-        track_infos = []
-        for i in range(tracks - missing):
-            track_infos.append(self._make_track_match(artist, album, i + 1))
+        track_infos = [
+            self._make_track_match(artist, album, i + 1)
+            for i in range(tracks - missing)
+        ]
 
         return AlbumInfo(
             artist=artist,
@@ -1012,7 +1010,7 @@ class GroupAlbumsImportTest(_common.TestCase, ImportHelper):
         self.import_media[0].save()
 
         self.importer.run()
-        albums = set([album.album for album in self.lib.albums()])
+        albums = {album.album for album in self.lib.albums()}
         self.assertEqual(albums, set(['Album B', 'Tag Album']))
 
     def test_add_album_for_different_artist_and_same_albumartist(self):
@@ -1024,7 +1022,7 @@ class GroupAlbumsImportTest(_common.TestCase, ImportHelper):
         self.import_media[1].save()
 
         self.importer.run()
-        artists = set([album.albumartist for album in self.lib.albums()])
+        artists = {album.albumartist for album in self.lib.albums()}
         self.assertEqual(artists, set(['Album Artist', 'Tag Artist']))
 
     def test_add_album_for_same_artist_and_different_album(self):
@@ -1032,7 +1030,7 @@ class GroupAlbumsImportTest(_common.TestCase, ImportHelper):
         self.import_media[0].save()
 
         self.importer.run()
-        albums = set([album.album for album in self.lib.albums()])
+        albums = {album.album for album in self.lib.albums()}
         self.assertEqual(albums, set(['Album B', 'Tag Album']))
 
     def test_add_album_for_same_album_and_different_artist(self):
@@ -1040,7 +1038,7 @@ class GroupAlbumsImportTest(_common.TestCase, ImportHelper):
         self.import_media[0].save()
 
         self.importer.run()
-        artists = set([album.albumartist for album in self.lib.albums()])
+        artists = {album.albumartist for album in self.lib.albums()}
         self.assertEqual(artists, set(['Artist B', 'Tag Artist']))
 
     def test_incremental(self):
@@ -1049,7 +1047,7 @@ class GroupAlbumsImportTest(_common.TestCase, ImportHelper):
         self.import_media[0].save()
 
         self.importer.run()
-        albums = set([album.album for album in self.lib.albums()])
+        albums = {album.album for album in self.lib.albums()}
         self.assertEqual(albums, set(['Album B', 'Tag Album']))
 
 
@@ -1501,9 +1499,11 @@ class AlbumsInDirTest(_common.TestCase):
         self.assertEqual(len(albums), 4)
 
     def test_separates_contents(self):
-        found = []
-        for _, album in albums_in_dir(self.base):
-            found.append(re.search(br'album(.)song', album[0]).group(1))
+        found = [
+            re.search(br'album(.)song', album[0]).group(1)
+            for _, album in albums_in_dir(self.base)
+        ]
+
         self.assertTrue(b'1' in found)
         self.assertTrue(b'2' in found)
         self.assertTrue(b'3' in found)
@@ -1957,8 +1957,10 @@ class ImportMusicBrainzIdTest(_common.TestCase, ImportHelper):
                            'an invalid and discarded id']
 
         task.lookup_candidates()
-        self.assertEqual(set(['VALID_RELEASE_0', 'VALID_RELEASE_1']),
-                         set([c.info.album for c in task.candidates]))
+        self.assertEqual(
+            set(['VALID_RELEASE_0', 'VALID_RELEASE_1']),
+            {c.info.album for c in task.candidates},
+        )
 
     def test_candidates_singleton(self):
         """Test directly SingletonImportTask.lookup_candidates()."""
@@ -1969,8 +1971,10 @@ class ImportMusicBrainzIdTest(_common.TestCase, ImportHelper):
                            'an invalid and discarded id']
 
         task.lookup_candidates()
-        self.assertEqual(set(['VALID_RECORDING_0', 'VALID_RECORDING_1']),
-                         set([c.info.title for c in task.candidates]))
+        self.assertEqual(
+            set(['VALID_RECORDING_0', 'VALID_RECORDING_1']),
+            {c.info.title for c in task.candidates},
+        )
 
 
 def suite():

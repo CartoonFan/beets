@@ -322,15 +322,13 @@ class NumericQuery(FieldQuery):
         else:
             if self.rangemin is not None and value < self.rangemin:
                 return False
-            if self.rangemax is not None and value > self.rangemax:
-                return False
-            return True
+            return self.rangemax is None or value <= self.rangemax
 
     def col_clause(self):
         if self.point is not None:
             return self.field + '=?', (self.point,)
         else:
-            if self.rangemin is not None and self.rangemax is not None:
+            if not (self.rangemin is None or self.rangemax is None):
                 return (u'{0} >= ? AND {0} <= ?'.format(self.field),
                         (self.rangemin, self.rangemax))
             elif self.rangemin is not None:
@@ -413,10 +411,7 @@ class AnyFieldQuery(CollectionQuery):
         return self.clause_with_joiner('or')
 
     def match(self, item):
-        for subq in self.subqueries:
-            if subq.match(item):
-                return True
-        return False
+        return any(subq.match(item) for subq in self.subqueries)
 
     def __repr__(self):
         return ("{0.__class__.__name__}({0.pattern!r}, {0.fields!r}, "
@@ -449,7 +444,7 @@ class AndQuery(MutableCollectionQuery):
         return self.clause_with_joiner('and')
 
     def match(self, item):
-        return all([q.match(item) for q in self.subqueries])
+        return all(q.match(item) for q in self.subqueries)
 
 
 class OrQuery(MutableCollectionQuery):
@@ -459,7 +454,7 @@ class OrQuery(MutableCollectionQuery):
         return self.clause_with_joiner('or')
 
     def match(self, item):
-        return any([q.match(item) for q in self.subqueries])
+        return any(q.match(item) for q in self.subqueries)
 
 
 class NotQuery(Query):
@@ -633,7 +628,7 @@ class Period(object):
         """
         precision = self.precision
         date = self.date
-        if 'year' == self.precision:
+        if 'year' == precision:
             return date.replace(year=date.year + 1, month=1)
         elif 'month' == precision:
             if (date.month < 12):
@@ -677,9 +672,7 @@ class DateInterval(object):
     def contains(self, date):
         if self.start is not None and date < self.start:
             return False
-        if self.end is not None and date >= self.end:
-            return False
-        return True
+        return self.end is None or date < self.end
 
     def __str__(self):
         return '[{0}, {1})'.format(self.start, self.end)
@@ -809,7 +802,7 @@ class MultipleSort(Sort):
         """
         sql_sorts = []
         for sort in reversed(self.sorts):
-            if not sort.order_clause() is None:
+            if sort.order_clause() is not None:
                 sql_sorts.append(sort)
             else:
                 break
@@ -825,10 +818,7 @@ class MultipleSort(Sort):
         return ", ".join(order_strings)
 
     def is_slow(self):
-        for sort in self.sorts:
-            if sort.is_slow():
-                return True
-        return False
+        return any(sort.is_slow() for sort in self.sorts)
 
     def sort(self, items):
         slow_sorts = []
@@ -839,9 +829,6 @@ class MultipleSort(Sort):
             elif sort.order_clause() is None:
                 switch_slow = True
                 slow_sorts.append(sort)
-            else:
-                pass
-
         for sort in slow_sorts:
             items = sort.sort(items)
         return items

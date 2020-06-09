@@ -79,10 +79,10 @@ class AnyFieldQueryTest(_common.LibTestCase):
 
 class AssertsMixin(object):
     def assert_items_matched(self, results, titles):
-        self.assertEqual(set([i.title for i in results]), set(titles))
+        self.assertEqual({i.title for i in results}, set(titles))
 
     def assert_albums_matched(self, results, albums):
-        self.assertEqual(set([a.album for a in results]), set(albums))
+        self.assertEqual({a.album for a in results}, set(albums))
 
 
 # A test case class providing a library with some dummy data and some
@@ -857,7 +857,7 @@ class NotQueryTest(DummyDataTestCase):
     - `test_type_xxx`: tests for the negation of a particular XxxQuery class.
     - `test_get_yyy`: tests on query strings (similar to `GetTest`)
     """
-    def assertNegationProperties(self, q):  # noqa
+    def assertNegationProperties(self, q):    # noqa
         """Given a Query `q`, assert that:
         - q OR not(q) == all items
         - q AND not(q) == 0
@@ -871,16 +871,18 @@ class NotQueryTest(DummyDataTestCase):
         self.assert_items_matched(self.lib.items(q_and), [])
 
         # assert manually checking the item titles
-        all_titles = set([i.title for i in self.lib.items()])
-        q_results = set([i.title for i in self.lib.items(q)])
-        not_q_results = set([i.title for i in self.lib.items(not_q)])
+        all_titles = {i.title for i in self.lib.items()}
+        q_results = {i.title for i in self.lib.items(q)}
+        not_q_results = {i.title for i in self.lib.items(not_q)}
         self.assertEqual(q_results.union(not_q_results), all_titles)
         self.assertEqual(q_results.intersection(not_q_results), set())
 
         # round trip
         not_not_q = dbcore.query.NotQuery(not_q)
-        self.assertEqual(set([i.title for i in self.lib.items(q)]),
-                         set([i.title for i in self.lib.items(not_not_q)]))
+        self.assertEqual(
+            {i.title for i in self.lib.items(q)},
+            {i.title for i in self.lib.items(not_not_q)},
+        )
 
     def test_type_and(self):
         # not(a and b) <-> not(a) or not(b)

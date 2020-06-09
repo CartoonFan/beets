@@ -100,8 +100,10 @@ def should_transcode(item, fmt):
             query, _ = parse_query_string(query_string, Item)
             if query.match(item):
                 return False
-    if config['convert']['never_convert_lossy_files'] and \
-            not (item.format.lower() in LOSSLESS_FORMATS):
+    if (
+        config['convert']['never_convert_lossy_files']
+        and item.format.lower() not in LOSSLESS_FORMATS
+    ):
         return False
     maxbr = config['convert']['max_bitrate'].get(int)
     return fmt.lower() != item.format.lower() or \
@@ -255,7 +257,7 @@ class ConvertPlugin(BeetsPlugin):
                 )
             )
 
-        if not quiet and not pretend:
+        if not (quiet or pretend):
             self._log.info(u'Finished encoding {0}',
                            util.displayable_path(source))
 
@@ -375,7 +377,7 @@ class ConvertPlugin(BeetsPlugin):
         """Copies or converts the associated cover art of the album. Album must
         have at least one track.
         """
-        if not album or not album.artpath:
+        if not (album and album.artpath):
             return
 
         album_item = album.items().get()

@@ -367,11 +367,7 @@ class Model(object):
         differ.
         """
         # Choose where to place the value.
-        if key in self._fields:
-            source = self._values_fixed
-        else:
-            source = self._values_flex
-
+        source = self._values_fixed if key in self._fields else self._values_flex
         # If the field has a type, filter the value.
         value = self._type(key).normalize(value)
 
@@ -708,10 +704,10 @@ class Results(object):
     def _get_indexed_flex_attrs(self):
         """ Index flexible attributes by the entity id they belong to
         """
-        flex_values = dict()
+        flex_values = {}
         for row in self.flex_rows:
             if row['entity_id'] not in flex_values:
-                flex_values[row['entity_id']] = dict()
+                flex_values[row['entity_id']] = {}
 
             flex_values[row['entity_id']][row['key']] = row['value']
 
@@ -760,14 +756,14 @@ class Results(object):
         """Get the nth item in this result set. This is inefficient: all
         items up to n are materialized and thrown away.
         """
-        if not self._rows and not self.sort:
+        if not (self._rows or self.sort):
             # Fully materialized and already in order. Just look up the
             # object.
             return self._objects[n]
 
         it = iter(self)
         try:
-            for i in range(n):
+            for _ in range(n):
                 next(it)
             return next(it)
         except StopIteration:
@@ -891,8 +887,8 @@ class Database(object):
         """Get a SQLite connection object to the underlying database.
         One connection object is created per thread.
         """
-        thread_id = threading.current_thread().ident
         with self._shared_map_lock:
+            thread_id = threading.current_thread().ident
             if thread_id in self._connections:
                 return self._connections[thread_id]
             else:
@@ -939,8 +935,8 @@ class Database(object):
         transaction stack. The context manager synchronizes access to
         the stack map. Transactions should never migrate across threads.
         """
-        thread_id = threading.current_thread().ident
         with self._shared_map_lock:
+            thread_id = threading.current_thread().ident
             yield self._tx_stacks[thread_id]
 
     def transaction(self):
@@ -970,7 +966,7 @@ class Database(object):
         # Get current schema.
         with self.transaction() as tx:
             rows = tx.query('PRAGMA table_info(%s)' % table)
-        current_fields = set([row[1] for row in rows])
+        current_fields = {row[1] for row in rows}
 
         field_names = set(fields.keys())
         if current_fields.issuperset(field_names):

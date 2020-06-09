@@ -136,10 +136,10 @@ class PathConversionTest(_common.TestCase):
         self.assertTrue(outpath.startswith(u'\\\\?\\'))
 
     def test_syspath_windows_format_unc_path(self):
-        # The \\?\ prefix on Windows behaves differently with UNC
-        # (network share) paths.
-        path = '\\\\server\\share\\file.mp3'
         with _common.platform_windows():
+            # The \\?\ prefix on Windows behaves differently with UNC
+            # (network share) paths.
+            path = '\\\\server\\share\\file.mp3'
             outpath = util.syspath(path)
         self.assertTrue(isinstance(outpath, six.text_type))
         self.assertEqual(outpath, u'\\\\?\\UNC\\server\\share\\file.mp3')

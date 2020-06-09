@@ -26,9 +26,7 @@ def mkdir_p(path):
     try:
         os.makedirs(path)
     except OSError:
-        if os.path.isdir(path):
-            pass
-        else:
+        if not os.path.isdir(path):
             raise
 
 

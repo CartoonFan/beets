@@ -187,7 +187,7 @@ class ImportSession(object):
         self.logger = self._setup_logging(loghandler)
         self.paths = paths
         self.query = query
-        self._is_resuming = dict()
+        self._is_resuming = {}
         self._merged_items = set()
         self._merged_dirs = set()
 
@@ -288,11 +288,7 @@ class ImportSession(object):
         self.set_config(config['import'])
 
         # Set up the pipeline.
-        if self.query is None:
-            stages = [read_tasks(self)]
-        else:
-            stages = [query_tasks(self)]
-
+        stages = [read_tasks(self)] if self.query is None else [query_tasks(self)]
         # In pretend mode, just log what would otherwise be imported.
         if self.config['pretend']:
             stages += [log_files(self)]
@@ -339,14 +335,12 @@ class ImportSession(object):
         """Returns true if the files belonging to this task have already
         been imported in a previous session.
         """
-        if self.is_resuming(toppath) \
-           and all([progress_element(toppath, p) for p in paths]):
+        if self.is_resuming(toppath) and all(
+            progress_element(toppath, p) for p in paths
+        ):
             return True
-        if self.config['incremental'] \
-           and tuple(paths) in self.history_dirs:
-            return True
-
-        return False
+        return bool(self.config['incremental'] \
+           and tuple(paths) in self.history_dirs)
 
     @property
     def history_dirs(self):
@@ -358,18 +352,18 @@ class ImportSession(object):
         """Returns true if all the paths being imported were part of a merge
         during previous tasks.
         """
-        for path in paths:
-            if path not in self._merged_items \
-               and path not in self._merged_dirs:
-                return False
-        return True
+        return not any(path not in self._merged_items \
+               and path not in self._merged_dirs for path in paths)
 
     def mark_merged(self, paths):
         """Mark paths and directories as merged for future reimport tasks.
         """
         self._merged_items.update(paths)
-        dirs = set([os.path.dirname(path) if os.path.isfile(path) else path
-                    for path in paths])
+        dirs = {
+            os.path.dirname(path) if os.path.isfile(path) else path
+            for path in paths
+        }
+
         self._merged_dirs.update(dirs)
 
     def is_resuming(self, toppath):
@@ -655,7 +649,7 @@ class ImportTask(BaseImportTask):
             return []
 
         duplicates = []
-        task_paths = set(i.path for i in self.items if i)
+        task_paths = {i.path for i in self.items if i}
         duplicate_query = dbcore.AndQuery((
             dbcore.MatchQuery('albumartist', artist),
             dbcore.MatchQuery('album', album),
@@ -665,7 +659,7 @@ class ImportTask(BaseImportTask):
             # Check whether the album paths are all present in the task
             # i.e. album is being completely re-imported by the task,
             # in which case it is not a duplicate (will be replaced).
-            album_paths = set(i.path for i in album.items())
+            album_paths = {i.path for i in album.items()}
             if not (album_paths <= task_paths):
                 duplicates.append(album)
         return duplicates
@@ -1016,10 +1010,7 @@ class ArchiveImportTask(SentinelImportTask):
         if not os.path.isfile(path):
             return False
 
-        for path_test, _ in cls.handlers():
-            if path_test(util.py3_path(path)):
-                return True
-        return False
+        return any(path_test(util.py3_path(path)) for path_test, _ in cls.handlers())
 
     @classmethod
     def handlers(cls):
@@ -1112,15 +1103,12 @@ class ImportTaskFactory(object):
             if self.session.config['singletons']:
                 for path in paths:
                     tasks = self._create(self.singleton(path))
-                    for task in tasks:
-                        yield task
+                    yield from tasks
                 yield self.sentinel(dirs)
 
             else:
                 tasks = self._create(self.album(paths, dirs))
-                for task in tasks:
-                    yield task
-
+                yield from tasks
         # Produce the final sentinel for this toppath to indicate that
         # it is finished. This is usually just a SentinelImportTask, but
         # for archive imports, send the archive task instead (to remove
@@ -1188,7 +1176,7 @@ class ImportTaskFactory(object):
             return None
 
         if dirs is None:
-            dirs = list(set(os.path.dirname(p) for p in paths))
+            dirs = list({os.path.dirname(p) for p in paths})
 
         if self.session.already_imported(self.toppath, dirs):
             log.debug(u'Skipping previously-imported path: {0}',
@@ -1270,11 +1258,7 @@ def _freshen_items(items):
 
 def _extend_pipeline(tasks, *stages):
     # Return pipeline extension for stages with list of tasks
-    if type(tasks) == list:
-        task_iter = iter(tasks)
-    else:
-        task_iter = tasks
-
+    task_iter = iter(tasks) if type(tasks) == list else tasks
     ipl = pipeline.Pipeline([task_iter] + list(stages))
     return pipeline.multiple(ipl.pull())
 
@@ -1293,8 +1277,7 @@ def read_tasks(session):
 
         # Generate tasks.
         task_factory = ImportTaskFactory(toppath, session)
-        for t in task_factory.tasks():
-            yield t
+        yield from task_factory.tasks()
         skipped += task_factory.skipped
 
         if not task_factory.imported:
@@ -1315,9 +1298,7 @@ def query_tasks(session):
         # Search for items.
         for item in session.lib.items(session.query):
             task = SingletonImportTask(None, item)
-            for task in task.handle_created(session):
-                yield task
-
+            yield from task.handle_created(session)
     else:
         # Search for albums.
         for album in session.lib.albums(session.query):
@@ -1327,8 +1308,7 @@ def query_tasks(session):
             _freshen_items(items)
 
             task = ImportTask(None, [album.item_dir()], items)
-            for task in task.handle_created(session):
-                yield task
+            yield from task.handle_created(session)
 
 
 @pipeline.mutator_stage
@@ -1383,8 +1363,7 @@ def user_query(session, task):
         def emitter(task):
             for item in task.items:
                 task = SingletonImportTask(task.toppath, item)
-                for new_task in task.handle_created(session):
-                    yield new_task
+                yield from task.handle_created(session)
             yield SentinelImportTask(task.toppath, task.paths)
 
         return _extend_pipeline(emitter(task),
@@ -1427,40 +1406,41 @@ def resolve_duplicates(session, task):
     """Check if a task conflicts with items or albums already imported
     and ask the session to resolve this.
     """
-    if task.choice_flag in (action.ASIS, action.APPLY, action.RETAG):
-        found_duplicates = task.find_duplicates(session.lib)
-        if found_duplicates:
-            log.debug(u'found duplicates: {}'.format(
-                [o.id for o in found_duplicates]
-            ))
+    if task.choice_flag not in (action.ASIS, action.APPLY, action.RETAG):
+        return
+    found_duplicates = task.find_duplicates(session.lib)
+    if found_duplicates:
+        log.debug(u'found duplicates: {}'.format(
+            [o.id for o in found_duplicates]
+        ))
 
-            # Get the default action to follow from config.
-            duplicate_action = config['import']['duplicate_action'].as_choice({
-                u'skip': u's',
-                u'keep': u'k',
-                u'remove': u'r',
-                u'merge': u'm',
-                u'ask': u'a',
-            })
-            log.debug(u'default action for duplicates: {0}', duplicate_action)
+        # Get the default action to follow from config.
+        duplicate_action = config['import']['duplicate_action'].as_choice({
+            u'skip': u's',
+            u'keep': u'k',
+            u'remove': u'r',
+            u'merge': u'm',
+            u'ask': u'a',
+        })
+        log.debug(u'default action for duplicates: {0}', duplicate_action)
 
-            if duplicate_action == u's':
-                # Skip new.
-                task.set_choice(action.SKIP)
-            elif duplicate_action == u'k':
-                # Keep both. Do nothing; leave the choice intact.
-                pass
-            elif duplicate_action == u'r':
-                # Remove old.
-                task.should_remove_duplicates = True
-            elif duplicate_action == u'm':
-                # Merge duplicates together
-                task.should_merge_duplicates = True
-            else:
-                # No default action set; ask the session.
-                session.resolve_duplicate(task, found_duplicates)
+        if duplicate_action == u's':
+            # Skip new.
+            task.set_choice(action.SKIP)
+        elif duplicate_action == u'k':
+            # Keep both. Do nothing; leave the choice intact.
+            pass
+        elif duplicate_action == u'r':
+            # Remove old.
+            task.should_remove_duplicates = True
+        elif duplicate_action == u'm':
+            # Merge duplicates together
+            task.should_merge_duplicates = True
+        else:
+            # No default action set; ask the session.
+            session.resolve_duplicate(task, found_duplicates)
 
-            session.log_choice(task, True)
+        session.log_choice(task, True)
 
 
 @pipeline.mutator_stage

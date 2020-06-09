@@ -156,10 +156,7 @@ def _flatten_artist_credit(credit):
             alias = _preferred_alias(el['artist'].get('alias-list', ()))
 
             # An artist.
-            if alias:
-                cur_artist_name = alias['alias']
-            else:
-                cur_artist_name = el['artist']['name']
+            cur_artist_name = alias['alias'] if alias else el['artist']['name']
             artist_parts.append(cur_artist_name)
 
             # Artist sort name.
@@ -260,19 +257,20 @@ def _set_date_str(info, date_str, original=False):
     object, set the object's release date fields appropriately. If
     `original`, then set the original_year, etc., fields.
     """
-    if date_str:
-        date_parts = date_str.split('-')
-        for key in ('year', 'month', 'day'):
-            if date_parts:
-                date_part = date_parts.pop(0)
-                try:
-                    date_num = int(date_part)
-                except ValueError:
-                    continue
+    if not date_str:
+        return
+    date_parts = date_str.split('-')
+    for key in ('year', 'month', 'day'):
+        if date_parts:
+            date_part = date_parts.pop(0)
+            try:
+                date_num = int(date_part)
+            except ValueError:
+                continue
 
-                if original:
-                    key = 'original_' + key
-                setattr(info, key, date_num)
+            if original:
+                key = 'original_' + key
+            setattr(info, key, date_num)
 
 
 def album_info(release):
@@ -380,11 +378,13 @@ def album_info(release):
         rel_primarytype = release['release-group']['primary-type']
         if rel_primarytype:
             log.debug('primary MB release type: ' + rel_primarytype.lower())
-    if 'secondary-type-list' in release['release-group']:
-        if release['release-group']['secondary-type-list']:
-            log.debug('secondary MB release type(s): ' + ', '.join(
-                [secondarytype.lower() for secondarytype in
-                    release['release-group']['secondary-type-list']]))
+    if (
+        'secondary-type-list' in release['release-group']
+        and release['release-group']['secondary-type-list']
+    ):
+        log.debug('secondary MB release type(s): ' + ', '.join(
+            [secondarytype.lower() for secondarytype in
+                release['release-group']['secondary-type-list']]))
 
     # Release events.
     info.country, release_date = _preferred_release_event(release)

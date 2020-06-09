@@ -37,12 +37,9 @@ def api_url(host, port, endpoint):
     """
     # check if http or https is defined as host and create hostname
     hostname_list = [host]
-    if host.startswith('http://') or host.startswith('https://'):
-        hostname = ''.join(hostname_list)
-    else:
+    if not host.startswith('http://') and not host.startswith('https://'):
         hostname_list.insert(0, 'http://')
-        hostname = ''.join(hostname_list)
-
+    hostname = ''.join(hostname_list)
     joined = urljoin(
         '{hostname}:{port}'.format(
             hostname=hostname,
@@ -139,9 +136,7 @@ def get_user(host, port, username):
     """
     url = api_url(host, port, '/Users/Public')
     r = requests.get(url)
-    user = [i for i in r.json() if i['Name'] == username]
-
-    return user
+    return [i for i in r.json() if i['Name'] == username]
 
 
 class EmbyUpdate(BeetsPlugin):
@@ -192,11 +187,11 @@ class EmbyUpdate(BeetsPlugin):
 
             # Get authentication token.
             token = get_token(host, port, headers, auth_data)
-            if not token:
-                self._log.warning(
-                    u'Could not get token for user {0}', username
-                )
-                return
+        if not token:
+            self._log.warning(
+                u'Could not get token for user {0}', username
+            )
+            return
 
         # Recreate headers with a token.
         headers = create_headers(user[0]['Id'], token=token)

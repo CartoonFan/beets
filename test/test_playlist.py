@@ -84,7 +84,7 @@ class PlaylistQueryTestHelper(PlaylistTestHelper):
     def test_name_query_with_absolute_paths_in_playlist(self):
         q = u'playlist:absolute'
         results = self.lib.items(q)
-        self.assertEqual(set([i.title for i in results]), set([
+        self.assertEqual({i.title for i in results}, set([
             u'some item',
             u'another item',
         ]))
@@ -95,7 +95,7 @@ class PlaylistQueryTestHelper(PlaylistTestHelper):
             'absolute.m3u',
         )))
         results = self.lib.items(q)
-        self.assertEqual(set([i.title for i in results]), set([
+        self.assertEqual({i.title for i in results}, set([
             u'some item',
             u'another item',
         ]))
@@ -103,7 +103,7 @@ class PlaylistQueryTestHelper(PlaylistTestHelper):
     def test_name_query_with_relative_paths_in_playlist(self):
         q = u'playlist:relative'
         results = self.lib.items(q)
-        self.assertEqual(set([i.title for i in results]), set([
+        self.assertEqual({i.title for i in results}, set([
             u'some item',
             u'another item',
         ]))
@@ -114,7 +114,7 @@ class PlaylistQueryTestHelper(PlaylistTestHelper):
             'relative.m3u',
         )))
         results = self.lib.items(q)
-        self.assertEqual(set([i.title for i in results]), set([
+        self.assertEqual({i.title for i in results}, set([
             u'some item',
             u'another item',
         ]))

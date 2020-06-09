@@ -100,8 +100,7 @@ class DiscogsPlugin(BeetsPlugin):
     def _time_to_next_request(self):
         seconds_between_requests = 60 / self.rate_limit_per_minute
         seconds_since_last_request = time.time() - self.last_request_timestamp
-        seconds_to_wait = seconds_between_requests - seconds_since_last_request
-        return seconds_to_wait
+        return seconds_between_requests - seconds_since_last_request
 
     def request_start(self):
         """wait for rate limit if needed
@@ -182,10 +181,7 @@ class DiscogsPlugin(BeetsPlugin):
         if not self.discogs_client:
             return
 
-        if va_likely:
-            query = album
-        else:
-            query = '%s %s' % (artist, album)
+        query = album if va_likely else '%s %s' % (artist, album)
         try:
             return self.get_albums(query)
         except DiscogsAPIError as e:
@@ -298,8 +294,9 @@ class DiscogsPlugin(BeetsPlugin):
         # lacking some of these fields. This function expects at least:
         # `artists` (>0), `title`, `id`, `tracklist` (>0)
         # https://www.discogs.com/help/doc/submission-guidelines-general-rules
-        if not all([result.data.get(k) for k in ['artists', 'title', 'id',
-                                                 'tracklist']]):
+        if not all(
+            result.data.get(k) for k in ['artists', 'title', 'id', 'tracklist']
+        ):
             self._log.warning(u"Release does not contain the required fields")
             return None
 
@@ -427,8 +424,8 @@ class DiscogsPlugin(BeetsPlugin):
 
         # If a medium has two sides (ie. vinyl or cassette), each pair of
         # consecutive sides should belong to the same medium.
-        if all([track.medium is not None for track in tracks]):
-            m = sorted(set([track.medium.lower() for track in tracks]))
+        if all(track.medium is not None for track in tracks):
+            m = sorted({track.medium.lower() for track in tracks})
             # If all track.medium are single consecutive letters, assume it is
             # a 2-sided medium.
             if ''.join(m) in ascii_lowercase:
@@ -468,10 +465,7 @@ class DiscogsPlugin(BeetsPlugin):
         # before the first track of each medium is a disc title.
         for track in tracks:
             if track.medium_index == 1:
-                if track.index in index_tracks:
-                    disctitle = index_tracks[track.index]
-                else:
-                    disctitle = None
+                disctitle = index_tracks.get(track.index, None)
             track.disctitle = disctitle
 
         return tracks

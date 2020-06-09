@@ -86,8 +86,7 @@ class PluralityTest(_common.TestCase):
         fields = ['artist', 'album', 'albumartist', 'year', 'disctotal',
                   'mb_albumid', 'label', 'catalognum', 'country', 'media',
                   'albumdisambig']
-        items = [Item(**dict((f, '%s_%s' % (f, i or 1)) for f in fields))
-                 for i in range(5)]
+        items = [Item(**{f: '%s_%s' % (f, i or 1) for f in fields}) for i in range(5)]
         likelies, _ = match.current_metadata(items)
         for f in fields:
             if isinstance(likelies[f], int):
@@ -342,8 +341,7 @@ class AlbumDistanceTest(_common.TestCase):
         return match.distance(items, info, self._mapping(items, info))
 
     def test_identical_albums(self):
-        items = []
-        items.append(_make_item(u'one', 1))
+        items = [_make_item(u'one', 1)]
         items.append(_make_item(u'two', 2))
         items.append(_make_item(u'three', 3))
         info = AlbumInfo(
@@ -355,8 +353,7 @@ class AlbumDistanceTest(_common.TestCase):
         self.assertEqual(self._dist(items, info), 0)
 
     def test_incomplete_album(self):
-        items = []
-        items.append(_make_item(u'one', 1))
+        items = [_make_item(u'one', 1)]
         items.append(_make_item(u'three', 3))
         info = AlbumInfo(
             artist=u'some artist',
@@ -370,8 +367,7 @@ class AlbumDistanceTest(_common.TestCase):
         self.assertTrue(dist < 0.2)
 
     def test_global_artists_differ(self):
-        items = []
-        items.append(_make_item(u'one', 1))
+        items = [_make_item(u'one', 1)]
         items.append(_make_item(u'two', 2))
         items.append(_make_item(u'three', 3))
         info = AlbumInfo(
@@ -383,8 +379,7 @@ class AlbumDistanceTest(_common.TestCase):
         self.assertNotEqual(self._dist(items, info), 0)
 
     def test_comp_track_artists_match(self):
-        items = []
-        items.append(_make_item(u'one', 1))
+        items = [_make_item(u'one', 1)]
         items.append(_make_item(u'two', 2))
         items.append(_make_item(u'three', 3))
         info = AlbumInfo(
@@ -397,8 +392,7 @@ class AlbumDistanceTest(_common.TestCase):
 
     def test_comp_no_track_artists(self):
         # Some VA releases don't have track artists (incomplete metadata).
-        items = []
-        items.append(_make_item(u'one', 1))
+        items = [_make_item(u'one', 1)]
         items.append(_make_item(u'two', 2))
         items.append(_make_item(u'three', 3))
         info = AlbumInfo(
@@ -413,8 +407,7 @@ class AlbumDistanceTest(_common.TestCase):
         self.assertEqual(self._dist(items, info), 0)
 
     def test_comp_track_artists_do_not_match(self):
-        items = []
-        items.append(_make_item(u'one', 1))
+        items = [_make_item(u'one', 1)]
         items.append(_make_item(u'two', 2, u'someone else'))
         items.append(_make_item(u'three', 3))
         info = AlbumInfo(
@@ -426,8 +419,7 @@ class AlbumDistanceTest(_common.TestCase):
         self.assertNotEqual(self._dist(items, info), 0)
 
     def test_tracks_out_of_order(self):
-        items = []
-        items.append(_make_item(u'one', 1))
+        items = [_make_item(u'one', 1)]
         items.append(_make_item(u'three', 2))
         items.append(_make_item(u'two', 3))
         info = AlbumInfo(
@@ -440,8 +432,7 @@ class AlbumDistanceTest(_common.TestCase):
         self.assertTrue(0 < dist < 0.2)
 
     def test_two_medium_release(self):
-        items = []
-        items.append(_make_item(u'one', 1))
+        items = [_make_item(u'one', 1)]
         items.append(_make_item(u'two', 2))
         items.append(_make_item(u'three', 3))
         info = AlbumInfo(
@@ -457,8 +448,7 @@ class AlbumDistanceTest(_common.TestCase):
         self.assertEqual(dist, 0)
 
     def test_per_medium_track_numbers(self):
-        items = []
-        items.append(_make_item(u'one', 1))
+        items = [_make_item(u'one', 1)]
         items.append(_make_item(u'two', 2))
         items.append(_make_item(u'three', 1))
         info = AlbumInfo(
@@ -482,12 +472,10 @@ class AssignmentTest(unittest.TestCase):
         )
 
     def test_reorder_when_track_numbers_incorrect(self):
-        items = []
-        items.append(self.item(u'one', 1))
+        items = [self.item(u'one', 1)]
         items.append(self.item(u'three', 2))
         items.append(self.item(u'two', 3))
-        trackinfo = []
-        trackinfo.append(TrackInfo(title=u'one'))
+        trackinfo = [TrackInfo(title=u'one')]
         trackinfo.append(TrackInfo(title=u'two'))
         trackinfo.append(TrackInfo(title=u'three'))
         mapping, extra_items, extra_tracks = \
@@ -501,12 +489,10 @@ class AssignmentTest(unittest.TestCase):
         })
 
     def test_order_works_with_invalid_track_numbers(self):
-        items = []
-        items.append(self.item(u'one', 1))
+        items = [self.item(u'one', 1)]
         items.append(self.item(u'three', 1))
         items.append(self.item(u'two', 1))
-        trackinfo = []
-        trackinfo.append(TrackInfo(title=u'one'))
+        trackinfo = [TrackInfo(title=u'one')]
         trackinfo.append(TrackInfo(title=u'two'))
         trackinfo.append(TrackInfo(title=u'three'))
         mapping, extra_items, extra_tracks = \
@@ -520,11 +506,9 @@ class AssignmentTest(unittest.TestCase):
         })
 
     def test_order_works_with_missing_tracks(self):
-        items = []
-        items.append(self.item(u'one', 1))
+        items = [self.item(u'one', 1)]
         items.append(self.item(u'three', 3))
-        trackinfo = []
-        trackinfo.append(TrackInfo(title=u'one'))
+        trackinfo = [TrackInfo(title=u'one')]
         trackinfo.append(TrackInfo(title=u'two'))
         trackinfo.append(TrackInfo(title=u'three'))
         mapping, extra_items, extra_tracks = \
@@ -537,12 +521,10 @@ class AssignmentTest(unittest.TestCase):
         })
 
     def test_order_works_with_extra_tracks(self):
-        items = []
-        items.append(self.item(u'one', 1))
+        items = [self.item(u'one', 1)]
         items.append(self.item(u'two', 2))
         items.append(self.item(u'three', 3))
-        trackinfo = []
-        trackinfo.append(TrackInfo(title=u'one'))
+        trackinfo = [TrackInfo(title=u'one')]
         trackinfo.append(TrackInfo(title=u'three'))
         mapping, extra_items, extra_tracks = \
             match.assign_items(items, trackinfo)
@@ -618,20 +600,21 @@ class ApplyTest(_common.TestCase, ApplyTestUtil):
     def setUp(self):
         super(ApplyTest, self).setUp()
 
-        self.items = []
+        self.items = [Item({})]
         self.items.append(Item({}))
-        self.items.append(Item({}))
-        trackinfo = []
-        trackinfo.append(TrackInfo(
-            title=u'oneNew',
-            track_id=u'dfa939ec-118c-4d0f-84a0-60f3d1e6522c',
-            medium=1,
-            medium_index=1,
-            medium_total=1,
-            index=1,
-            artist_credit='trackArtistCredit',
-            artist_sort='trackArtistSort',
-        ))
+        trackinfo = [
+            TrackInfo(
+                title=u'oneNew',
+                track_id=u'dfa939ec-118c-4d0f-84a0-60f3d1e6522c',
+                medium=1,
+                medium_index=1,
+                medium_total=1,
+                index=1,
+                artist_credit='trackArtistCredit',
+                artist_sort='trackArtistSort',
+            )
+        ]
+
         trackinfo.append(TrackInfo(
             title=u'twoNew',
             track_id=u'40130ed1-a27c-42fd-a328-1ebefb6caef4',
@@ -773,8 +756,7 @@ class ApplyTest(_common.TestCase, ApplyTestUtil):
         self.assertEqual(self.items[0].day, 18)
 
     def test_date_only_zeros_month_and_day(self):
-        self.items = []
-        self.items.append(Item(year=1, month=2, day=3))
+        self.items = [Item(year=1, month=2, day=3)]
         self.items.append(Item(year=4, month=5, day=6))
 
         my_info = self.info.copy()
@@ -786,8 +768,7 @@ class ApplyTest(_common.TestCase, ApplyTestUtil):
         self.assertEqual(self.items[0].day, 0)
 
     def test_missing_date_applies_nothing(self):
-        self.items = []
-        self.items.append(Item(year=1, month=2, day=3))
+        self.items = [Item(year=1, month=2, day=3)]
         self.items.append(Item(year=4, month=5, day=6))
 
         self._apply()
@@ -808,17 +789,18 @@ class ApplyCompilationTest(_common.TestCase, ApplyTestUtil):
     def setUp(self):
         super(ApplyCompilationTest, self).setUp()
 
-        self.items = []
+        self.items = [Item({})]
         self.items.append(Item({}))
-        self.items.append(Item({}))
-        trackinfo = []
-        trackinfo.append(TrackInfo(
-            title=u'oneNew',
-            track_id=u'dfa939ec-118c-4d0f-84a0-60f3d1e6522c',
-            artist=u'artistOneNew',
-            artist_id=u'a05686fc-9db2-4c23-b99e-77f5db3e5282',
-            index=1,
-        ))
+        trackinfo = [
+            TrackInfo(
+                title=u'oneNew',
+                track_id=u'dfa939ec-118c-4d0f-84a0-60f3d1e6522c',
+                artist=u'artistOneNew',
+                artist_id=u'a05686fc-9db2-4c23-b99e-77f5db3e5282',
+                index=1,
+            )
+        ]
+
         trackinfo.append(TrackInfo(
             title=u'twoNew',
             track_id=u'40130ed1-a27c-42fd-a328-1ebefb6caef4',

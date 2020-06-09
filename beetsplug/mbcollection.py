@@ -120,7 +120,7 @@ class MusicBrainzCollectionPlugin(BeetsPlugin):
         return [mbupdate]
 
     def remove_missing(self, collection_id, lib_albums):
-        lib_ids = set([x.mb_albumid for x in lib_albums])
+        lib_ids = {x.mb_albumid for x in lib_albums}
         albums_in_collection = self._get_albums_in_collection(collection_id)
         remove_me = list(set(albums_in_collection) - lib_ids)
         for i in range(0, len(remove_me), FETCH_CHUNK_SIZE):

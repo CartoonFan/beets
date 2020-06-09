@@ -112,9 +112,7 @@ def build_year_spans(year_spans_str):
     """Build a chronologically ordered list of spans dict from unordered spans
     stringlist.
     """
-    spans = []
-    for elem in year_spans_str:
-        spans.append(span_from_str(elem))
+    spans = [span_from_str(elem) for elem in year_spans_str]
     complete_year_spans(spans)
     return spans
 
@@ -238,8 +236,5 @@ class BucketPlugin(plugins.BeetsPlugin):
         if not field and len(text) == 4 and text.isdigit():
             field = 'year'
 
-        if field == 'year':
-            func = self.find_bucket_year
-        else:
-            func = self.find_bucket_alpha
+        func = self.find_bucket_year if field == 'year' else self.find_bucket_alpha
         return func(text)
